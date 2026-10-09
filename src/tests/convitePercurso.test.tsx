@@ -197,7 +197,7 @@ describe("accept-and-sign com senha", () => {
     fireEvent.click(screen.getByLabelText(/li o contrato e concordo/i));
 
     // Seleciona "Senha da minha conta"
-    const radioSenha = screen.getByLabelText(/senha da minha conta/i);
+    const radioSenha = screen.getByLabelText(/minha senha/i);
     fireEvent.click(radioSenha);
 
     // Digita a senha
@@ -253,7 +253,7 @@ describe("accept-and-sign com google", () => {
 
     // Verifica que o metodo Google esta disponivel e selecionado por padrao (unica opcao)
     expect(screen.getByLabelText(/minha conta google/i)).toBeInTheDocument();
-    expect(screen.queryByLabelText(/senha da minha conta/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/minha senha/i)).not.toBeInTheDocument();
 
     // Clica em assinar
     fireEvent.click(screen.getByRole("button", { name: /aceitar e assinar/i }));
@@ -303,7 +303,7 @@ describe("CPF obrigatorio", () => {
     await screen.findByTestId("step-revisar");
 
     fireEvent.click(screen.getByLabelText(/li o contrato e concordo/i));
-    const radioSenha = screen.getByLabelText(/senha da minha conta/i);
+    const radioSenha = screen.getByLabelText(/minha senha/i);
     fireEvent.click(radioSenha);
     fireEvent.change(screen.getByLabelText(/^Senha$/i), {
       target: { value: "qualquer-senha" },
@@ -357,7 +357,7 @@ describe("pagamento pulado quando devido e null", () => {
     await screen.findByTestId("step-revisar");
 
     fireEvent.click(screen.getByLabelText(/li o contrato e concordo/i));
-    fireEvent.click(screen.getByLabelText(/senha da minha conta/i));
+    fireEvent.click(screen.getByLabelText(/minha senha/i));
     fireEvent.change(screen.getByLabelText(/^Senha$/i), {
       target: { value: "qualquer-senha" },
     });
@@ -425,7 +425,7 @@ describe("cartao de download do app (Android)", () => {
     fireEvent.click(screen.getByRole("button", { name: /continuar para assinar/i }));
     await screen.findByTestId("step-revisar");
     fireEvent.click(screen.getByLabelText(/li o contrato e concordo/i));
-    fireEvent.click(screen.getByLabelText(/senha da minha conta/i));
+    fireEvent.click(screen.getByLabelText(/minha senha/i));
     fireEvent.change(screen.getByLabelText(/^Senha$/i), {
       target: { value: "qualquer" },
     });
@@ -476,7 +476,7 @@ describe("cartao de download do app (Android)", () => {
     fireEvent.click(screen.getByRole("button", { name: /continuar para assinar/i }));
     await screen.findByTestId("step-revisar");
     fireEvent.click(screen.getByLabelText(/li o contrato e concordo/i));
-    fireEvent.click(screen.getByLabelText(/senha da minha conta/i));
+    fireEvent.click(screen.getByLabelText(/minha senha/i));
     fireEvent.change(screen.getByLabelText(/^Senha$/i), {
       target: { value: "qualquer" },
     });

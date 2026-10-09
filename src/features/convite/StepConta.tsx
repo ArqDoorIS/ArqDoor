@@ -160,15 +160,15 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
     const cpfDigits = cpf.replace(/\D/g, "");
 
     if (!validateCpf(cpfDigits)) {
-      toast({ title: "CPF invalido", description: "Verifique os digitos.", variant: "destructive" });
+      toast({ title: "CPF inválido", description: "Verifique os dígitos.", variant: "destructive" });
       return;
     }
     if (password !== confirmPassword) {
-      toast({ title: "Senhas diferentes", description: "A confirmacao precisa ser igual a senha.", variant: "destructive" });
+      toast({ title: "Senhas diferentes", description: "A confirmação precisa ser igual à senha.", variant: "destructive" });
       return;
     }
     if (!termos) {
-      toast({ title: "Aceite os termos", description: "E necessario aceitar os termos para continuar.", variant: "destructive" });
+      toast({ title: "Aceite os termos", description: "É necessário aceitar os termos para continuar.", variant: "destructive" });
       return;
     }
 
@@ -189,7 +189,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
 
       if (res.status === 409) {
         toast({
-          title: "E-mail ou CPF ja cadastrado",
+          title: "E-mail ou CPF já cadastrado",
           description: body?.message || "Tente fazer login.",
           variant: "destructive",
         });
@@ -265,7 +265,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
             className="pl-9"
           />
         </div>
-        <p className="text-xs text-slate-400">Necessario para assinar o contrato.</p>
+        <p className="text-xs text-slate-400">Necessário para assinar o contrato.</p>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="cad-nascimento">Data de nascimento</Label>
@@ -287,7 +287,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
           id="cad-password"
           value={password}
           onChange={setPassword}
-          placeholder="Minimo 6 caracteres"
+          placeholder="Mínimo 6 caracteres"
           autoComplete="new-password"
         />
       </div>
@@ -314,7 +314,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
           </a>{" "}
           e a{" "}
           <a href="/privacidade" target="_blank" rel="noreferrer" className="underline text-orange-600">
-            Politica de privacidade
+            Política de privacidade
           </a>
           .
         </Label>
@@ -341,7 +341,7 @@ function FormCpf({ user, onSuccess }: { user: UserType; onSuccess: () => void })
     e.preventDefault();
     const digits = cpf.replace(/\D/g, "");
     if (!validateCpf(digits)) {
-      toast({ title: "CPF invalido", description: "Verifique os digitos.", variant: "destructive" });
+      toast({ title: "CPF inválido", description: "Verifique os dígitos.", variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -364,7 +364,7 @@ function FormCpf({ user, onSuccess }: { user: UserType; onSuccess: () => void })
   return (
     <form onSubmit={handleSave} className="space-y-4">
       <p className="text-sm text-slate-700">
-        Sua conta nao tem CPF cadastrado. Voce precisa informar o CPF para assinar o contrato.
+        Sua conta não tem CPF cadastrado. Você precisa informar o CPF para assinar o contrato.
       </p>
       <div className="space-y-1.5">
         <Label htmlFor="cpf-field">CPF</Label>
@@ -410,7 +410,7 @@ export function StepConta({ user, onSuccess }: Props) {
         <div>
           <h2 className="text-xl font-bold text-slate-900">Confirmar CPF</h2>
           <p className="text-sm text-slate-500 mt-0.5">
-            Para assinar voce precisa ter CPF cadastrado.
+            Para assinar você precisa ter CPF cadastrado.
           </p>
         </div>
         <FormCpf user={user} onSuccess={onSuccess} />
@@ -507,7 +507,7 @@ export function StepConta({ user, onSuccess }: Props) {
           </Button>
           <FormLogin onSuccess={onSuccess} />
           <p className="text-sm text-center text-slate-500">
-            Nao tem conta?{" "}
+            Não tem conta?{" "}
             <button
               type="button"
               onClick={() => setMode("cadastro")}
@@ -553,7 +553,7 @@ export function StepConta({ user, onSuccess }: Props) {
           )}
           <FormCadastro onSuccess={onSuccess} />
           <p className="text-sm text-center text-slate-500">
-            Ja tem conta?{" "}
+            Já tem conta?{" "}
             <button
               type="button"
               onClick={() => setMode("login")}

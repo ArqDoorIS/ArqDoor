@@ -41,7 +41,7 @@ function PasswordInput({
         type={visible ? "text" : "password"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Sua senha de login"
+        placeholder="Sua senha"
         autoComplete="current-password"
         className="pr-10"
       />
@@ -108,17 +108,17 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
           onCpfRequired();
           return;
         }
-        setErrorMsg(data?.message || "Nao foi possivel assinar. Verifique a senha.");
+        setErrorMsg(data?.message || "Não foi possível assinar. Verifique a senha.");
         return;
       }
 
       if (res.status === 409) {
-        setErrorMsg("Este convite ja foi aceito por outra conta. Contate " + providerName + " para um novo link.");
+        setErrorMsg("Este convite já foi aceito por outra conta. Contate " + providerName + " para um novo link.");
         return;
       }
 
       if (res.status === 410) {
-        setErrorMsg("Este convite expirou. Peca um novo link a " + providerName + ".");
+        setErrorMsg("Este convite expirou. Peça um novo link a " + providerName + ".");
         return;
       }
 
@@ -149,7 +149,7 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 space-y-3">
           <h2 className="font-semibold text-amber-900">Proposta aceita, mas assinatura pendente</h2>
           <p className="text-sm text-slate-700">
-            {assinadoResult.mensagem || "O aceite foi registrado, mas a assinatura nao foi concluida neste momento."}
+            {assinadoResult.mensagem || "O aceite foi registrado, mas a assinatura não foi concluída neste momento."}
           </p>
           <Button
             variant="outline"
@@ -213,7 +213,7 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
           className="mt-0.5"
         />
         <Label htmlFor="concordo" className="text-sm leading-relaxed text-slate-700 cursor-pointer">
-          Li o contrato e concordo com as etapas, os valores e as condicoes.
+          Li o contrato e concordo com as etapas, os valores e as condições.
         </Label>
       </div>
 
@@ -232,8 +232,8 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
             >
               <RadioGroupItem value="password" id="method-password" className="mt-0.5" />
               <div>
-                <p className="font-medium text-sm text-slate-800">Senha da minha conta</p>
-                <p className="text-xs text-slate-500">Use a mesma senha do seu login</p>
+                <p className="font-medium text-sm text-slate-800">Minha senha</p>
+                <p className="text-xs text-slate-500">A de assinatura, se você criou uma. Se não, a do login.</p>
               </div>
             </label>
           )}
@@ -244,7 +244,7 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
             <RadioGroupItem value="google" id="method-google" className="mt-0.5" />
             <div>
               <p className="font-medium text-sm text-slate-800">Minha conta Google</p>
-              <p className="text-xs text-slate-500">Valida pela sua sessao ativa</p>
+              <p className="text-xs text-slate-500">Válida pela sua sessão ativa</p>
             </div>
           </label>
         </RadioGroup>
@@ -268,7 +268,7 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
       <div className="flex items-center gap-3 pt-1">
         <ShieldCheck className="h-5 w-5 text-orange-500 shrink-0" />
         <p className="text-xs text-slate-500 flex-1">
-          Sua assinatura gera um PDF com hash de verificacao, guardado de forma segura.
+          Sua assinatura gera um PDF com hash de verificação, guardado de forma segura.
         </p>
       </div>
 

@@ -35,7 +35,7 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
         </div>
         <h1 className="text-2xl font-bold text-slate-900">Pronto!</h1>
         <p className="text-sm text-slate-600 max-w-sm">
-          Voce aceitou e assinou o contrato. Agora a conversa esta aberta e o projeto pode comecar.
+          Você aceitou e assinou o contrato. Agora a conversa está aberta e o projeto pode começar.
         </p>
       </div>
 
@@ -48,7 +48,7 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
           <TimelineItem
             done
             label="Contrato assinado"
-            detail={result.assinado ? "Assinatura registrada com hash de verificacao." : "Assinatura pendente."}
+            detail={result.assinado ? "Assinatura registrada com hash de verificação." : "Assinatura pendente."}
           />
           {modoProtegido ? (
             <TimelineItem
@@ -56,20 +56,20 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
               label={paymentDone ? "Pagamento confirmado" : "Pagamento pendente"}
               detail={
                 paymentDone
-                  ? "Pagamento recebido e aguardando liberacao ao profissional."
-                  : "Voce pode pagar mais tarde pela tela de conversas."
+                  ? "Pagamento recebido e aguardando liberação ao profissional."
+                  : "Você pode pagar mais tarde pela tela de conversas."
               }
             />
           ) : (
             <TimelineItem
               done={false}
               label="Pagamento direto"
-              detail={result.pagamento?.motivo || "Voce paga cada etapa quando ela for concluida."}
+              detail={result.pagamento?.motivo || "Você paga cada etapa quando ela for concluída."}
             />
           )}
           <TimelineItem
             done={false}
-            label="Proxima etapa"
+            label="Próxima etapa"
             detail="O profissional inicia quando o pagamento for confirmado."
           />
         </div>

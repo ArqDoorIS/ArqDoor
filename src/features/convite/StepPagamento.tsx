@@ -22,6 +22,10 @@ import type { PagamentoAgora, PagamentoDevido } from "./types";
 
 type PaymentMethod = "PIX" | "CREDIT_CARD";
 
+// Status que contam como pagamento confirmado (mesma lista do app no percurso do convite).
+const STATUS_PAGOS = new Set(["CONFIRMED", "RECEIVED", "RECEIVED_IN_CASH", "PAID"]);
+const statusPago = (status: unknown) => STATUS_PAGOS.has(String(status ?? "").toUpperCase());
+
 type Props = {
   pagamento: PagamentoAgora;
   ticketId: number;
@@ -57,19 +61,19 @@ function CobrancaResult({
           </div>
         )}
         <div>
-          <p className="text-sm font-medium mb-1">Codigo copia e cola</p>
+          <p className="text-sm font-medium mb-1">Código copia e cola</p>
           <div className="rounded-lg bg-white border border-slate-200 p-2 text-xs text-slate-700 break-all font-mono">
-            {pixData?.copy_and_paste || "Indisponivel"}
+            {pixData?.copy_and_paste || "Indisponível"}
           </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
             className="mt-2 gap-1.5"
-            onClick={() => onCopy(pixData?.copy_and_paste || "", "Codigo PIX copiado")}
+            onClick={() => onCopy(pixData?.copy_and_paste || "", "Código PIX copiado")}
             disabled={!pixData?.copy_and_paste}
           >
-            <Copy className="h-3.5 w-3.5" /> Copiar codigo
+            <Copy className="h-3.5 w-3.5" /> Copiar código
           </Button>
         </div>
         {pixData?.expires_at && (
@@ -82,6 +86,7 @@ function CobrancaResult({
   }
 
   if (method === "CREDIT_CARD") {
+    if (cobrancaRecusada(data)) return null;
     return (
       <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-4">
         {data?.credit_card_installment && (
@@ -91,7 +96,7 @@ function CobrancaResult({
           </p>
         )}
         <p className="text-sm text-slate-700">
-          Cobranca no cartao registrada. O resultado aparece assim que a operadora responder.
+          Cobrança no cartão registrada. O resultado aparece assim que a operadora responder.
         </p>
       </div>
     );
@@ -107,6 +112,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
   const [cobrancaData, setCobrancaData] = useState<any>(null);
   const [installmentCount, setInstallmentCount] = useState<number | null>(null);
   const [installmentOption, setInstallmentOption] = useState<InstallmentOption | null>(null);
+  const [verificando, setVerificando] = useState(false);
   const podeTokenizar = cartaoDisponivel();
 
   const devido = pagamento.devido as PagamentoDevido;
@@ -138,7 +144,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
         description = `Pagamento do grupo ${devido.nome || devido.group_id}`;
       } else {
         endpoint = `/payments/tickets/${ticketId}`;
-        description = `Deposito em garantia`;
+        description = `Depósito em garantia`;
       }
 
       const res = await apiRequest("POST", endpoint, {
@@ -151,14 +157,55 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
       const data = await res.json().catch(() => null);
 
       if (!res.ok || data?.success === false) {
-        throw new Error(data?.message || "Nao foi possivel gerar o pagamento.");
+        throw new Error(data?.message || "Não foi possível gerar o pagamento.");
       }
 
-      setCobrancaData(data?.data || data);
+      const cobranca = data?.data || data;
+      setCobrancaData(cobranca);
+      // Cartao aprovado na hora: nao ha o que esperar, segue para o Pronto como pago.
+      if (isCreditCard && statusPago(cobranca?.status)) {
+        onSuccess();
+      }
     } catch (err: any) {
-      toast({ title: "Erro ao gerar cobranca", description: err?.message, variant: "destructive" });
+      toast({ title: "Erro ao gerar cobrança", description: err?.message, variant: "destructive" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // "Ja paguei" so avanca quando o backend confirma. Grupo: refresh da primeira etapa do
+  // grupo (o servico enxerga a cobranca agrupada pelo PaymentStep). Deposito: refresh do ticket.
+  const verificarPagamento = async () => {
+    setVerificando(true);
+    try {
+      const primeiraEtapa = devido.etapas?.[0]?.id;
+      const endpoint =
+        devido.tipo === "grupo" && primeiraEtapa
+          ? `/payments/steps/${primeiraEtapa}/refresh`
+          : `/payments/tickets/${ticketId}/refresh`;
+      const res = await apiRequest("GET", endpoint);
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body?.success === false) {
+        throw new Error(body?.message || "Não foi possível verificar o pagamento.");
+      }
+      const lista: any[] = Array.isArray(body?.data) ? body.data : [];
+      const pago =
+        Boolean(body?.paid) ||
+        Boolean(body?.data?.paid) ||
+        statusPago(body?.data?.status) ||
+        lista.some((p) => statusPago(p?.status));
+      if (pago) {
+        onSuccess();
+        return;
+      }
+      toast({
+        title: "Pagamento ainda não confirmado",
+        description: "O PIX pode levar alguns instantes. Tente de novo em seguida ou escolha pagar depois.",
+      });
+    } catch (err: any) {
+      toast({ title: "Erro ao verificar pagamento", description: err?.message, variant: "destructive" });
+    } finally {
+      setVerificando(false);
     }
   };
 
@@ -167,13 +214,13 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
     toast({ title: label });
   };
 
-  const pagamentoConcluido =
-    cobrancaData &&
-    (method === "PIX" ? !!cobrancaData?.pix : method === "CREDIT_CARD");
+  const cobrancaEmAndamento =
+    !!cobrancaData &&
+    (method === "PIX" ? !!cobrancaData?.pix : !cobrancaRecusada(cobrancaData));
 
   const paymentOptions = [
     { value: "PIX" as const, title: "PIX", description: "QR Code e copia e cola", icon: QrCode },
-    { value: "CREDIT_CARD" as const, title: "Credito", description: "Em ate 12x", icon: CreditCard },
+    { value: "CREDIT_CARD" as const, title: "Crédito", description: "Em até 12x", icon: CreditCard },
   ];
 
   return (
@@ -188,7 +235,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
       {/* Detalhe do que vai ser pago */}
       <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-1">
         <p className="text-sm font-semibold text-orange-800">
-          {devido.nome || (devido.tipo === "deposito" ? "Deposito em garantia" : "Grupo")}
+          {devido.nome || (devido.tipo === "deposito" ? "Depósito em garantia" : "Grupo")}
         </p>
         <p className="text-2xl font-bold text-slate-900">{formatPrice(devido.valor)}</p>
         {devido.etapas && devido.etapas.length > 0 && (
@@ -244,7 +291,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
       {isCreditCard && !podeTokenizar && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 space-y-2">
           <p className="text-xs text-red-700">
-            O pagamento com cartao nao esta disponivel nesta versao. Use PIX para continuar agora.
+            O pagamento com cartão não está disponível nesta versão. Use PIX para continuar agora.
           </p>
           <Button
             type="button"
@@ -284,19 +331,21 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
           className="bg-orange-600 hover:bg-orange-700 gap-2"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <QrCode className="h-4 w-4" />}
-          Gerar cobranca
+          Gerar cobrança
         </Button>
       )}
 
       {/* Acoes apos cobranca gerada */}
-      {pagamentoConcluido && (
+      {cobrancaEmAndamento && (
         <Button
           type="button"
-          onClick={onSuccess}
+          onClick={verificarPagamento}
+          disabled={verificando}
           className="w-full bg-orange-600 hover:bg-orange-700 h-11 gap-2"
+          data-testid="ja-paguei"
         >
-          <CheckCircle2 className="h-4 w-4" />
-          Ja paguei
+          {verificando ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+          Já paguei
         </Button>
       )}
 

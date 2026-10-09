@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, ExternalLink, FileText, Maximize2, Smartphone } from "lucide-react";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { formatInviteExpiry } from "@/lib/invite-validity";
+import { linkDoAppParaConvite, navegadorAndroid } from "@/lib/invite-app-link";
 import type { InviteData, InviteStep, PaymentGroup, ProviderData } from "./types";
 
 type Props = {
@@ -23,8 +24,8 @@ function ModoExplicado({ method }: { method?: string }) {
       <div className="rounded-xl bg-orange-50 border border-orange-100 p-4 space-y-1">
         <div className="text-sm font-semibold text-orange-800">Pagamento protegido</div>
         <p className="text-sm text-slate-700">
-          Voce paga cada grupo antes de ele comecar. O dinheiro fica guardado na ArqDoor
-          e e liberado ao profissional somente quando o grupo for concluido e aprovado.
+          Você paga cada grupo antes de ele começar. O dinheiro fica guardado na ArqDoor
+          e é liberado ao profissional somente quando o grupo for concluído e aprovado.
         </p>
       </div>
     );
@@ -33,7 +34,7 @@ function ModoExplicado({ method }: { method?: string }) {
     <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-1">
       <div className="text-sm font-semibold text-slate-800">Pagamento direto</div>
       <p className="text-sm text-slate-700">
-        Voce paga cada etapa quando ela for concluida e aprovada. Sem adiantamento.
+        Você paga cada etapa quando ela for concluída e aprovada. Sem adiantamento.
       </p>
     </div>
   );
@@ -115,6 +116,11 @@ function StepsLista({
 export function StepProposta({ invite, provider, pdfUrl, total, steps, paymentGroups, token, onContinue }: Props) {
   const [pdfExpanded, setPdfExpanded] = useState(false);
   const providerName = provider?.name || provider?.user?.name || "Prestador";
+  // So no Android: la o intent abre o app instalado ou volta para esta pagina.
+  const appLink =
+    typeof window !== "undefined" && navegadorAndroid(navigator.userAgent)
+      ? linkDoAppParaConvite(token, window.location.hostname, window.location.href)
+      : null;
   const expiryStr = formatInviteExpiry(invite.expires_at);
 
   return (
@@ -128,14 +134,17 @@ export function StepProposta({ invite, provider, pdfUrl, total, steps, paymentGr
           </p>
           <h1 className="text-2xl font-bold text-slate-900 mt-0.5">{invite.title}</h1>
         </div>
-        <a
-          href={`arqdoor://convite/${token}`}
-          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 whitespace-nowrap mt-1 transition-colors"
-          aria-label="Abrir este convite no aplicativo ArqDoor"
-        >
-          <Smartphone className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Abrir no app</span>
-        </a>
+        {appLink && (
+          <a
+            href={appLink}
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 whitespace-nowrap mt-1 transition-colors"
+            aria-label="Abrir este convite no aplicativo ArqDoor"
+            data-testid="abrir-no-app"
+          >
+            <Smartphone className="h-3.5 w-3.5" />
+            <span>Abrir no app</span>
+          </a>
+        )}
       </div>
 
       {/* Descricao */}
@@ -214,7 +223,7 @@ export function StepProposta({ invite, provider, pdfUrl, total, steps, paymentGr
         </div>
       ) : (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          O prestador ainda nao anexou o contrato em PDF. Voce podera assinar quando ele for disponibilizado.
+          O prestador ainda não anexou o contrato em PDF. Você poderá assinar quando ele for disponibilizado.
         </div>
       )}
 
@@ -222,7 +231,7 @@ export function StepProposta({ invite, provider, pdfUrl, total, steps, paymentGr
       {expiryStr && (
         <div className="flex items-center gap-2 text-xs text-slate-500">
           <Clock className="h-3.5 w-3.5" />
-          <span>Este link vale ate {expiryStr}</span>
+          <span>Este link vale até {expiryStr}</span>
         </div>
       )}
 
@@ -237,7 +246,7 @@ export function StepProposta({ invite, provider, pdfUrl, total, steps, paymentGr
         </Button>
         {!pdfUrl && (
           <p className="text-xs text-slate-400 mt-2">
-            O PDF do contrato precisa estar disponivel para continuar.
+            O PDF do contrato precisa estar disponível para continuar.
           </p>
         )}
       </div>

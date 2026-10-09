@@ -74,7 +74,7 @@ export default function InvitePublic() {
           return;
         }
         if (!res.ok || body?.success === false) {
-          throw new Error(body?.message || "Convite nao encontrado.");
+          throw new Error(body?.message || "Convite não encontrado.");
         }
 
         if (body?.invite) {
@@ -86,7 +86,7 @@ export default function InvitePublic() {
         setProvider(body.provider || null);
       } catch (error: any) {
         toast({
-          title: "Convite indisponivel",
+          title: "Convite indisponível",
           description: error?.message || "Verifique o link.",
           variant: "destructive",
         });
@@ -226,9 +226,9 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-owner-error">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">Voce e o prestador deste contrato</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Você é o prestador deste contrato</h1>
           <p className="text-sm text-muted-foreground">
-            O prestador nao pode assinar o proprio convite. Compartilhe o link com o cliente.
+            O prestador não pode assinar o próprio convite. Compartilhe o link com o cliente.
           </p>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function InvitePublic() {
   if (!invite) {
     return (
       <div className="container mx-auto px-4 py-24 text-center text-muted-foreground space-y-3">
-        <p>Nao foi possivel carregar o convite.</p>
+        <p>Não foi possível carregar o convite.</p>
         <Button variant="outline" onClick={() => window.location.reload()}>
           Tentar de novo
         </Button>
@@ -253,13 +253,13 @@ export default function InvitePublic() {
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
           <h1 className="text-xl font-semibold text-gray-900">
             {invite.status === "accepted"
-              ? "Este convite ja foi utilizado"
-              : "Este convite nao esta mais disponivel"}
+              ? "Este convite já foi aceito"
+              : "Este convite não está mais disponível"}
           </h1>
           <p className="text-sm text-muted-foreground">
             {invite.status === "accepted"
-              ? "O contrato ja foi aceito e nao pode ser reutilizado."
-              : "Peca ao prestador um novo link."}
+              ? "Para acompanhar o contrato e os pagamentos, entre na sua conta e abra a conversa com quem enviou a proposta."
+              : "Peça ao prestador um novo link."}
           </p>
         </div>
       </div>
