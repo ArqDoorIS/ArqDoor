@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NewProposalDialog, formatIsoToBr, parseBrToIso } from "@/components/modals/NewProposalDialog";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { formatInviteExpiry, VALIDADE_PADRAO, type ValidadeDoConvite } from "@/lib/invite-validity";
 import { Copy, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
 import type {
   ProviderReceivingAccount,
@@ -109,6 +110,7 @@ export default function Invites() {
     number | null
   >(null);
   const [saving, setSaving] = useState(false);
+  const [linkValidity, setLinkValidity] = useState<ValidadeDoConvite>(VALIDADE_PADRAO);
 
   const isProvider = user?.type === "prestador";
 
@@ -198,6 +200,7 @@ export default function Invites() {
     setReceivingMethod("escrow");
     setSelectedReceivingAccountId(null);
     setEditingInvite(null);
+    setLinkValidity(VALIDADE_PADRAO);
   };
 
   const openCreateDialog = () => {
@@ -326,6 +329,7 @@ export default function Invites() {
       }));
 
       let inviteId = editingInvite?.id;
+      let createdExpiry: string | null = null;
 
       if (editingInvite) {
         const res = await apiRequest("PUT", `/invites/${editingInvite.id}`, {
@@ -343,6 +347,7 @@ export default function Invites() {
         inviteId = body?.invite?.id || editingInvite.id;
       } else {
         const res = await apiRequest("POST", "/invites", {
+          validade: linkValidity,
           steps: payloadSteps,
           payment_preference: "custom",
           payment_groups: paymentGroups,
@@ -355,6 +360,7 @@ export default function Invites() {
           throw new Error(body?.message || "Erro ao criar convite.");
         }
         inviteId = body?.invite?.id;
+        createdExpiry = formatInviteExpiry(body?.invite?.expires_at);
       }
 
       if (contractFile && inviteId) {
@@ -369,7 +375,9 @@ export default function Invites() {
 
       toast({
         title: editingInvite ? "Convite atualizado" : "Convite criado",
-        description: "O link já está pronto para compartilhar.",
+        description: createdExpiry
+          ? `O link já está pronto para compartilhar. Válido até ${createdExpiry}.`
+          : "O link já está pronto para compartilhar.",
       });
       setDialogOpen(false);
       resetForm();
@@ -518,6 +526,8 @@ export default function Invites() {
         onPaymentGroupsChange={setPaymentGroups}
         receivingMethod={receivingMethod}
         onReceivingMethodChange={setReceivingMethod}
+        linkValidity={linkValidity}
+        onLinkValidityChange={editingInvite ? undefined : setLinkValidity}
         receivingAccounts={receivingAccounts}
         loadingReceivingAccounts={loadingReceivingAccounts}
         selectedReceivingAccountId={selectedReceivingAccountId}

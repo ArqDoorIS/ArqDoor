@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
-import { FileText, Loader2 } from "lucide-react";
+import { Clock, FileText, Loader2, SearchX } from "lucide-react";
+import { falhaDoConvitePublico, formatInviteExpiry, type FalhaDoConvite } from "@/lib/invite-validity";
 import { AuthModals } from "@/components/modals/AuthModals";
 
 type InviteStep = {
@@ -91,6 +92,7 @@ export default function InvitePublic() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [invite, setInvite] = useState<InviteData | null>(null);
+  const [falha, setFalha] = useState<FalhaDoConvite | null>(null);
   const [provider, setProvider] = useState<any>(null);
   const [cpfInput, setCpfInput] = useState("");
   const [savingCpf, setSavingCpf] = useState(false);
@@ -105,6 +107,12 @@ export default function InvitePublic() {
         setLoading(true);
         const res = await apiRequest("GET", `/invites/public/${token}`);
         const body = await res.json().catch(() => ({}));
+        const falhaConhecida = res.ok ? null : falhaDoConvitePublico(res.status, body);
+        if (falhaConhecida) {
+          setFalha(falhaConhecida);
+          setInvite(null);
+          return;
+        }
         if (!res.ok || body?.success === false) {
           throw new Error(body?.message || "Convite não encontrado.");
         }
@@ -307,10 +315,50 @@ export default function InvitePublic() {
     );
   }
 
+  if (falha?.tipo === "expirado") {
+    const venceuEm = formatInviteExpiry(falha.expiraEm);
+    return (
+      <div className="container mx-auto px-4 py-24" data-testid="invite-expired">
+        <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+            <Clock className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-900">Este convite expirou</h1>
+          <p className="text-sm text-muted-foreground">{falha.titulo}</p>
+          {venceuEm ? <p className="text-xs text-muted-foreground">Venceu em {venceuEm}</p> : null}
+          <p className="text-sm text-gray-900">
+            {falha.prestador
+              ? `Peça um novo link a ${falha.prestador}.`
+              : "Peça um novo link a quem enviou a proposta."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (falha?.tipo === "nao_encontrado") {
+    return (
+      <div className="container mx-auto px-4 py-24" data-testid="invite-not-found">
+        <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+            <SearchX className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-900">Convite não encontrado</h1>
+          <p className="text-sm text-muted-foreground">
+            Confira se o link está completo. Se copiou de uma mensagem, copie de novo inteiro.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!invite) {
     return (
-      <div className="container mx-auto px-4 py-24 text-center text-muted-foreground">
-        Convite não encontrado.
+      <div className="container mx-auto px-4 py-24 text-center text-muted-foreground space-y-3">
+        <p>Não foi possível carregar o convite.</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          Tentar de novo
+        </Button>
       </div>
     );
   }

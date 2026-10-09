@@ -4,6 +4,7 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
+  Clock,
   FileText,
   Info,
   Landmark,
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { VALIDADES_DO_CONVITE, VALIDADE_PADRAO, type ValidadeDoConvite } from "@/lib/invite-validity";
 import type {
   ProviderReceivingAccount,
   ProviderReceivingMethod,
@@ -101,6 +103,9 @@ interface NewProposalDialogProps {
   onPaymentGroupsChange?: (groups: PaymentGroup[]) => void;
   receivingMethod?: ProviderReceivingMethod;
   onReceivingMethodChange?: (value: ProviderReceivingMethod) => void;
+  /** Validade do link de convite. O seletor só aparece quando `onLinkValidityChange` é passado. */
+  linkValidity?: ValidadeDoConvite;
+  onLinkValidityChange?: (value: ValidadeDoConvite) => void;
   receivingAccounts?: ProviderReceivingAccount[];
   loadingReceivingAccounts?: boolean;
   selectedReceivingAccountId?: number | null;
@@ -169,6 +174,8 @@ export function NewProposalDialog({
   onPaymentGroupsChange,
   receivingMethod = "escrow",
   onReceivingMethodChange,
+  linkValidity = VALIDADE_PADRAO,
+  onLinkValidityChange,
   receivingAccounts = [],
   loadingReceivingAccounts = false,
   selectedReceivingAccountId = null,
@@ -1327,6 +1334,30 @@ export function NewProposalDialog({
                         : "Nenhum arquivo selecionado ainda."}
                   </div>
                 </div>
+
+                {onLinkValidityChange ? (
+                  <div className="rounded-2xl border bg-white p-4 space-y-3">
+                    <Label htmlFor="validade-do-link" className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <Clock className="h-4 w-4 text-orange-500" />
+                      Validade do link
+                    </Label>
+                    <select
+                      id="validade-do-link"
+                      value={linkValidity}
+                      onChange={(event) => onLinkValidityChange(event.target.value as ValidadeDoConvite)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      {VALIDADES_DO_CONVITE.map((opcao) => (
+                        <option key={opcao.value} value={opcao.value}>
+                          {opcao.label}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-muted-foreground">
+                      Depois disso o cliente não consegue mais aceitar por este link.
+                    </p>
+                  </div>
+                ) : null}
 
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
                   <p className="text-sm font-semibold text-slate-900">Resumo rápido</p>
