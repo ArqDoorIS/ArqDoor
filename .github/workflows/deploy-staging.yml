@@ -70,7 +70,7 @@ jobs:
       - name: Confia na chave da VPS
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
 
       - name: Marca o inicio
         id: inicio

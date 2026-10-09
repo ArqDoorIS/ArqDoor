@@ -110,7 +110,7 @@ jobs:
         if: steps.deploy_guard.outputs.enabled == 'true'
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
 
       - name: Upload dist tarball
         if: steps.deploy_guard.outputs.enabled == 'true'
