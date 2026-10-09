@@ -54,9 +54,47 @@ jobs:
         if: steps.deploy_guard.outputs.enabled == 'true'
         run: npm ci
 
+      # O build de producao precisa destas variaveis: sem elas o site sobe sem login com Google,
+      # sem Sentry e com a chave publica da Pagar.me vazia, e o pagamento com cartao quebra
+      # (foi o que aconteceu na republicacao manual de 21/09/2026). Faltando alguma, o deploy
+      # para aqui em vez de publicar um site quebrado.
+      - name: Confere as variaveis do build
+        if: steps.deploy_guard.outputs.enabled == 'true'
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_PAGARME_PUBLIC_KEY: ${{ secrets.VITE_PAGARME_PUBLIC_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+        run: |
+          faltam=""
+          for nome in VITE_GOOGLE_CLIENT_ID VITE_PAGARME_PUBLIC_KEY VITE_SENTRY_DSN; do
+            [ -n "${!nome}" ] || faltam="$faltam $nome"
+          done
+          if [ -n "$faltam" ]; then
+            echo "::error::Faltam secrets do build no repositorio:$faltam"
+            exit 1
+          fi
+          case "$VITE_PAGARME_PUBLIC_KEY" in
+            pk_*) ;;
+            *) echo "::error::VITE_PAGARME_PUBLIC_KEY nao parece uma chave publica da Pagar.me (pk_...)."; exit 1 ;;
+          esac
+
       - name: Build
         if: steps.deploy_guard.outputs.enabled == 'true'
+        env:
+          VITE_API_BASE_URL: https://api.arqdoor.com
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_PAGARME_PUBLIC_KEY: ${{ secrets.VITE_PAGARME_PUBLIC_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
         run: npm run build
+
+      - name: Confere que a chave da Pagar.me entrou no build
+        if: steps.deploy_guard.outputs.enabled == 'true'
+        run: |
+          if ! grep -rqE 'pk_[A-Za-z0-9]{6}' dist/assets; then
+            echo "::error::O build saiu sem a chave publica da Pagar.me; o cartao nao funcionaria."
+            exit 1
+          fi
+          echo "Chave publica da Pagar.me presente no build."
 
       - name: Package dist
         if: steps.deploy_guard.outputs.enabled == 'true'
