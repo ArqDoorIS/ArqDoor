@@ -6,6 +6,8 @@ import { AdminAuditLogSection } from "@/features/admin/components/AdminAuditLogS
 import { AdminContractsSection } from "@/features/admin/components/AdminContractsSection";
 import { AdminConversationsSection } from "@/features/admin/components/AdminConversationsSection";
 import { AdminDocumentsSection } from "@/features/admin/components/AdminDocumentsSection";
+import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
+import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
@@ -56,11 +58,21 @@ export default function Admin() {
         onEmailChange={session.setEmail}
         onPasswordChange={session.setPassword}
         onSubmit={session.login}
+        desafio={session.desafio}
+        codigo={session.codigo}
+        onCodigoChange={session.setCodigo}
+        onVerificar={session.verificarCodigo}
+        onCancelar={session.cancelarVerificacao}
       />
     );
   }
 
   const dashboard = admin.dashboard;
+  // Um reviewer nao deve ver aba que sempre responde 403: a tela pareceria quebrada em
+  // vez de restrita. Enquanto o papel nao chegou, mostra so o que todo mundo alcanca,
+  // para nao piscar abas que vao sumir (ADR-001).
+  const papel = session.role;
+  const abasVisiveis = TABS.filter((tab) => (papel ? tab.papeis.includes(papel) : tab.papeis.includes("reviewer")));
   const activeTab = TABS.find((tab) => tab.key === admin.activeTab);
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
@@ -143,6 +155,10 @@ export default function Admin() {
         );
       case "documentos":
         return <AdminDocumentsSection documents={dashboard.documents} />;
+      case "verificacao":
+        return <AdminVerificationSection />;
+      case "equipe":
+        return <AdminTeamSection />;
       case "taxas":
         return <AdminFeesSection />;
       case "indicacoes":
@@ -254,7 +270,7 @@ export default function Admin() {
           )}
         >
           <nav className="grid gap-1 sm:grid-cols-2 lg:block" aria-label="Seções administrativas">
-            {TABS.map(({ key, label, icon: Icon }) => (
+            {abasVisiveis.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 type="button"

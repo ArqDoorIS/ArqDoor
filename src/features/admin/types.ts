@@ -2,12 +2,14 @@ import type { ComponentType } from "react";
 
 export type AdminTab =
   | "dashboard"
+  | "equipe"
   | "all"
   | "usuarios"
   | "contratos"
   | "pagamentos"
   | "transferencias"
   | "documentos"
+  | "verificacao"
   | "taxas"
   | "indicacoes"
   | "conversas"
@@ -534,8 +536,13 @@ export type ClientPagination<T> = {
   totalPages: number;
 };
 
+export type AdminRole = "owner" | "reviewer";
+
 export type AdminTabConfig = {
   key: AdminTab;
   label: string;
   icon: ComponentType<{ className?: string }>;
+  // Quais papeis enxergam a aba. Sem isso, um reviewer veria abas que sempre respondem
+  // 403, e a tela pareceria quebrada em vez de restrita (ADR-001).
+  papeis: AdminRole[];
 };

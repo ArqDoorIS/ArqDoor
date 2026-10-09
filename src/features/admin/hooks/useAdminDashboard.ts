@@ -405,8 +405,19 @@ export function useAdminDashboard({
     if (!isAuthenticated) return;
 
     const controller = new AbortController();
+    /**
+     * Abas que buscam os PROPRIOS dados nao tem secao correspondente no dashboard.
+     * `verificacao` entra aqui junto de `indicacoes`: a fila de documentos vem de
+     * `/admin/documents`, e pedir uma secao inexistente ao backend so renderia erro.
+     * `equipe` pelo mesmo motivo: ela le `/admin/members`.
+     */
     const requestedSection: DashboardSection =
-      activeTab === "dashboard" || activeTab === "indicacoes" ? "all" : activeTab;
+      activeTab === "dashboard" ||
+      activeTab === "indicacoes" ||
+      activeTab === "verificacao" ||
+      activeTab === "equipe"
+        ? "all"
+        : activeTab;
     const currentPage = pageByTab[activeTab];
 
     const fetchDashboard = async () => {

@@ -1,0 +1,124 @@
+name: Deploy staging (Coolify)
+
+# Publica o site de staging (staging.arqdoor.com, usado com o app ArqDoor Teste) a partir da
+# `develop`. Roda em todo push na `develop` e sob demanda.
+#
+# Existe porque o staging nao tinha automacao nenhuma e ficou parado em 11/08/2026: telas
+# testadas em staging nao eram as de producao. Spec: specs/features/2026-09-deploy-um-comando.
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-staging-web
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Testes unitarios
+        run: npx vitest run
+      - name: Tipos
+        run: npx tsc --noEmit
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: So a develop publica staging
+        if: github.ref != 'refs/heads/develop'
+        run: |
+          echo "::error::Staging so e publicado a partir da develop (ref atual: ${GITHUB_REF})."
+          exit 1
+
+      # Falha em vez de pular. O workflow de producao do site pulava o deploy com um aviso
+      # quando faltava secret e terminava "success": o site de producao nunca foi publicado
+      # pelo CI e ninguem percebeu.
+      - name: Valida secrets do deploy
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          COOLIFY_STAGING_WEB_UUID: ${{ secrets.COOLIFY_STAGING_WEB_UUID }}
+        run: |
+          faltam=""
+          for nome in VPS_HOST VPS_USER VPS_SSH_KEY COOLIFY_API_TOKEN COOLIFY_STAGING_WEB_UUID; do
+            [ -n "${!nome}" ] || faltam="$faltam $nome"
+          done
+          if [ -n "$faltam" ]; then
+            echo "::error::Faltam secrets no repositorio:$faltam"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Confia na chave da VPS
+        run: |
+          mkdir -p ~/.ssh
+          # Ate 5 tentativas: em 09/10/2026 uma oscilacao de 5s no keyscan derrubou um deploy de producao.
+          for i in 1 2 3 4 5; do
+            if ssh-keyscan -T 15 -H "${{ secrets.VPS_HOST }}" > /tmp/vps_keys 2>/dev/null && [ -s /tmp/vps_keys ]; then
+              cat /tmp/vps_keys >> ~/.ssh/known_hosts
+              exit 0
+            fi
+            echo "ssh-keyscan falhou (tentativa $i/5); nova tentativa em 10s"
+            sleep 10
+          done
+          echo "::error::Nao foi possivel ler a chave da VPS por SSH."
+          exit 1
+
+
+      - name: Marca o inicio
+        id: inicio
+        run: echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
+      # A API do Coolify so aceita chamada de dentro da VPS (allowlist de IP). O porque de o
+      # curl rodar dentro do container esta no cabecalho do script.
+      - name: Dispara o deploy no Coolify e acompanha
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          scp -o BatchMode=yes scripts/deploy-coolify.sh \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/deploy-coolify-web.sh"
+          printf '%s\n' "$TOKEN" | ssh -o BatchMode=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "bash /tmp/deploy-coolify-web.sh ${{ secrets.COOLIFY_STAGING_WEB_UUID }}; rc=\$?; rm -f /tmp/deploy-coolify-web.sh; exit \$rc"
+
+      # O Coolify ja confirmou que o deploy DESTE commit terminou (passo anterior). Aqui so se
+      # confere que o site responde e que o bundle que o index aponta carrega.
+      #
+      # A data (Last-Modified) nao serve de prova: quando o commit nao muda o site, o build gera
+      # os mesmos arquivos e o Docker reaproveita a camada anterior, com a data antiga. Medido em
+      # 2026-09-30 no commit e271c6c, que so mexia no script de deploy.
+      - name: Confere que staging.arqdoor.com responde com o build publicado
+        run: |
+          set -uo pipefail
+          for i in $(seq 1 12); do
+            HTML=$(curl -sf -H "Connection: close" https://staging.arqdoor.com/ || true)
+            JS=$(printf '%s' "$HTML" | grep -oE 'assets/index-[^"]+\.js' | head -1)
+            if [ -n "$JS" ] && curl -sf -o /dev/null -H "Connection: close" "https://staging.arqdoor.com/$JS"; then
+              LM=$(curl -sI -H "Connection: close" https://staging.arqdoor.com/ | tr -d '\r' | sed -n 's/^[Ll]ast-[Mm]odified: //p')
+              echo "Site no ar com $JS (Last-Modified: $LM)."
+              exit 0
+            fi
+            echo "aguardando o site responder... ($i/12)"
+            sleep 10
+          done
+          echo "::error::staging.arqdoor.com nao respondeu com um bundle que carrega."
+          exit 1

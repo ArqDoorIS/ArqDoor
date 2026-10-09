@@ -12,6 +12,19 @@ import { setResumeRoute } from "@/lib/utils";
 const LANDING_ROUTES = ["/", "/auth", "/nova-senha", "/excluir-conta", "/cadastro"];
 const ADMIN_ROUTES = ["/admin"];
 
+/**
+ * O painel tem origem propria (admin.arqdoor.com), e ali a raiz JA e o painel: obrigar
+ * `/admin` no fim de um host que se chama admin seria redundante.
+ *
+ * A checagem e por prefixo `admin.` em vez de igualdade com o dominio de producao, para
+ * um admin.staging.arqdoor.com futuro funcionar sem mexer aqui.
+ *
+ * O mesmo bundle continua servindo arqdoor.com, onde `/` e a home e o painel segue em
+ * `/admin`. Quem decide e o host, nao o build.
+ */
+export const ehHostDoPainel = () =>
+  typeof window !== "undefined" && window.location.hostname.startsWith("admin.");
+
 // Route-level code splitting: reduces the initial JS payload in production.
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Home = lazy(() => import("@/pages/Home"));
@@ -58,7 +71,9 @@ function Router() {
   return (
     <Suspense fallback={<RouteLoading />}>
       <Switch>
-        <Route path="/"><RouteBoundary><Home /></RouteBoundary></Route>
+        <Route path="/">
+          <RouteBoundary>{ehHostDoPainel() ? <Admin /> : <Home />}</RouteBoundary>
+        </Route>
         <Route path="/auth"><RouteBoundary><AuthPage /></RouteBoundary></Route>
         <Route path="/cadastro"><RouteBoundary><ReferralLanding /></RouteBoundary></Route>
         <Route path="/profile"><RouteBoundary><Profile /></RouteBoundary></Route>
@@ -87,7 +102,10 @@ function AppContent() {
   const { isLoggedIn, isInitialized } = useAuth();
 
   const isInvitePublic = location.startsWith("/convite/");
-  const isAdminRoute = ADMIN_ROUTES.includes(location);
+  // Sem o segundo termo, a raiz do host do painel cairia no LandingLayout e apareceria
+  // com a navbar do site em volta do admin.
+  const isAdminRoute =
+    ADMIN_ROUTES.includes(location) || (ehHostDoPainel() && location === "/");
   const isPublic = LANDING_ROUTES.includes(location) || isInvitePublic || isAdminRoute;
   const Layout = isInvitePublic
     ? (ApplicationLayout as any)
