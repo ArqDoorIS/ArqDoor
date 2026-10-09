@@ -70,6 +70,17 @@ jobs:
       - name: Confia na chave da VPS
         run: |
           mkdir -p ~/.ssh
+          # Ate 5 tentativas: em 09/10/2026 uma oscilacao de 5s no keyscan derrubou um deploy de producao.
+          for i in 1 2 3 4 5; do
+            if ssh-keyscan -T 15 -H "${{ secrets.VPS_HOST }}" > /tmp/vps_keys 2>/dev/null && [ -s /tmp/vps_keys ]; then
+              cat /tmp/vps_keys >> ~/.ssh/known_hosts
+              exit 0
+            fi
+            echo "ssh-keyscan falhou (tentativa $i/5); nova tentativa em 10s"
+            sleep 10
+          done
+          echo "::error::Nao foi possivel ler a chave da VPS por SSH."
+          exit 1
 
 
       - name: Marca o inicio
