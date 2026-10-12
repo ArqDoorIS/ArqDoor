@@ -40,12 +40,19 @@ export function ConviteResumoAside({ invite, provider, total, currentStep, onCon
 
       {/* CTA "Continuar" - visivel apenas no passo 1 */}
       {currentStep === 1 && onContinue && (
-        <Button
-          onClick={onContinue}
-          className="w-full bg-orange-600 hover:bg-orange-700 text-sm font-semibold h-11 rounded-xl"
-        >
-          Continuar
-        </Button>
+        <>
+          <Button
+            onClick={onContinue}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-sm font-semibold h-11 rounded-xl"
+          >
+            Continuar
+          </Button>
+          {invite.destinatario?.cpf_final && (
+            <p className="text-xs text-slate-500 text-center">
+              O CPF é conferido quando você aceitar.
+            </p>
+          )}
+        </>
       )}
     </div>
   );

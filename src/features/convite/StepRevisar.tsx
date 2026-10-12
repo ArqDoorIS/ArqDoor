@@ -20,6 +20,10 @@ type Props = {
   onSuccess: (result: AcceptAndSignResponse) => void;
   onCpfRequired: () => void;
   onOwnerError: () => void;
+  /** Chamado quando o backend retorna 403 motivo=CPF_DIFERENTE */
+  onCpfDiferente?: () => void;
+  /** Chamado quando o backend retorna 423 (convite bloqueado no aceite) */
+  onBloqueado?: () => void;
 };
 
 type SignMethod = "password" | "google";
@@ -58,7 +62,7 @@ function PasswordInput({
   );
 }
 
-export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess, onCpfRequired, onOwnerError }: Props) {
+export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess, onCpfRequired, onOwnerError, onCpfDiferente, onBloqueado }: Props) {
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -98,7 +102,24 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
       const res = await apiRequest("POST", `/invites/public/${token}/accept-and-sign`, body);
       const data = await res.json().catch(() => null);
 
+      if (res.status === 423) {
+        if (onBloqueado) {
+          onBloqueado();
+        } else {
+          setErrorMsg(data?.message || "Este link foi bloqueado.");
+        }
+        return;
+      }
+
       if (res.status === 403) {
+        if (data?.motivo === "CPF_DIFERENTE") {
+          if (onCpfDiferente) {
+            onCpfDiferente();
+          } else {
+            setErrorMsg(data?.message || "Este convite é para outra pessoa.");
+          }
+          return;
+        }
         onOwnerError();
         return;
       }

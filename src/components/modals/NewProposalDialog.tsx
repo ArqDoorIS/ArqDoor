@@ -8,12 +8,15 @@ import {
   FileText,
   Info,
   Landmark,
+  Lock,
   Plus,
   PlusCircle,
   ShieldCheck,
+  Users,
   Wallet,
   X,
 } from "lucide-react";
+import { mascaraCpf, validarCpf, apenasDigitosCpf } from "@/lib/invite-cpf";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,6 +119,15 @@ interface NewProposalDialogProps {
   draftRestoredFileName?: string | null;
   /** Callback para descartar o rascunho salvo. */
   onClearDraft?: () => void;
+  /**
+   * Modo de destinatario: "todos" (padrao) ou "cpf" (so um CPF).
+   * A secao "Quem pode aceitar" so aparece quando `onDestinatarioModeChange` e passado.
+   */
+  destinatarioMode?: "todos" | "cpf";
+  onDestinatarioModeChange?: (mode: "todos" | "cpf") => void;
+  /** CPF digitado no modo "cpf" (com ou sem mascara). */
+  destinatarioCpf?: string;
+  onDestinatarioCpfChange?: (cpf: string) => void;
 }
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
@@ -184,6 +196,10 @@ export function NewProposalDialog({
   existingContractLabel,
   draftRestoredFileName = null,
   onClearDraft,
+  destinatarioMode = "todos",
+  onDestinatarioModeChange,
+  destinatarioCpf = "",
+  onDestinatarioCpfChange,
 }: NewProposalDialogProps) {
   const [priceDigits, setPriceDigits] = React.useState<Record<string, string>>({});
   // Drafts dos inputs de data (BR dd/mm/aaaa). Só commitamos no state global
@@ -558,6 +574,16 @@ export function NewProposalDialog({
       return false;
     }
 
+    if (onDestinatarioModeChange && destinatarioMode === "cpf") {
+      if (!validarCpf(apenasDigitosCpf(destinatarioCpf || ""))) {
+        showStageError(
+          "CPF inválido",
+          "Verifique o CPF do cliente antes de continuar."
+        );
+        return false;
+      }
+    }
+
     if (receivingMethod === "standard") {
       if (loadingReceivingAccounts) {
         showStageError(
@@ -586,6 +612,9 @@ export function NewProposalDialog({
     receivingMethod,
     selectedReceivingAccountId,
     showStageError,
+    destinatarioMode,
+    destinatarioCpf,
+    onDestinatarioModeChange,
   ]);
 
   const validateStage = React.useCallback(
@@ -1356,6 +1385,98 @@ export function NewProposalDialog({
                     <p className="text-xs text-muted-foreground">
                       Depois disso o cliente não consegue mais aceitar por este link.
                     </p>
+                  </div>
+                ) : null}
+
+                {onDestinatarioModeChange ? (
+                  <div className="rounded-2xl border bg-white p-4 space-y-3">
+                    <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <Users className="h-4 w-4 text-orange-500" />
+                      Quem pode aceitar
+                    </p>
+                    <div className="space-y-2">
+                      <button
+                        type="button"
+                        data-testid="destinatario-todos"
+                        onClick={() => onDestinatarioModeChange("todos")}
+                        className={cn(
+                          "flex items-start gap-3 w-full rounded-xl border p-3 text-left transition-colors",
+                          destinatarioMode === "todos"
+                            ? "border-orange-400 bg-orange-50"
+                            : "border-slate-200 bg-white hover:border-slate-300"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center",
+                            destinatarioMode === "todos"
+                              ? "border-orange-500"
+                              : "border-slate-300"
+                          )}
+                        >
+                          {destinatarioMode === "todos" && (
+                            <span className="h-2 w-2 rounded-full bg-orange-500 block" />
+                          )}
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Qualquer pessoa com o link</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Quem abrir primeiro e aceitar vira o cliente.</p>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        data-testid="destinatario-cpf"
+                        onClick={() => onDestinatarioModeChange("cpf")}
+                        className={cn(
+                          "flex items-start gap-3 w-full rounded-xl border p-3 text-left transition-colors",
+                          destinatarioMode === "cpf"
+                            ? "border-orange-400 bg-orange-50"
+                            : "border-slate-200 bg-white hover:border-slate-300"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center",
+                            destinatarioMode === "cpf"
+                              ? "border-orange-500"
+                              : "border-slate-300"
+                          )}
+                        >
+                          {destinatarioMode === "cpf" && (
+                            <span className="h-2 w-2 rounded-full bg-orange-500 block" />
+                          )}
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">
+                            <Lock className="inline h-3.5 w-3.5 text-orange-500 mr-1 -mt-0.5" />
+                            Só um CPF
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">Só quem tiver esse CPF na conta consegue aceitar.</p>
+                        </div>
+                      </button>
+                    </div>
+
+                    {destinatarioMode === "cpf" && (
+                      <div className="space-y-1.5 pt-1">
+                        <Label htmlFor="cpf-destinatario" className="text-xs font-semibold text-slate-700">
+                          CPF do cliente
+                        </Label>
+                        <Input
+                          id="cpf-destinatario"
+                          data-testid="cpf-destinatario-input"
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="000.000.000-00"
+                          maxLength={14}
+                          value={destinatarioCpf}
+                          onChange={(e) => onDestinatarioCpfChange?.(mascaraCpf(e.target.value))}
+                        />
+                        <p className="text-xs text-slate-500">
+                          Só a conta com esse CPF consegue aceitar. Para trocar o CPF depois, crie um link novo.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : null}
 
