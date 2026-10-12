@@ -309,11 +309,11 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
         />
         <Label htmlFor="cad-termos" className="text-xs leading-relaxed text-slate-600 cursor-pointer">
           Li e aceito os{" "}
-          <a href="/termos" target="_blank" rel="noreferrer" className="underline text-orange-600">
+          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-orange-600">
             Termos de uso
           </a>{" "}
           e a{" "}
-          <a href="/privacidade" target="_blank" rel="noreferrer" className="underline text-orange-600">
+          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-orange-600">
             Política de privacidade
           </a>
           .
