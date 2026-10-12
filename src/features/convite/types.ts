@@ -31,6 +31,9 @@ export type InviteData = {
   provider_receiving_method?: "escrow" | "standard";
   expires_at?: string | null;
   created_at?: string;
+  // Convite destinado: objeto presente quando o convite foi criado com CPF.
+  // So os 4 ultimos digitos sao expostos na resposta publica.
+  destinatario?: { cpf_final: string } | null;
 };
 
 export type ProviderData = {

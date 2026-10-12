@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { NewProposalDialog, formatIsoToBr, parseBrToIso } from "@/components/modals/NewProposalDialog";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { formatInviteExpiry, VALIDADE_PADRAO, type ValidadeDoConvite } from "@/lib/invite-validity";
-import { Copy, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { apenasDigitosCpf, formatarCpfFinal, validarCpf } from "@/lib/invite-cpf";
+import { Copy, Eye, EyeOff, ExternalLink, Lock, Pencil, Plus, ShieldOff, Trash2 } from "lucide-react";
 import type {
   ProviderReceivingAccount,
   ProviderReceivingMethod,
@@ -38,6 +39,12 @@ type Invite = {
   provider_bank_document?: string | null;
   provider_pix_key?: string | null;
   created_at?: string;
+  // Convite destinado a um CPF (spec 2026-10-convite-destinado)
+  destinatario_cpf_final?: string | null;
+  cpf_tentativas?: number;
+  bloqueado_em?: string | null;
+  // Previa detalhada no WhatsApp (spec 2026-10-convite-previa)
+  previa_detalhada?: boolean;
 };
 
 type ProposalStep = {
@@ -111,6 +118,9 @@ export default function Invites() {
   >(null);
   const [saving, setSaving] = useState(false);
   const [linkValidity, setLinkValidity] = useState<ValidadeDoConvite>(VALIDADE_PADRAO);
+  const [destinatarioMode, setDestinatarioMode] = useState<"todos" | "cpf">("todos");
+  const [destinatarioCpf, setDestinatarioCpf] = useState("");
+  const [previaDetalhada, setPreviaDetalhada] = useState(false);
 
   const isProvider = user?.type === "prestador";
 
@@ -201,6 +211,9 @@ export default function Invites() {
     setSelectedReceivingAccountId(null);
     setEditingInvite(null);
     setLinkValidity(VALIDADE_PADRAO);
+    setDestinatarioMode("todos");
+    setDestinatarioCpf("");
+    setPreviaDetalhada(false);
   };
 
   const openCreateDialog = () => {
@@ -223,6 +236,7 @@ export default function Invites() {
     setContractFile(null);
     setReceivingMethod(invite.provider_receiving_method || "escrow");
     setSelectedReceivingAccountId(invite.provider_receiving_account_id || null);
+    setPreviaDetalhada(invite.previa_detalhada ?? false);
     setDialogOpen(true);
   };
 
@@ -339,6 +353,7 @@ export default function Invites() {
           provider_receiving_method: receivingMethod,
           provider_receiving_account_id:
             receivingMethod === "standard" ? selectedReceivingAccountId : null,
+          previa_detalhada: previaDetalhada,
         });
         const body = await res.json().catch(() => ({}));
         if (!res.ok || body?.success === false) {
@@ -346,6 +361,19 @@ export default function Invites() {
         }
         inviteId = body?.invite?.id || editingInvite.id;
       } else {
+        // Validacao local do CPF destinatario (belt-and-suspenders alem do dialog)
+        if (destinatarioMode === "cpf") {
+          const cpfDigits = apenasDigitosCpf(destinatarioCpf);
+          if (!validarCpf(cpfDigits)) {
+            toast({
+              title: "CPF inválido",
+              description: "Verifique o CPF do cliente antes de criar o convite.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+
         const res = await apiRequest("POST", "/invites", {
           validade: linkValidity,
           steps: payloadSteps,
@@ -354,6 +382,10 @@ export default function Invites() {
           provider_receiving_method: receivingMethod,
           provider_receiving_account_id:
             receivingMethod === "standard" ? selectedReceivingAccountId : null,
+          previa_detalhada: previaDetalhada,
+          ...(destinatarioMode === "cpf"
+            ? { destinatario_cpf: apenasDigitosCpf(destinatarioCpf) }
+            : {}),
         });
         const body = await res.json().catch(() => ({}));
         if (!res.ok || body?.success === false) {
@@ -439,13 +471,19 @@ export default function Invites() {
               <div key={invite.id} className="rounded-2xl border p-5 bg-white shadow-sm">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-lg font-semibold text-gray-900">
                         Convite #{invite.id}
                       </h2>
                       <span className={`text-xs px-2 py-1 rounded-full ${statusInfo.tone}`}>
                         {statusInfo.label}
                       </span>
+                      {invite.bloqueado_em && (
+                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-medium">
+                          <ShieldOff className="h-3 w-3" />
+                          Bloqueado
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {invite.created_at || (invite as any)?.createdAt
@@ -468,6 +506,34 @@ export default function Invites() {
                       invite.provider_receiving_account_label
                         ? ` · ${invite.provider_receiving_account_label}`
                         : ""}
+                    </div>
+                    {invite.destinatario_cpf_final && (
+                      <div className="flex items-center gap-1.5 text-sm text-gray-700">
+                        <Lock className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                        {invite.bloqueado_em ? (
+                          <span className="text-red-700">
+                            Bloqueado depois de 5 tentativas com outro CPF. Crie um link novo.
+                          </span>
+                        ) : (
+                          <span>
+                            Pessoal, CPF terminado em{" "}
+                            <span className="font-medium">{formatarCpfFinal(invite.destinatario_cpf_final)}</span>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 text-sm">
+                      {invite.previa_detalhada ? (
+                        <>
+                          <Eye className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                          <span className="text-gray-700">Prévia com nome, título e valor</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <span className="text-muted-foreground">Prévia sem detalhes no WhatsApp</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -528,6 +594,13 @@ export default function Invites() {
         onReceivingMethodChange={setReceivingMethod}
         linkValidity={linkValidity}
         onLinkValidityChange={editingInvite ? undefined : setLinkValidity}
+        destinatarioMode={destinatarioMode}
+        onDestinatarioModeChange={editingInvite ? undefined : setDestinatarioMode}
+        destinatarioCpf={destinatarioCpf}
+        onDestinatarioCpfChange={editingInvite ? undefined : setDestinatarioCpf}
+        previaDetalhada={previaDetalhada}
+        onPreviaDetalhadaChange={setPreviaDetalhada}
+        providerName={user?.name}
         receivingAccounts={receivingAccounts}
         loadingReceivingAccounts={loadingReceivingAccounts}
         selectedReceivingAccountId={selectedReceivingAccountId}
