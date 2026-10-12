@@ -8,7 +8,7 @@ import { NewProposalDialog, formatIsoToBr, parseBrToIso } from "@/components/mod
 import { formatDate, formatPrice } from "@/lib/utils";
 import { formatInviteExpiry, VALIDADE_PADRAO, type ValidadeDoConvite } from "@/lib/invite-validity";
 import { apenasDigitosCpf, formatarCpfFinal, validarCpf } from "@/lib/invite-cpf";
-import { Copy, ExternalLink, Lock, Pencil, Plus, ShieldOff, Trash2 } from "lucide-react";
+import { Copy, Eye, EyeOff, ExternalLink, Lock, Pencil, Plus, ShieldOff, Trash2 } from "lucide-react";
 import type {
   ProviderReceivingAccount,
   ProviderReceivingMethod,
@@ -43,6 +43,8 @@ type Invite = {
   destinatario_cpf_final?: string | null;
   cpf_tentativas?: number;
   bloqueado_em?: string | null;
+  // Previa detalhada no WhatsApp (spec 2026-10-convite-previa)
+  previa_detalhada?: boolean;
 };
 
 type ProposalStep = {
@@ -118,6 +120,7 @@ export default function Invites() {
   const [linkValidity, setLinkValidity] = useState<ValidadeDoConvite>(VALIDADE_PADRAO);
   const [destinatarioMode, setDestinatarioMode] = useState<"todos" | "cpf">("todos");
   const [destinatarioCpf, setDestinatarioCpf] = useState("");
+  const [previaDetalhada, setPreviaDetalhada] = useState(false);
 
   const isProvider = user?.type === "prestador";
 
@@ -210,6 +213,7 @@ export default function Invites() {
     setLinkValidity(VALIDADE_PADRAO);
     setDestinatarioMode("todos");
     setDestinatarioCpf("");
+    setPreviaDetalhada(false);
   };
 
   const openCreateDialog = () => {
@@ -232,6 +236,7 @@ export default function Invites() {
     setContractFile(null);
     setReceivingMethod(invite.provider_receiving_method || "escrow");
     setSelectedReceivingAccountId(invite.provider_receiving_account_id || null);
+    setPreviaDetalhada(invite.previa_detalhada ?? false);
     setDialogOpen(true);
   };
 
@@ -348,6 +353,7 @@ export default function Invites() {
           provider_receiving_method: receivingMethod,
           provider_receiving_account_id:
             receivingMethod === "standard" ? selectedReceivingAccountId : null,
+          previa_detalhada: previaDetalhada,
         });
         const body = await res.json().catch(() => ({}));
         if (!res.ok || body?.success === false) {
@@ -376,6 +382,7 @@ export default function Invites() {
           provider_receiving_method: receivingMethod,
           provider_receiving_account_id:
             receivingMethod === "standard" ? selectedReceivingAccountId : null,
+          previa_detalhada: previaDetalhada,
           ...(destinatarioMode === "cpf"
             ? { destinatario_cpf: apenasDigitosCpf(destinatarioCpf) }
             : {}),
@@ -515,6 +522,19 @@ export default function Invites() {
                         )}
                       </div>
                     )}
+                    <div className="flex items-center gap-1.5 text-sm">
+                      {invite.previa_detalhada ? (
+                        <>
+                          <Eye className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                          <span className="text-gray-700">Prévia com nome, título e valor</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <span className="text-muted-foreground">Prévia sem detalhes no WhatsApp</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {invite.status !== "cancelled" && (
@@ -578,6 +598,9 @@ export default function Invites() {
         onDestinatarioModeChange={editingInvite ? undefined : setDestinatarioMode}
         destinatarioCpf={destinatarioCpf}
         onDestinatarioCpfChange={editingInvite ? undefined : setDestinatarioCpf}
+        previaDetalhada={previaDetalhada}
+        onPreviaDetalhadaChange={setPreviaDetalhada}
+        providerName={user?.name}
         receivingAccounts={receivingAccounts}
         loadingReceivingAccounts={loadingReceivingAccounts}
         selectedReceivingAccountId={selectedReceivingAccountId}
