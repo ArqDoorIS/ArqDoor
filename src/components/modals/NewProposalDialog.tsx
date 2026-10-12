@@ -128,6 +128,14 @@ interface NewProposalDialogProps {
   /** CPF digitado no modo "cpf" (com ou sem mascara). */
   destinatarioCpf?: string;
   onDestinatarioCpfChange?: (cpf: string) => void;
+  /**
+   * Liga/desliga a previa detalhada no WhatsApp (spec 2026-10-convite-previa).
+   * Aparece tanto na criacao quanto na edicao.
+   */
+  previaDetalhada?: boolean;
+  onPreviaDetalhadaChange?: (v: boolean) => void;
+  /** Nome do prestador logado, para a amostra de previa. */
+  providerName?: string;
 }
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
@@ -200,6 +208,9 @@ export function NewProposalDialog({
   onDestinatarioModeChange,
   destinatarioCpf = "",
   onDestinatarioCpfChange,
+  previaDetalhada = false,
+  onPreviaDetalhadaChange,
+  providerName,
 }: NewProposalDialogProps) {
   const [priceDigits, setPriceDigits] = React.useState<Record<string, string>>({});
   // Drafts dos inputs de data (BR dd/mm/aaaa). Só commitamos no state global
@@ -1479,6 +1490,83 @@ export function NewProposalDialog({
                     )}
                   </div>
                 ) : null}
+
+                <div className="rounded-2xl border bg-white p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Mostrar detalhes na prévia</p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Seu nome, o título e o valor aparecem no WhatsApp antes de abrir o link.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={previaDetalhada}
+                      data-testid="toggle-previa-detalhada"
+                      onClick={() => onPreviaDetalhadaChange?.(!previaDetalhada)}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
+                        previaDetalhada ? "bg-orange-500" : "bg-slate-200"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform",
+                          previaDetalhada ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 space-y-1.5">
+                    <p className="text-xs font-semibold text-emerald-700">Como o cliente vai ver</p>
+                    <div
+                      data-testid="previa-amostra"
+                      className="rounded-lg bg-white border border-slate-100 overflow-hidden flex"
+                    >
+                      <div className="w-12 shrink-0 bg-orange-600 flex items-center justify-center text-white text-[10px] font-bold leading-tight text-center px-1">
+                        ArqDoor
+                      </div>
+                      <div className="flex-1 px-3 py-2 min-w-0 space-y-0.5">
+                        {previaDetalhada ? (
+                          <>
+                            <p
+                              data-testid="previa-titulo"
+                              className="text-xs font-semibold text-slate-900 line-clamp-2"
+                            >
+                              {/* O convite do site nao tem titulo proprio: a previa real e "Proposta de <nome>". */}
+                              {providerName ? `Proposta de ${providerName}` : "Proposta no ArqDoor"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {[
+                                projectTotal > 0
+                                  ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(projectTotal)
+                                  : null,
+                                proposalSteps.length === 1
+                                  ? "1 etapa"
+                                  : `${proposalSteps.length} etapas`,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p
+                              data-testid="previa-titulo"
+                              className="text-xs font-semibold text-slate-900"
+                            >
+                              Proposta no ArqDoor
+                            </p>
+                            <p className="text-xs text-slate-500">Abra o link para ver os detalhes.</p>
+                          </>
+                        )}
+                        <p className="text-xs text-slate-400">arqdoor.com</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
                   <p className="text-sm font-semibold text-slate-900">Resumo rápido</p>
