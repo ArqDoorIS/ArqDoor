@@ -141,7 +141,7 @@ describe("amostra de previa no dialog", () => {
     );
   });
 
-  it("exibe 'Proposta de Ana Ribeiro: Levantamento' quando previaDetalhada e true", () => {
+  it("exibe 'Proposta de Ana Ribeiro' quando previaDetalhada e true (convite do site nao tem titulo)", () => {
     render(
       <NewProposalDialog
         {...baseProps}
@@ -150,9 +150,7 @@ describe("amostra de previa no dialog", () => {
       />
     );
 
-    expect(screen.getByTestId("previa-titulo")).toHaveTextContent(
-      "Proposta de Ana Ribeiro: Levantamento"
-    );
+    expect(screen.getByTestId("previa-titulo")).toHaveTextContent(/^Proposta de Ana Ribeiro$/);
   });
 
   it("amostra muda ao clicar na chave", () => {

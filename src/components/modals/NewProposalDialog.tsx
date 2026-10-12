@@ -1535,9 +1535,8 @@ export function NewProposalDialog({
                               data-testid="previa-titulo"
                               className="text-xs font-semibold text-slate-900 line-clamp-2"
                             >
-                              {providerName
-                                ? `Proposta de ${providerName}${proposalSteps[0]?.title ? `: ${proposalSteps[0].title}` : ""}`
-                                : "Proposta no ArqDoor"}
+                              {/* O convite do site nao tem titulo proprio: a previa real e "Proposta de <nome>". */}
+                              {providerName ? `Proposta de ${providerName}` : "Proposta no ArqDoor"}
                             </p>
                             <p className="text-xs text-slate-500">
                               {[
