@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "wouter";
-import { Loader2, Clock, SearchX } from "lucide-react";
+import { Loader2, Clock, Lock, SearchX, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest, API_BASE_URL } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { falhaDoConvitePublico, formatInviteExpiry, type FalhaDoConvite } from "@/lib/invite-validity";
+import { cpfBate, formatarCpfFinal } from "@/lib/invite-cpf";
 
 import { ConviteProgress } from "@/features/convite/ConviteProgress";
 import { ConviteResumoAside } from "@/features/convite/ConviteResumoAside";
@@ -44,7 +45,7 @@ const normalizeInviteSteps = (raw: unknown): InviteStep[] => {
 
 export default function InvitePublic() {
   const { token } = useParams<{ token: string }>();
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -56,6 +57,8 @@ export default function InvitePublic() {
   const [acceptResult, setAcceptResult] = useState<AcceptAndSignResponse | null>(null);
   const [paymentDone, setPaymentDone] = useState(false);
   const [ownerError, setOwnerError] = useState(false);
+  // Convite destinado a outro CPF: pre-checagem client-side ou 403 do backend
+  const [cpfDiferente, setCpfDiferente] = useState(false);
   const [, navigate] = useLocation();
   // Convite aceito: contrato de quem aceitou (spec 2026-10-convite-continuar-no-app).
   // undefined = ainda nao consultado; null = aceito por outra conta.
@@ -156,7 +159,35 @@ export default function InvitePublic() {
       setStep(2); // vai para a tela de conta, que mostra o campo de CPF inline
       return;
     }
+    // Pre-checagem client-side para convite destinado a um CPF especifico
+    if (invite?.destinatario?.cpf_final) {
+      if (!cpfBate(cpfDigits, invite.destinatario.cpf_final)) {
+        setCpfDiferente(true);
+        return;
+      }
+    }
     setStep(3);
+  };
+
+  // Chamado pelo StepRevisar quando o backend retorna 403 CPF_DIFERENTE
+  const handleCpfDiferente = () => {
+    setCpfDiferente(true);
+  };
+
+  // Chamado pelo StepRevisar quando o backend retorna 423 (link bloqueado no aceite)
+  const handleBloqueadoNoAceite = () => {
+    setFalha({
+      tipo: "bloqueado",
+      titulo: invite?.title || "Proposta",
+      prestador: provider?.name || provider?.user?.name || null,
+    });
+  };
+
+  // Logout e volta ao passo 1 do convite (para "Entrar com outra conta")
+  const handleEntrarComOutraConta = async () => {
+    await logout();
+    setCpfDiferente(false);
+    setStep(1);
   };
 
   // Chamado pelo StepConta quando auth conclui com sucesso
@@ -244,6 +275,30 @@ export default function InvitePublic() {
     );
   }
 
+  if (falha?.tipo === "bloqueado") {
+    const nome = falha.prestador;
+    return (
+      <div className="container mx-auto px-4 py-24" data-testid="invite-bloqueado">
+        <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+            <ShieldOff className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-900">Este link foi bloqueado</h1>
+          <p className="text-sm text-muted-foreground">
+            {nome ? (
+              <>Peça a <span className="font-medium text-gray-900">{nome}</span> um link novo.</>
+            ) : (
+              "Peça ao prestador um link novo."
+            )}
+          </p>
+          <Button variant="outline" onClick={() => navigate("/")}>
+            Ir para o início
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (ownerError) {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-owner-error">
@@ -321,6 +376,46 @@ export default function InvitePublic() {
     );
   }
 
+  // Convite destinado a outro CPF
+  if (cpfDiferente) {
+    const nome = provider?.name || provider?.user?.name || null;
+    return (
+      <div className="min-h-screen bg-stone-50" data-testid="convite-outra-pessoa">
+        <div className="container mx-auto px-4 py-24">
+          <div className="mx-auto max-w-md rounded-3xl border bg-white shadow-sm">
+            <div className="p-8 text-center space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50">
+                <Lock className="h-8 w-8 text-orange-600" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">Este convite é para outra pessoa</h1>
+              <p className="text-sm leading-relaxed text-slate-600">
+                {nome ?? "O prestador"} enviou esta proposta para um CPF diferente do que está na sua conta. Nada foi aceito nem assinado.
+              </p>
+              <p className="text-sm leading-relaxed text-slate-600">
+                Se a proposta é para você, peça {nome ? `a ${nome}` : "ao prestador"} um link novo com o seu CPF.
+              </p>
+            </div>
+            <div className="border-t border-slate-100 p-6 space-y-3">
+              <Button
+                onClick={() => navigate("/")}
+                className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+              >
+                Ir para o início
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleEntrarComOutraConta}
+                className="w-full text-slate-600 hover:text-slate-900"
+              >
+                Entrar com outra conta
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // --- Layout principal com barra de progresso ---
 
   return (
@@ -331,6 +426,21 @@ export default function InvitePublic() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Conteudo principal */}
           <div className="lg:col-span-2">
+            {step === 1 && invite.destinatario?.cpf_final && (
+              <div
+                data-testid="faixa-convite-pessoal"
+                className="mb-4 flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+              >
+                <Lock className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
+                <span className="text-sm text-orange-900">
+                  <strong className="font-semibold">Convite pessoal.</strong>{" "}
+                  Destinado ao CPF terminado em{" "}
+                  <strong>{formatarCpfFinal(invite.destinatario.cpf_final)}</strong>.{" "}
+                  Só essa pessoa consegue aceitar.
+                </span>
+              </div>
+            )}
+
             {step === 1 && (
               <div className="rounded-3xl border bg-white shadow-sm p-6 sm:p-8">
                 <StepProposta
@@ -363,6 +473,8 @@ export default function InvitePublic() {
                   onSuccess={handleRevisarSuccess}
                   onCpfRequired={handleCpfRequired}
                   onOwnerError={handleOwnerError}
+                  onCpfDiferente={handleCpfDiferente}
+                  onBloqueado={handleBloqueadoNoAceite}
                 />
               </div>
             )}

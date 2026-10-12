@@ -26,9 +26,10 @@ export function formatInviteExpiry(iso?: string | null): string | null {
 
 export type FalhaDoConvite =
   | { tipo: "expirado"; titulo: string; prestador: string | null; expiraEm: string | null }
-  | { tipo: "nao_encontrado" };
+  | { tipo: "nao_encontrado" }
+  | { tipo: "bloqueado"; titulo: string; prestador: string | null };
 
-/** Traduz a resposta de erro de `GET /invites/public/:token`. `null` para erro que não é 404 nem 410. */
+/** Traduz a resposta de erro de `GET /invites/public/:token`. `null` para erro que nao e 404, 410 nem 423. */
 export function falhaDoConvitePublico(status: number, body: any): FalhaDoConvite | null {
   if (status === 410 && body?.expired) {
     return {
@@ -39,5 +40,12 @@ export function falhaDoConvitePublico(status: number, body: any): FalhaDoConvite
     };
   }
   if (status === 404) return { tipo: "nao_encontrado" };
+  if (status === 423 && body?.bloqueado) {
+    return {
+      tipo: "bloqueado",
+      titulo: body?.invite?.title || "Proposta",
+      prestador: body?.provider?.name || null,
+    };
+  }
   return null;
 }
