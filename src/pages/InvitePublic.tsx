@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { Loader2, Clock, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest, API_BASE_URL } from "@/lib/queryClient";
@@ -56,6 +56,12 @@ export default function InvitePublic() {
   const [acceptResult, setAcceptResult] = useState<AcceptAndSignResponse | null>(null);
   const [paymentDone, setPaymentDone] = useState(false);
   const [ownerError, setOwnerError] = useState(false);
+  const [, navigate] = useLocation();
+  // Convite aceito: contrato de quem aceitou (spec 2026-10-convite-continuar-no-app).
+  // undefined = ainda nao consultado; null = aceito por outra conta.
+  const [meuContrato, setMeuContrato] = useState<
+    { ticket_id: number; provider_user_id: number | null } | null | undefined
+  >(undefined);
 
   // Busca os dados do convite
   useEffect(() => {
@@ -97,6 +103,22 @@ export default function InvitePublic() {
 
     fetchInvite();
   }, [token, toast]);
+
+  useEffect(() => {
+    if (!token || invite?.status !== "accepted" || !isLoggedIn || acceptResult) return;
+    let ativo = true;
+    apiRequest("GET", `/invites/public/${token}/meu-contrato`)
+      .then(async (res) => {
+        const body = await res.json().catch(() => ({}));
+        if (ativo) setMeuContrato(res.ok ? body?.data ?? null : null);
+      })
+      .catch(() => {
+        if (ativo) setMeuContrato(null);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [token, invite?.status, isLoggedIn, acceptResult]);
 
   // Derivados
   const pdfUrl = useMemo(() => {
@@ -246,21 +268,54 @@ export default function InvitePublic() {
     );
   }
 
-  // Convite aceito (status != active) e o flow nao chegou ao Pronto
-  if (invite.status !== "active" && step < 5) {
+  // Convite aceito: quem aceitou volta ao proprio contrato pelo link
+  if (invite.status === "accepted" && step < 5) {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-already-accepted">
+        <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
+          <h1 className="text-xl font-semibold text-gray-900">Este convite já foi aceito</h1>
+          {!isLoggedIn ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Se foi você quem aceitou, entre na sua conta para ver o contrato.
+              </p>
+              <div className="text-left">
+                <StepConta user={user} onSuccess={() => setMeuContrato(undefined)} />
+              </div>
+            </>
+          ) : meuContrato === undefined ? (
+            <Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" />
+          ) : meuContrato ? (
+            <Button
+              data-testid="abrir-meu-contrato"
+              onClick={() =>
+                navigate(
+                  meuContrato.provider_user_id
+                    ? `/messages/${meuContrato.provider_user_id}?ticket=${meuContrato.ticket_id}`
+                    : "/messages"
+                )
+              }
+              className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+            >
+              Abrir meu contrato
+            </Button>
+          ) : (
+            <p className="text-sm text-muted-foreground" data-testid="aceito-por-outra-conta">
+              Este convite já foi aceito por outra conta.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Cancelado ou rascunho: nao ha o que fazer pelo link
+  if (invite.status !== "active" && step < 5) {
+    return (
+      <div className="container mx-auto px-4 py-24" data-testid="invite-unavailable">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">
-            {invite.status === "accepted"
-              ? "Este convite já foi aceito"
-              : "Este convite não está mais disponível"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {invite.status === "accepted"
-              ? "Para acompanhar o contrato e os pagamentos, entre na sua conta e abra a conversa com quem enviou a proposta."
-              : "Peça ao prestador um novo link."}
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">Este convite não está mais disponível</h1>
+          <p className="text-sm text-muted-foreground">Peça ao prestador um novo link.</p>
         </div>
       </div>
     );
