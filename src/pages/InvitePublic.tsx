@@ -276,7 +276,7 @@ export default function InvitePublic() {
   }
 
   if (falha?.tipo === "bloqueado") {
-    const prestadorNome = falha.prestador || "o prestador";
+    const nome = falha.prestador;
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-bloqueado">
         <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
@@ -285,7 +285,11 @@ export default function InvitePublic() {
           </div>
           <h1 className="text-xl font-semibold text-gray-900">Este link foi bloqueado</h1>
           <p className="text-sm text-muted-foreground">
-            Peça a <span className="font-medium text-gray-900">{prestadorNome}</span> um link novo.
+            {nome ? (
+              <>Peça a <span className="font-medium text-gray-900">{nome}</span> um link novo.</>
+            ) : (
+              "Peça ao prestador um link novo."
+            )}
           </p>
           <Button variant="outline" onClick={() => navigate("/")}>
             Ir para o início
@@ -374,7 +378,7 @@ export default function InvitePublic() {
 
   // Convite destinado a outro CPF
   if (cpfDiferente) {
-    const prestadorNome = provider?.name || provider?.user?.name || "o prestador";
+    const nome = provider?.name || provider?.user?.name || null;
     return (
       <div className="min-h-screen bg-stone-50" data-testid="convite-outra-pessoa">
         <div className="container mx-auto px-4 py-24">
@@ -385,10 +389,10 @@ export default function InvitePublic() {
               </div>
               <h1 className="text-xl font-bold text-gray-900">Este convite é para outra pessoa</h1>
               <p className="text-sm leading-relaxed text-slate-600">
-                {prestadorNome} enviou esta proposta para um CPF diferente do que está na sua conta. Nada foi aceito nem assinado.
+                {nome ?? "O prestador"} enviou esta proposta para um CPF diferente do que está na sua conta. Nada foi aceito nem assinado.
               </p>
               <p className="text-sm leading-relaxed text-slate-600">
-                Se a proposta é para você, peça a {prestadorNome} um link novo com o seu CPF.
+                Se a proposta é para você, peça {nome ? `a ${nome}` : "ao prestador"} um link novo com o seu CPF.
               </p>
             </div>
             <div className="border-t border-slate-100 p-6 space-y-3">
