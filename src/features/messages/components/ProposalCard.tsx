@@ -17,6 +17,7 @@ interface ProposalCardProps {
   steps: any[];
   isLatest?: boolean;
   currentUserType?: string;
+  highlighted?: boolean;
   onViewDetails: (ticketId: number) => void;
   onViewPdf: (ticket: any) => void;
   onStartSignature: (ticket: any) => void;
@@ -134,6 +135,7 @@ export function ProposalCard({
   steps,
   isLatest = false,
   currentUserType,
+  highlighted = false,
   onViewDetails,
   onViewPdf,
   onStartSignature,
@@ -177,7 +179,9 @@ export function ProposalCard({
 
   return (
     <div
-      className={`flex flex-col justify-between p-3 shadow-sm border transition-all duration-200 hover:shadow-md ${cfg.bg} ${cfg.border}`}
+      data-ticket-id={ticket.id}
+      data-testid="proposal-card"
+      className={`flex flex-col justify-between p-3 shadow-sm border transition-all duration-200 hover:shadow-md ${cfg.bg} ${cfg.border}${highlighted ? ' ring-2 ring-orange-400 ring-offset-1' : ''}`}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">

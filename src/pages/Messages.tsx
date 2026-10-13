@@ -310,6 +310,11 @@ export default function Messages() {
   const [signatureFlow, setSignatureFlow] = useState<SignatureFlow | null>(null);
 
   const [showOlderTickets, setShowOlderTickets] = useState(false);
+
+  // Mobile tab: "chat" ou "propostas"
+  const [mobileTab, setMobileTab] = useState<'chat' | 'propostas'>('chat');
+  // Id da proposta destacada (rolar + anel laranja)
+  const [highlightTicketId, setHighlightTicketId] = useState<number | null>(null);
   const [paymentDialog, setPaymentDialog] = useState<PaymentDialogState | null>(null);
   const [groupedPaymentDialog, setGroupedPaymentDialog] = useState<GroupedPaymentDialogState | null>(null);
   const [groupedPaymentEnabledByTicket, setGroupedPaymentEnabledByTicket] = useState<Record<number, boolean>>({});
@@ -2172,6 +2177,31 @@ export default function Messages() {
     handleViewPdf(ticketId);
   }, [location, handleViewPdf]);
 
+  // Lida com ?ticket=<id> SEM view=contract: destaca o card e, no celular, abre a aba Propostas
+  const highlightTicketRef = useRef<number | null>(null);
+  useEffect(() => {
+    const [, queryString] = location.split("?");
+    if (!queryString) return;
+    const params = new URLSearchParams(queryString);
+    const view = params.get("view");
+    const ticketParam = params.get("ticket");
+    // So age quando tem ticket mas NAO tem view=contract
+    if (!ticketParam || view === "contract") return;
+    const ticketId = Number(ticketParam);
+    if (!Number.isFinite(ticketId) || ticketId <= 0) return;
+    if (highlightTicketRef.current === ticketId) return;
+    highlightTicketRef.current = ticketId;
+    setHighlightTicketId(ticketId);
+    setMobileTab('propostas');
+  }, [location]);
+
+  // Limpa o destaque apos 4 segundos
+  useEffect(() => {
+    if (!highlightTicketId) return;
+    const timer = setTimeout(() => setHighlightTicketId(null), 4000);
+    return () => clearTimeout(timer);
+  }, [highlightTicketId]);
+
   const signatureRequiresAck = signatureFlow
     ? signatureFlow.requireAck ?? (signatureFlow.type === 'contract')
     : true;
@@ -2242,63 +2272,94 @@ export default function Messages() {
                   setLocation('/messages');
                 }}
               />
+              {/* Abas de navegacao - visivel apenas abaixo de md */}
+              <div
+                className="flex md:hidden border-b border-gray-200 bg-white"
+                role="tablist"
+                aria-label="Seções da conversa"
+              >
+                <button
+                  role="tab"
+                  aria-selected={mobileTab === 'chat'}
+                  data-testid="tab-conversa"
+                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'chat' ? ' border-b-2 border-orange-500 text-orange-600' : ' text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setMobileTab('chat')}
+                >
+                  Conversa
+                </button>
+                <button
+                  role="tab"
+                  aria-selected={mobileTab === 'propostas'}
+                  data-testid="tab-propostas"
+                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'propostas' ? ' border-b-2 border-orange-500 text-orange-600' : ' text-gray-500 hover:text-gray-700'}`}
+                  onClick={() => setMobileTab('propostas')}
+                >
+                  Propostas ({tickets.length})
+                </button>
+              </div>
+
               <div className="flex-1 flex overflow-hidden">
-                <ChatPanel
-                  messages={processedMessages}
-                  currentUserId={user?.id}
-                  newMessage={newMessage}
-                  sendingMessage={sendingMessage}
-                  onMessageChange={setNewMessage}
-                  onSendMessage={handleSendMessage}
-                  messagesEndRef={messagesEndRef}
-                  composerAction={
-                    user?.type === "prestador" || user?.type === "contratante" ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            disabled={
-                              isProcessingAdditionalPayment ||
-                              additionalPaymentListTicketOptions.length === 0
-                            }
-                            className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
-                          >
-                            <Plus className="h-4 w-4" />
-                            <span className="sr-only">Ações adicionais</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="top" align="start" className="w-64">
-                          {user?.type === "prestador" && (
-                            <DropdownMenuItem
-                              onClick={handleOpenCreateAdditionalPaymentDialog}
-                              disabled={additionalPaymentCreateTicketOptions.length === 0}
+                {/* ChatPanel: oculto no celular quando a aba ativa e Propostas */}
+                <div className={`flex-1 flex flex-col overflow-hidden min-w-0${mobileTab === 'propostas' ? ' hidden md:flex' : ''}`}>
+                  <ChatPanel
+                    messages={processedMessages}
+                    currentUserId={user?.id}
+                    newMessage={newMessage}
+                    sendingMessage={sendingMessage}
+                    onMessageChange={setNewMessage}
+                    onSendMessage={handleSendMessage}
+                    messagesEndRef={messagesEndRef}
+                    composerAction={
+                      user?.type === "prestador" || user?.type === "contratante" ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              disabled={
+                                isProcessingAdditionalPayment ||
+                                additionalPaymentListTicketOptions.length === 0
+                              }
+                              className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
                             >
-                              <ReceiptText className="h-4 w-4" />
-                              Criar pagamento adicional
+                              <Plus className="h-4 w-4" />
+                              <span className="sr-only">Ações adicionais</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="start" className="w-64">
+                            {user?.type === "prestador" && (
+                              <DropdownMenuItem
+                                onClick={handleOpenCreateAdditionalPaymentDialog}
+                                disabled={additionalPaymentCreateTicketOptions.length === 0}
+                              >
+                                <ReceiptText className="h-4 w-4" />
+                                Criar pagamento adicional
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onClick={handleOpenAdditionalPaymentsListDialog}
+                              disabled={additionalPaymentListTicketOptions.length === 0}
+                            >
+                              <List className="h-4 w-4" />
+                              Listar pagamentos adicionais
                             </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem
-                            onClick={handleOpenAdditionalPaymentsListDialog}
-                            disabled={additionalPaymentListTicketOptions.length === 0}
-                          >
-                            <List className="h-4 w-4" />
-                            Listar pagamentos adicionais
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            disabled
-                            className="text-gray-400"
-                          >
-                            <ImagePlus className="h-4 w-4" />
-                            Adicionar imagem
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : null
-                  }
-                />
+                            <DropdownMenuItem
+                              disabled
+                              className="text-gray-400"
+                            >
+                              <ImagePlus className="h-4 w-4" />
+                              Adicionar imagem
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : null
+                    }
+                  />
+                </div>
+                {/* ContractsPanel: oculto no celular quando a aba ativa e Conversa; largura total no celular */}
                 <ContractsPanel
+                  className={mobileTab === 'chat' ? 'hidden md:flex' : 'flex w-full md:w-80 md:flex-none'}
                   tickets={tickets}
                   ticketStepsMap={ticketStepsMap}
                   loadingTickets={loadingTickets}
@@ -2310,6 +2371,7 @@ export default function Messages() {
                   onStartSignature={handleStartSignature}
                   onRejectProposal={handleRejectContract}
                   currentUserType={user?.type}
+                  highlightTicketId={highlightTicketId}
                 />
               </div>
             </>

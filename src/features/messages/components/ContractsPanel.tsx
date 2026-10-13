@@ -1,7 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Loader2, FileText } from 'lucide-react';
 import { ProposalCard } from './ProposalCard';
+import { cn } from '@/lib/utils';
 
 interface ContractsPanelProps {
   tickets: any[];
@@ -15,6 +17,10 @@ interface ContractsPanelProps {
   onStartSignature: (ticket: any) => void;
   onRejectProposal?: (ticketId: number) => void;
   currentUserType?: string;
+  /** Id da proposta a destacar e rolar ate ela. Nulo = nenhuma. */
+  highlightTicketId?: number | null;
+  /** Classe extra aplicada ao elemento raiz (controla largura e visibilidade). */
+  className?: string;
 }
 
 export function ContractsPanel({
@@ -29,9 +35,34 @@ export function ContractsPanel({
   onStartSignature,
   onRejectProposal,
   currentUserType,
+  highlightTicketId,
+  className,
 }: ContractsPanelProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!highlightTicketId || !containerRef.current) return;
+    const timer = setTimeout(() => {
+      const el = containerRef.current?.querySelector(
+        `[data-ticket-id="${highlightTicketId}"]`
+      ) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 80);
+    return () => clearTimeout(timer);
+  }, [highlightTicketId]);
+
+  const sortedTickets = tickets.slice().sort(sortTicketsDesc);
+
   return (
-    <div className="w-80 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+    <div
+      ref={containerRef}
+      className={cn(
+        'w-80 bg-white border-l border-gray-200 flex flex-col overflow-hidden',
+        className
+      )}
+    >
       <div className="p-4 border-b border-gray-200">
         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
           <FileText className="h-5 w-5" /> Propostas
@@ -56,9 +87,7 @@ export function ContractsPanel({
           </div>
         ) : (
           <div className="space-y-4">
-            {tickets
-              .slice()
-              .sort(sortTicketsDesc)
+            {sortedTickets
               .slice(0, 2)
               .map((ticket, index) => (
                 <ProposalCard
@@ -67,6 +96,7 @@ export function ContractsPanel({
                   steps={ticketStepsMap[ticket.id] || []}
                   isLatest={index === 0}
                   currentUserType={currentUserType}
+                  highlighted={highlightTicketId != null && ticket.id === highlightTicketId}
                   onViewDetails={onViewProposalDetails}
                   onViewPdf={onViewPdf}
                   onStartSignature={onStartSignature}
