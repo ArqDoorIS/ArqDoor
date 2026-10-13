@@ -144,7 +144,7 @@ function BlocoResumo({
 
       {contrato.status === "concluido" && contrato.concluido_em && (
         <p className="text-xs text-stone-400 dark:text-stone-500">
-          Concluido em {formatDataCompleta(contrato.concluido_em)}
+          Concluído em {formatDataCompleta(contrato.concluido_em)}
         </p>
       )}
 
@@ -464,7 +464,7 @@ export function ContratoAcompanhamento({ dados, token, user, isLoggedIn, onLogin
   return (
     <div
       data-testid="acompanhamento-contrato"
-      className="w-full max-w-5xl mx-auto px-4 py-6 md:py-10"
+      className="w-full max-w-5xl mx-auto px-4 pt-24 pb-10 md:pt-28"
     >
       <div className="flex flex-col md:flex-row md:items-start gap-6">
         {/* Coluna esquerda: resumo + fase atual + acoes */}

@@ -231,7 +231,7 @@ describe("helper: textoDaEtapa", () => {
   });
 
   it("aguardando com datas previstas", () => {
-    expect(textoDaEtapa(base, false)).toBe("Aguardando - previsto de 20/10 a 25/10");
+    expect(textoDaEtapa(base, false)).toBe("Aguardando · previsto de 20/10 a 25/10");
   });
 
   it("aguardando sem datas", () => {

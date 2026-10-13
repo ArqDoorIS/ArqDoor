@@ -48,8 +48,8 @@ export function textoDaEtapa(
     case "aguardando": {
       const inicio = formatDia(etapa.previsto_inicio);
       const fim = formatDia(etapa.previsto_fim);
-      if (inicio && fim) return `Aguardando - previsto de ${inicio} a ${fim}`;
-      if (inicio) return `Aguardando - previsto para ${inicio}`;
+      if (inicio && fim) return `Aguardando · previsto de ${inicio} a ${fim}`;
+      if (inicio) return `Aguardando · previsto para ${inicio}`;
       return "Aguardando";
     }
   }

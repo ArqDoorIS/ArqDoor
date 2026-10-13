@@ -112,13 +112,13 @@ export function GrupoEtapas({ grupo, isCliente, isDetalhado }: Props) {
   const nomeGrupo = grupo.nome ?? "Etapas";
   const badgePago = grupo.pago
     ? {
-        texto: isDetalhado && grupo.valor != null ? `Pago - ${formatValor(grupo.valor)}` : "Pago",
+        texto: isDetalhado && grupo.valor != null ? `Pago · ${formatValor(grupo.valor)}` : "Pago",
         cls: "bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300",
       }
     : {
         texto:
           isDetalhado && grupo.valor != null
-            ? `A pagar - ${formatValor(grupo.valor)}`
+            ? `A pagar · ${formatValor(grupo.valor)}`
             : "Aguardando pagamento",
         cls: "bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400",
       };

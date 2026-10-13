@@ -377,11 +377,11 @@ export default function InvitePublic() {
       return (
         <div className="container mx-auto px-4 py-24" data-testid="invite-already-accepted">
           <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-gray-900">Este convite ja foi aceito</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Este convite já foi aceito</h1>
             {!isLoggedIn ? (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Se foi voce quem aceitou, entre na sua conta para ver o contrato.
+                  Se foi você quem aceitou, entre na sua conta para ver o contrato.
                 </p>
                 <div className="text-left">
                   <StepConta user={user} onSuccess={() => setMeuContrato(undefined)} />
@@ -405,7 +405,7 @@ export default function InvitePublic() {
               </Button>
             ) : (
               <p className="text-sm text-muted-foreground" data-testid="aceito-por-outra-conta">
-                Este convite ja foi aceito por outra conta.
+                Este convite já foi aceito por outra conta.
               </p>
             )}
           </div>
