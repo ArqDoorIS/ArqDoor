@@ -1,0 +1,30 @@
+name: CI
+
+# Roda testes e tipos em todo PR, antes do merge. Push em `develop` nao entra: o
+# deploy-staging.yml ja roda os mesmos passos antes de publicar.
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Testes unitarios
+        run: npx vitest run
+      - name: Tipos
+        run: npx tsc --noEmit
