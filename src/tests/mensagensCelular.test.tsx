@@ -246,6 +246,32 @@ describe("ContractsPanel - highlightTicketId", () => {
     expect(card7?.className).not.toContain("ring-orange-400");
   });
 
+  it("mostra a proposta destacada mesmo quando ela e mais antiga que as duas recentes", () => {
+    const tresTickets = [
+      { id: 50, status: "pendente", provider_receiving_method: "escrow" },
+      { id: 40, status: "pendente", provider_receiving_method: "escrow" },
+      { id: 3, status: "em andamento", provider_receiving_method: "escrow" },
+    ];
+    render(
+      <ContractsPanel
+        tickets={tresTickets}
+        ticketStepsMap={{}}
+        loadingTickets={false}
+        canCreateProposal={false}
+        sortTicketsDesc={(a: any, b: any) => b.id - a.id}
+        onOpenOlderContracts={vi.fn()}
+        onViewProposalDetails={vi.fn()}
+        onViewPdf={vi.fn()}
+        onStartSignature={vi.fn()}
+        highlightTicketId={3}
+      />
+    );
+    const ids = screen
+      .getAllByTestId("proposal-card")
+      .map((c) => c.getAttribute("data-ticket-id"));
+    expect(ids).toEqual(["50", "3"]);
+  });
+
   it("nao destaca nenhum card quando highlightTicketId e null", () => {
     render(
       <ContractsPanel

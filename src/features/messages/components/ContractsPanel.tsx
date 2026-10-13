@@ -54,6 +54,16 @@ export function ContractsPanel({
   }, [highlightTicketId]);
 
   const sortedTickets = tickets.slice().sort(sortTicketsDesc);
+  // O painel mostra as duas mais recentes. A proposta destacada (vinda do link do convite)
+  // entra no lugar da segunda quando for mais antiga, para o destaque nunca sumir.
+  const visibleTickets = (() => {
+    const primeiras = sortedTickets.slice(0, 2);
+    if (highlightTicketId == null || primeiras.some((t) => t.id === highlightTicketId)) {
+      return primeiras;
+    }
+    const destacada = sortedTickets.find((t) => t.id === highlightTicketId);
+    return destacada ? [primeiras[0], destacada].filter(Boolean) : primeiras;
+  })();
 
   return (
     <div
@@ -87,8 +97,7 @@ export function ContractsPanel({
           </div>
         ) : (
           <div className="space-y-4">
-            {sortedTickets
-              .slice(0, 2)
+            {visibleTickets
               .map((ticket, index) => (
                 <ProposalCard
                   key={ticket.id ?? `ticket-${index}`}
