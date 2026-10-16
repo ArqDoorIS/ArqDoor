@@ -78,6 +78,10 @@ jobs:
             *) echo "::error::VITE_PAGARME_PUBLIC_KEY nao parece uma chave publica da Pagar.me (pk_...)."; exit 1 ;;
           esac
 
+      - name: Testes unitarios
+        if: steps.deploy_guard.outputs.enabled == 'true'
+        run: npm test
+
       - name: Build
         if: steps.deploy_guard.outputs.enabled == 'true'
         env:

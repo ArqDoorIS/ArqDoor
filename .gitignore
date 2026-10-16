@@ -61,3 +61,10 @@ frontend-landing-*.tar.gz
 
 # Checkpoint automatico de ferramenta, sem conteudo de projeto
 .planning/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.env.e2e
