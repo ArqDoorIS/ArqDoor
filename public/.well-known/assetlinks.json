@@ -10,5 +10,17 @@
         "D5:69:A7:22:76:CF:A1:EE:E6:A4:D4:A7:87:0E:32:D7:71:3F:C8:06:4D:EA:73:1B:27:E0:60:71:B1:57:08:75"
       ]
     }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.arqdoor.app.staging",
+      "sha256_cert_fingerprints": [
+        "36:CF:F4:5B:9B:45:4D:00:E6:7D:FD:F8:9C:4C:C1:B8:B9:C5:D0:DB:C8:D5:F7:CA:5A:8D:E0:F1:BD:D3:2A:94"
+      ]
+    }
   }
 ]
