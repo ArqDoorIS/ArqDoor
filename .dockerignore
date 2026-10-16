@@ -1,0 +1,11 @@
+# Fora do contexto do build do Docker (o Coolify usa o Dockerfile no staging).
+.git
+node_modules
+dist
+.env
+.env.*
+test-results
+playwright-report
+blob-report
+coverage
+*.log
