@@ -8,12 +8,10 @@ import PortfolioModal, { PortfolioComment } from "@/components/modals/PortfolioM
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { ProviderApi, UserApi, Service, PortfolioItem } from "./types";
 import { ProviderHeaderCard } from "./components/ProviderHeaderCard";
 import { ProviderInfoCard } from "./components/ProviderInfoCard";
+import { TrustCard } from "./components/TrustCard";
 import { ProviderServicesSection } from "./components/ProviderServicesSection";
 import { ProviderPortfolioSection } from "./components/ProviderPortfolioSection";
 import { ProviderRatingsSection } from "./components/ProviderRatingsSection";
@@ -285,27 +283,6 @@ export default function ProviderProfilePage() {
     }
   };
 
-  const hasAbout = !!provider?.about?.trim();
-  // "hasDocuments" agora reflete a verificação do admin (feita via WhatsApp),
-  // não apenas o preenchimento de CPF/CNPJ. Antes a barra mostrava "Pendente"
-  // mesmo com CPF preenchido pois a verificação real era manual.
-  const isVerified = (user as any)?.is_verified === true;
-  const hasDocuments = isVerified;
-  const hasProfession = !!provider?.profession?.trim();
-  /**
-   * A foto entra na conta (decisao do Vitor, 10/09/2026).
-   *
-   * Ela deixou de ser obrigatoria para usar a plataforma, e passou a ser o que separa um
-   * perfil de 100% de um perfil quase completo. Sem ela aqui, um prestador sem foto
-   * marcava 100% de confianca — que e justamente o oposto do que a barra deveria dizer.
-   */
-  const hasPhoto = !!(user as any)?.perfil;
-  const baseTotal = 4;
-  const baseCompleted =
-    Number(hasAbout) + Number(hasDocuments) + Number(hasProfession) + Number(hasPhoto);
-  const trustPercent = Math.round((baseCompleted / baseTotal) * 100);
-  const hasPortfolio = portfolio.length > 0;
-  const hasServices = services.length > 0;
 
   if (loadingProvider || loadingUser) {
     return (
@@ -342,44 +319,7 @@ export default function ProviderProfilePage() {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,_320px)_minmax(0,_1fr)_minmax(0,_320px)]">
           <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Nível de confiança</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600">Perfil verificado</span>
-                  <span className="font-semibold text-slate-900">{trustPercent}%</span>
-                </div>
-                <Progress value={trustPercent} />
-                <div className="space-y-1 text-sm text-slate-600">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={hasPhoto ? "default" : "secondary"}>Foto</Badge>
-                    <span>{hasPhoto ? "Publicada" : "Opcional, mas necessária para 100%"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={hasAbout ? "default" : "secondary"}>Sobre mim</Badge>
-                    <span>{hasAbout ? "Preenchido" : "Pendente"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={hasDocuments ? "default" : "secondary"}>Documentos</Badge>
-                    <span>
-                      {hasDocuments
-                        ? "Verificado pelo admin"
-                        : "Pendente — solicite verificação no WhatsApp"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={hasProfession ? "default" : "secondary"}>Profissão</Badge>
-                    <span>{hasProfession ? "Informada" : "Pendente"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={hasPortfolio ? "default" : "outline"}>Portfólio</Badge>
-                    <span>{hasPortfolio ? "Destaques publicados" : "Opcional (impulsiona confiança)"}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <TrustCard userId={Number(user.id)} />
             <ProviderInfoCard createdAt={user.createdAt} about={provider.about} />
           </div>
 
