@@ -7,6 +7,7 @@ import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import CompleteProfileModal from "@/components/modals/CompleteProfileModal";
 import CookieConsent from "@/components/CookieConsent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { TempoReal } from "@/components/TempoReal";
 import { setResumeRoute } from "@/lib/utils";
 
 const LANDING_ROUTES = ["/", "/auth", "/nova-senha", "/excluir-conta", "/cadastro"];
@@ -138,6 +139,7 @@ function App() {
     <ErrorBoundary>
       <AppContent />
       <CompleteProfileModal />
+      <TempoReal />
       <CookieConsent />
       <Toaster />
     </ErrorBoundary>
