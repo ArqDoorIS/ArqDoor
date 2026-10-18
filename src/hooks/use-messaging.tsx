@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { intervaloDePolling, useTempoRealConectado } from "@/lib/tempo-real";
 import {
   Conversation,
   Message,
@@ -23,6 +24,7 @@ export function useMessaging(initialPartnerId?: string | null) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isVisible, setIsVisible] = useState<boolean>(!document.hidden);
+  const tempoReal = useTempoRealConectado();
 
   useEffect(() => {
     const onVisibility = () => setIsVisible(!document.hidden);
@@ -43,7 +45,8 @@ export function useMessaging(initialPartnerId?: string | null) {
     queryKey: ["conversations", user?.id],
     enabled: isInitialized && isLoggedIn && !!user?.id,
     staleTime: 5_000,
-    refetchInterval: isVisible ? 5_000 : 30_000, // conversas: rápido visível, mais lento em bg
+    // Com o tempo real de pé a mensagem nova chega como aviso; o polling vira conferência.
+    refetchInterval: intervaloDePolling(tempoReal, isVisible ? 5_000 : 30_000),
     queryFn: async () => {
       const response = await apiRequest("GET", "/conversation");
       if (!response.ok) throw new Error("Erro ao buscar conversas");
@@ -129,7 +132,7 @@ export function useMessaging(initialPartnerId?: string | null) {
     queryKey: ["messages", currentConversation?.id, user?.id],
     enabled: isInitialized && !!currentConversation?.id && isLoggedIn,
     staleTime: 1_000,
-    refetchInterval: isVisible ? 3_000 : 30_000,
+    refetchInterval: intervaloDePolling(tempoReal, isVisible ? 3_000 : 30_000),
     queryFn: async () => {
       if (!currentConversation?.id) return [];
       const response = await apiRequest("GET", `/message/conversation/${currentConversation.id}`);
