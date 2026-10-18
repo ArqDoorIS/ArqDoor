@@ -39,8 +39,7 @@ import { AboutCard } from "./components/AboutCard";
 import { ServicesSection } from "./components/ServicesSection";
 import { RatingsModal } from "./components/RatingsModal";
 import { ReceivingAccountsCard } from "./components/ReceivingAccountsCard";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { TrustCard } from "./components/TrustCard";
 import type { ProviderReceivingAccountApi } from "./types";
 import type { ReceivingAccountDraft } from "./components/ReceivingAccountsCard";
 
@@ -842,30 +841,6 @@ export default function ProfilePage() {
     }
   };
 
-  const hasAbout = !!providerProfile?.about?.trim?.();
-  // Verificação de documentos agora é controlada pelo admin via WhatsApp.
-  // CPF preenchido no perfil não é mais critério — o admin marca a conta
-  // como verificada após conferir os documentos.
-  const isVerified = (user as any)?.is_verified === true;
-  const hasCpf = isVerified;
-  const hasProfession = !!providerProfile?.profession?.trim?.();
-  const hasPortfolio = portfolio.length > 0;
-  const hasServices = services.length > 0;
-  const hasAddress = !!locationInfo?.cep;
-  // Foto entra na base: sem ela o perfil nao chega a 100% (Vitor, 10/09/2026). Ela nao
-  // bloqueia nada — so deixa de somar.
-  const hasPhoto = !!(user as any)?.perfil;
-  const baseTotal = 5;
-  const baseCompleted =
-    Number(hasAbout) +
-    Number(hasCpf) +
-    Number(hasProfession) +
-    Number(hasAddress) +
-    Number(hasPhoto);
-  const baseScore = (baseCompleted / baseTotal) * 90;
-  const extraScore = (hasPortfolio ? 5 : 0) + (hasServices ? 5 : 0);
-  const trustPercentRaw = Math.round(baseScore + extraScore);
-  const trustPercent = hasCpf ? trustPercentRaw : Math.min(trustPercentRaw, 60);
 
   if (!user) {
     return (
@@ -886,50 +861,7 @@ export default function ProfilePage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Coluna Esquerda: Nível de confiança (prestador), Informações, Sobre, Profissão */}
             <div className="space-y-6">
-              {user.type === "prestador" && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Nível de confiança</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Perfil verificado</span>
-                      <span className="font-semibold text-slate-900">{trustPercent}%</span>
-                    </div>
-                    <Progress value={trustPercent} />
-                    <div className="space-y-1 text-sm text-slate-600">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasPhoto ? "default" : "secondary"}>Foto</Badge>
-                        <span>{hasPhoto ? "Publicada" : "Opcional, mas necessária para 100%"}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasAbout ? "default" : "secondary"}>Sobre mim</Badge>
-                        <span>{hasAbout ? "Preenchido" : "Pendente"}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasCpf ? "default" : "secondary"}>Documentos</Badge>
-                        <span>
-                          {hasCpf
-                            ? "Verificado pelo admin"
-                            : "Pendente — solicite verificação no WhatsApp (limita 60% de confiança)"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasAddress ? "default" : "secondary"}>Endereço</Badge>
-                        <span>{hasAddress ? "Cadastrado" : "Pendente"}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasProfession ? "default" : "secondary"}>Profissão</Badge>
-                        <span>{hasProfession ? "Informada" : "Pendente"}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={hasPortfolio ? "default" : "outline"}>Portfólio</Badge>
-                        <span>{hasPortfolio ? "Destaques publicados" : "Opcional (5% confiança)"}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              {user.type === "prestador" && <TrustCard userId="me" />}
               <Card>
                 <CardHeader>
                   <CardTitle>Informações Pessoais</CardTitle>
