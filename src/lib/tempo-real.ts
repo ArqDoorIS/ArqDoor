@@ -3,7 +3,7 @@ import { io, type Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/lib/queryClient";
 
 /**
- * Conexao em tempo real com a API (spec specs/features/2026-10-tempo-real, fase do chat).
+ * Conexão em tempo real com a API (spec specs/features/2026-10-tempo-real, fase do chat).
  * Estendido em 2026-10-presenca-no-chat: suporte a presenca, digitando e visibilidade de aba.
  *
  * O servidor avisa o que mudou (mensagem nova, conversa nova, lida, notificacao, presenca,
@@ -15,7 +15,7 @@ export type ChaveDeConsulta = readonly unknown[];
 export const EVENTOS_DO_CHAT = ["mensagem:nova", "conversa:nova", "conversa:lida", "notificacao:nova"] as const;
 export const EVENTOS_DE_PRESENCA = ["presenca:mudou", "conversa:digitando", "conversa:parou"] as const;
 
-/** Consultas que voltam a buscar a cada (re)conexao: aviso pode ter se perdido no caminho. */
+/** Consultas que voltam a buscar a cada (re)conexão: aviso pode ter se perdido no caminho. */
 export const COBERTAS_PELO_TEMPO_REAL: ChaveDeConsulta[] = [["conversations"], ["messages"], ["notifications"]];
 
 const idValido = (v: unknown): number | null => {
@@ -39,7 +39,7 @@ export function chavesDoAviso(evento: string, dados: unknown): ChaveDeConsulta[]
   }
 }
 
-/** Polling lento com o tempo real de pe; o de sempre sem ele. */
+/** Polling lento com o tempo real de pé; o de sempre sem ele. */
 export function intervaloDePolling(conectado: boolean, semTempoReal: number): number {
   return conectado ? Math.max(60_000, semTempoReal) : semTempoReal;
 }
