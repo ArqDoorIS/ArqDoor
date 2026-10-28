@@ -19,6 +19,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useUnreadCount } from "@/hooks/use-unread-count";
+import { useDisponibilidade } from "@/hooks/use-disponibilidade";
 import { getInitials } from "@/lib/utils";
 
 // Usa a mesma logo da landing pra ter consistência visual entre landing e app
@@ -53,6 +54,7 @@ const Navbar = () => {
   const [location, navigate] = useLocation();
   const { user, isLoggedIn, logout } = useAuth();
   const unreadCount = useUnreadCount();
+  const { disponivel, toggleDisponibilidade, salvando } = useDisponibilidade();
 
   const handleLogout = async () => {
     await logout();
@@ -136,6 +138,39 @@ const Navbar = () => {
                   <Link href="/profile">
                     <User className="mr-2 h-4 w-4" /> <span>Perfil</span>
                   </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {/* Chave de disponibilidade para trabalho (CA-01) */}
+                <DropdownMenuItem
+                  asChild
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <button
+                    role="switch"
+                    aria-checked={disponivel}
+                    aria-label="Disponível para trabalho"
+                    disabled={salvando}
+                    onClick={toggleDisponibilidade}
+                    className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5 text-sm outline-none"
+                  >
+                    {/* Track */}
+                    <span
+                      className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+                      style={{
+                        backgroundColor: disponivel ? '#22c55e' : '#d1d5db',
+                      }}
+                      aria-hidden="true"
+                    >
+                      {/* Thumb */}
+                      <span
+                        className="inline-block h-4 w-4 rounded-full bg-white shadow transition-transform"
+                        style={{
+                          transform: disponivel ? 'translateX(18px)' : 'translateX(2px)',
+                        }}
+                      />
+                    </span>
+                    <span>Disponível para trabalho</span>
+                  </button>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>

@@ -2309,6 +2309,7 @@ export default function Messages() {
                     onMessageChange={setNewMessage}
                     onSendMessage={handleSendMessage}
                     messagesEndRef={messagesEndRef}
+                    conversationId={currentConversation?.id}
                     composerAction={
                       user?.type === "prestador" || user?.type === "contratante" ? (
                         <DropdownMenu>
