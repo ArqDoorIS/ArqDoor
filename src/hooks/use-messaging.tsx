@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { intervaloDePolling, useTempoRealConectado } from "@/lib/tempo-real";
+import { semeadoDeConversas } from "@/lib/presenca";
 import {
   Conversation,
   Message,
@@ -339,6 +340,13 @@ export function useMessaging(initialPartnerId?: string | null) {
       }
     }
   }, [isInitialized, conversations, initialPartnerId, currentConversation, loadingConversations, loadingUsers]);
+
+  // Semente o store de presenca sempre que a lista de conversas mudar
+  useEffect(() => {
+    if (conversations.length > 0) {
+      semeadoDeConversas(conversations);
+    }
+  }, [conversations]);
 
   const contract = useContract(currentConversation?.id);
 
