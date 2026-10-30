@@ -15,6 +15,7 @@ type FormState = {
   gender: AdminUserProfile["account"]["gender"];
   cpf: string;
   cnpj: string;
+  accountType: AdminUserProfile["account"]["type"];
   perfilCompleto: boolean;
   active: boolean;
   hidden: boolean;
@@ -55,6 +56,7 @@ const buildForm = (profile: AdminUserProfile): FormState => ({
   gender: profile.account.gender,
   cpf: text(profile.account.cpf),
   cnpj: text(profile.account.cnpj),
+  accountType: profile.account.type,
   perfilCompleto: profile.account.perfil_completo,
   active: profile.account.is_active,
   hidden: profile.account.is_hidden,
@@ -154,9 +156,20 @@ export function AdminUserEditorPanel({
       setFormError("A confirmação da nova senha não confere.");
       return;
     }
-    if (profile.account.type === "prestador" && form.profession.trim() === "" && profile.provider) {
+    const isProvider = form.accountType === "prestador";
+    const typeChanged = form.accountType !== profile.account.type;
+
+    if (isProvider && form.profession.trim() === "" && (profile.provider || typeChanged)) {
       setFormError("Informe a profissão do prestador.");
       return;
+    }
+    if (typeChanged) {
+      const target = isProvider ? "prestador" : "cliente";
+      const confirmed = window.confirm(
+        `Trocar a conta de ${profile.account.name} para ${target}? ` +
+          "O usuário precisa sair e entrar de novo no app para ver o novo perfil."
+      );
+      if (!confirmed) return;
     }
 
     const hasLocation = Boolean(
@@ -164,7 +177,7 @@ export function AdminUserEditorPanel({
         [form.cep, form.state, form.city, form.neighborhood, form.street, form.number, form.latitude, form.longitude].some(Boolean)
     );
     const hasProviderUpdate =
-      profile.account.type === "prestador" &&
+      isProvider &&
       Boolean(profile.provider || form.profession || form.about);
 
     const payload: AdminUserProfileUpdate = {
@@ -176,6 +189,7 @@ export function AdminUserEditorPanel({
         gender: form.gender,
         cpf: form.cpf.trim() || null,
         cnpj: form.cnpj.trim() || null,
+        ...(typeChanged ? { type: form.accountType } : {}),
         perfil_completo: form.perfilCompleto,
         is_active: form.active,
         is_hidden: form.hidden,
@@ -255,7 +269,22 @@ export function AdminUserEditorPanel({
           </Field>
           <Field label="CPF"><Input inputMode="numeric" value={form.cpf} onChange={(event) => set("cpf", event.target.value.replace(/\D/g, "").slice(0, 11))} /></Field>
           <Field label="CNPJ"><Input inputMode="numeric" value={form.cnpj} onChange={(event) => set("cnpj", event.target.value.replace(/\D/g, "").slice(0, 14))} /></Field>
+          <Field label="Tipo de conta">
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={form.accountType} onChange={(event) => set("accountType", event.target.value as FormState["accountType"])}>
+              <option value="contratante">Cliente</option><option value="prestador">Prestador</option>
+            </select>
+          </Field>
         </div>
+        {form.accountType !== profile.account.type && (
+          <p className="mt-3 border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            {form.accountType === "prestador"
+              ? profile.provider
+                ? "A conta volta a ser prestador com o perfil profissional que já tinha."
+                : "Preencha a profissão em Perfil profissional para criar o perfil de prestador."
+              : "O perfil profissional fica guardado e volta se a conta virar prestador de novo."}
+            {" "}A troca é recusada se houver contrato ou visita em aberto.
+          </p>
+        )}
         <div className="mt-4 grid gap-x-8 md:grid-cols-3">
           <ToggleField label="Perfil completo" checked={form.perfilCompleto} onCheckedChange={(checked) => set("perfilCompleto", checked)} />
           <ToggleField label="Conta ativa" checked={form.active} onCheckedChange={(checked) => set("active", checked)} />
@@ -272,7 +301,7 @@ export function AdminUserEditorPanel({
         </div>
       </section>
 
-      {profile.account.type === "prestador" && (
+      {form.accountType === "prestador" && (
         <section className="border-b border-slate-200 pb-7">
           <SectionTitle icon={<BriefcaseBusiness className="h-4 w-4" />} title="Perfil profissional" />
           <div className="mt-4 grid gap-4 md:grid-cols-2">
