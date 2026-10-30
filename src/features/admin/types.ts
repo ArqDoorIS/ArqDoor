@@ -477,6 +477,7 @@ export type AdminUserProfileUpdate = {
     gender?: "Masculino" | "Feminino" | "Prefiro não dizer";
     cpf?: string | null;
     cnpj?: string | null;
+    type?: "prestador" | "contratante";
     perfil_completo?: boolean;
     is_active?: boolean;
     is_hidden?: boolean;
