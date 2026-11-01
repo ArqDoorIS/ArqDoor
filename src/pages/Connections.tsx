@@ -111,7 +111,7 @@ export default function ConnectionsPage() {
   const accepted = connectionsQuery.data?.accepted_connections || [];
 
   return (
-    <>
+    <div className="pt-6">
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -298,6 +298,6 @@ export default function ConnectionsPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

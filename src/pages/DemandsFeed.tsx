@@ -71,20 +71,20 @@ export default function DemandsPage() {
 
   if (loading) {
     return (
-      <>
+      <div className="pt-6">
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
           <div className="flex flex-col items-center">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-amber-600 mb-4"></div>
             <p className="text-slate-500 font-medium">Carregando demandas...</p>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <>
+      <div className="pt-6">
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
           <div className="text-center p-8 bg-white rounded-lg shadow-sm border border-slate-200 max-w-md">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -95,7 +95,7 @@ export default function DemandsPage() {
             <Button onClick={() => window.location.reload()} variant="outline">Tentar novamente</Button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -134,7 +134,7 @@ export default function DemandsPage() {
   };
 
   return (
-    <>
+    <div className="pt-6">
       <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
@@ -330,6 +330,6 @@ export default function DemandsPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

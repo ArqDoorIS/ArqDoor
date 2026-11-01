@@ -198,7 +198,7 @@ export default function ProviderHomeDashboard() {
   }, [dashboard, historyModal]);
 
   return (
-    <>
+    <div className="pt-6">
       <div className="bg-white">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-0 pt-8">
           <div className="flex items-center justify-between gap-3 px-1 py-1">
@@ -562,6 +562,6 @@ export default function ProviderHomeDashboard() {
           ) : null}
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

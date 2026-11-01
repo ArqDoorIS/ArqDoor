@@ -172,7 +172,7 @@ export default function ClientHomeDashboard() {
   );
 
   return (
-    <>
+    <div className="pt-6">
       <div className="bg-white xl:h-[calc(100dvh-5.5rem)] xl:overflow-hidden">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-0 pt-8">
           <div className="flex items-center justify-between gap-3 px-1 py-1">
@@ -456,6 +456,6 @@ export default function ClientHomeDashboard() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
