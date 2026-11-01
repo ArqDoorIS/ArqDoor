@@ -58,6 +58,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-cabecalhos.conf /etc/nginx/cabecalhos-de-seguranca.conf
 
 # Expose port
 EXPOSE 80
