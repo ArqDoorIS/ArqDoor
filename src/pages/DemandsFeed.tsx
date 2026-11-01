@@ -1,7 +1,6 @@
 // src/pages/DemandsPage.tsx
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import {
   Card,
   CardHeader,
@@ -22,9 +21,10 @@ import {
   Grid3X3,
   List
 } from "lucide-react";
-import { apiRequest, API_BASE_URL } from "@/lib/queryClient";
+import { API_BASE_URL } from "@/lib/queryClient";
 import { Demand, EnrichedDemand } from "@/lib/Interfaces";
 import { getInitials } from "@/lib/utils";
+import { buscarTodasAsDemandas } from "@/lib/demandasPublicas";
 
 const buildImageUrl = (path?: string) => {
   if (!path) return "";
@@ -48,12 +48,7 @@ export default function DemandsPage() {
   useEffect(() => {
     (async () => {
       try {
-        const demandRes = await apiRequest("GET", "/demands/getall");
-        console.log(demandRes)
-        if (!demandRes.ok) throw new Error("Erro ao buscar demandas");
-        const body = await demandRes.json();
-        console.log(body)
-        const fetchedDemands: Demand[] = Array.isArray(body.demands) ? body.demands : [];
+        const fetchedDemands: Demand[] = await buscarTodasAsDemandas();
 
         const enriched: EnrichedDemand[] = fetchedDemands.map(d => {
           return {
@@ -76,20 +71,20 @@ export default function DemandsPage() {
 
   if (loading) {
     return (
-      <ApplicationLayout>
+      <>
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
           <div className="flex flex-col items-center">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-amber-600 mb-4"></div>
             <p className="text-slate-500 font-medium">Carregando demandas...</p>
           </div>
         </div>
-      </ApplicationLayout>
+      </>
     );
   }
 
   if (error) {
     return (
-      <ApplicationLayout>
+      <>
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
           <div className="text-center p-8 bg-white rounded-lg shadow-sm border border-slate-200 max-w-md">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -100,7 +95,7 @@ export default function DemandsPage() {
             <Button onClick={() => window.location.reload()} variant="outline">Tentar novamente</Button>
           </div>
         </div>
-      </ApplicationLayout>
+      </>
     );
   }
 
@@ -139,7 +134,7 @@ export default function DemandsPage() {
   };
 
   return (
-    <ApplicationLayout>
+    <>
       <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
@@ -335,6 +330,6 @@ export default function DemandsPage() {
           )}
         </div>
       </div>
-    </ApplicationLayout>
+    </>
   );
 }
