@@ -54,6 +54,8 @@ export interface User {
   perfil?: string;
   banner?: string | null;
   avatar?: string | null;
+  /** Disponivel para trabalho (gravado no banco). */
+  is_active?: boolean;
 }
 export interface AuthContextType {
   user: User | null;
@@ -88,6 +90,8 @@ export interface Conversation {
     banner?: string | null;
     is_hidden?: boolean;
     is_active?: boolean;
+    /** Presenca atual: true se o usuario tem conexao aberta agora. Vem de GET /conversation. */
+    online?: boolean;
   };
   lastMessage?: {
     id: number;

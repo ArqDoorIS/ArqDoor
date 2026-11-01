@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AplicationLayout from "@/components/layouts/ApplicationLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -844,16 +843,16 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <AplicationLayout>
+      <div className="pt-6">
         <div className="flex items-center justify-center min-h-screen">
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>
-      </AplicationLayout>
+      </div>
     );
   }
 
   return (
-    <AplicationLayout>
+    <div className="pt-6">
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
           <ProfileHeader user={user as any} onLogout={logout} />
@@ -1234,6 +1233,6 @@ export default function ProfilePage() {
         onReload={handleOpenRatingsModal}
         providerProfileId={providerProfileId}
       />
-    </AplicationLayout>
+    </div>
   );
 }

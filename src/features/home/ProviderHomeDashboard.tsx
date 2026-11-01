@@ -10,7 +10,6 @@ import {
   MessageCircle,
   Users,
 } from "lucide-react";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -199,7 +198,7 @@ export default function ProviderHomeDashboard() {
   }, [dashboard, historyModal]);
 
   return (
-    <ApplicationLayout>
+    <div className="pt-6">
       <div className="bg-white">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-0 pt-8">
           <div className="flex items-center justify-between gap-3 px-1 py-1">
@@ -563,6 +562,6 @@ export default function ProviderHomeDashboard() {
           ) : null}
         </DialogContent>
       </Dialog>
-    </ApplicationLayout>
+    </div>
   );
 }

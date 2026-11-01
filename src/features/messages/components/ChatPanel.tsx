@@ -1,10 +1,13 @@
-import { MutableRefObject, FormEvent, ReactNode } from 'react';
+import { MutableRefObject, FormEvent, ReactNode, useRef, useCallback } from 'react';
 import { Message } from '@/lib/Interfaces';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Send } from 'lucide-react';
 import { formatMessageTime } from '../utils';
+import { emitirDigitando, emitirParou } from '@/lib/tempo-real';
+
+const THROTTLE_DIGITANDO_MS = 3_000;
 
 interface ChatPanelProps {
   messages: Message[];
@@ -15,6 +18,8 @@ interface ChatPanelProps {
   onSendMessage: (event: FormEvent<HTMLFormElement>) => void;
   messagesEndRef: MutableRefObject<HTMLDivElement | null>;
   composerAction?: ReactNode;
+  /** ID da conversa atual; necessario para emitir eventos de digitando. */
+  conversationId?: number;
 }
 
 export function ChatPanel({
@@ -26,7 +31,42 @@ export function ChatPanel({
   onSendMessage,
   messagesEndRef,
   composerAction,
+  conversationId,
 }: ChatPanelProps) {
+  const ultimoEmitRef = useRef<number>(0);
+
+  const handleChange = useCallback(
+    (value: string) => {
+      onMessageChange(value);
+      if (!conversationId) return;
+      if (value.length === 0) {
+        // Campo esvaziado: avisar que parou
+        emitirParou(conversationId);
+        ultimoEmitRef.current = 0;
+        return;
+      }
+      // Throttle: emite no maximo uma vez a cada 3 s
+      const agora = Date.now();
+      if (agora - ultimoEmitRef.current >= THROTTLE_DIGITANDO_MS) {
+        emitirDigitando(conversationId);
+        ultimoEmitRef.current = agora;
+      }
+    },
+    [onMessageChange, conversationId]
+  );
+
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      onSendMessage(e);
+      // Mensagem enviada: parar o indicador de digitando
+      if (conversationId) {
+        emitirParou(conversationId);
+        ultimoEmitRef.current = 0;
+      }
+    },
+    [onSendMessage, conversationId]
+  );
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 overflow-hidden">
@@ -70,11 +110,11 @@ export function ChatPanel({
       </div>
 
       <div className="p-4 bg-white border-t border-gray-200">
-        <form onSubmit={onSendMessage} className="flex gap-2 items-center">
+        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
           {composerAction ? <div className="shrink-0">{composerAction}</div> : null}
           <Input
             value={newMessage}
-            onChange={e => onMessageChange(e.target.value)}
+            onChange={e => handleChange(e.target.value)}
             placeholder="Digite sua mensagem..."
             className="flex-1"
             disabled={sendingMessage}

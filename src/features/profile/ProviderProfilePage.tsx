@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import { apiRequest, API_BASE_URL } from "@/lib/queryClient";
 import PortfolioModal, { PortfolioComment } from "@/components/modals/PortfolioModal";
 import { useAuth } from "@/hooks/use-auth";
@@ -286,26 +285,26 @@ export default function ProviderProfilePage() {
 
   if (loadingProvider || loadingUser) {
     return (
-      <ApplicationLayout>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
         </div>
-      </ApplicationLayout>
+      </div>
     );
   }
 
   if (!provider || !user) {
     return (
-      <ApplicationLayout>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <p className="text-slate-600">Prestador não encontrado.</p>
         </div>
-      </ApplicationLayout>
+      </div>
     );
   }
 
   return (
-    <ApplicationLayout>
+    <div className="pt-6">
       <div className="w-full max-w-7xl mx-auto p-6 space-y-8">
         <ProviderHeaderCard
           user={user}
@@ -386,7 +385,7 @@ export default function ProviderProfilePage() {
           return handleAddCommentPortfolio(selectedPortfolioItem.id, text);
         }}
       />
-    </ApplicationLayout>
+    </div>
   );
 }
 

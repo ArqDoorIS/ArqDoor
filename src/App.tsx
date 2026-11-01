@@ -10,7 +10,9 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { TempoReal } from "@/components/TempoReal";
 import { setResumeRoute } from "@/lib/utils";
 
-const LANDING_ROUTES = ["/", "/auth", "/nova-senha", "/excluir-conta", "/cadastro"];
+// `/termos-de-uso` é público: a ficha da Play e o rodapé apontam para lá, e quem não está
+// logado caía no login antes de ver o documento (spec 2026-11-site-ganhos-rapidos).
+const LANDING_ROUTES = ["/", "/auth", "/nova-senha", "/excluir-conta", "/cadastro", "/termos-de-uso"];
 const ADMIN_ROUTES = ["/admin"];
 
 /**

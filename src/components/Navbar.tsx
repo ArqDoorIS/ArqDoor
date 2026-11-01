@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, Home, Newspaper, Image, User, LogOut, MessageCircle, Link2, Users, LayoutDashboard } from "lucide-react";
@@ -19,6 +19,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useUnreadCount } from "@/hooks/use-unread-count";
+import { useDisponibilidade } from "@/hooks/use-disponibilidade";
 import { getInitials } from "@/lib/utils";
 
 // Usa a mesma logo da landing pra ter consistência visual entre landing e app
@@ -53,6 +54,13 @@ const Navbar = () => {
   const [location, navigate] = useLocation();
   const { user, isLoggedIn, logout } = useAuth();
   const unreadCount = useUnreadCount();
+  const { disponivel, toggleDisponibilidade, salvando } = useDisponibilidade();
+  // Menu do celular controlado: sem isto ele continuava aberto por cima da página nova
+  // depois de tocar num link (spec 2026-11-site-ganhos-rapidos).
+  const [menuAberto, setMenuAberto] = useState(false);
+  useEffect(() => {
+    setMenuAberto(false);
+  }, [location]);
 
   const handleLogout = async () => {
     await logout();
@@ -138,6 +146,39 @@ const Navbar = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                {/* Chave de disponibilidade para trabalho (CA-01) */}
+                <DropdownMenuItem
+                  asChild
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <button
+                    role="switch"
+                    aria-checked={disponivel}
+                    aria-label="Disponível para trabalho"
+                    disabled={salvando}
+                    onClick={toggleDisponibilidade}
+                    className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5 text-sm outline-none"
+                  >
+                    {/* Track */}
+                    <span
+                      className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+                      style={{
+                        backgroundColor: disponivel ? '#22c55e' : '#d1d5db',
+                      }}
+                      aria-hidden="true"
+                    >
+                      {/* Thumb */}
+                      <span
+                        className="inline-block h-4 w-4 rounded-full bg-white shadow transition-transform"
+                        style={{
+                          transform: disponivel ? 'translateX(18px)' : 'translateX(2px)',
+                        }}
+                      />
+                    </span>
+                    <span>Disponível para trabalho</span>
+                  </button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" /> <span>Desconectar</span>
                 </DropdownMenuItem>
@@ -146,13 +187,14 @@ const Navbar = () => {
           ) : (
             <>
               <Button variant="default" onClick={() => navigate("/auth")}>Login</Button>
-              <Button variant="link" onClick={() => navigate("/auth/register")}>Cadastrar</Button>
+              {/* `/auth/register` não existia e caía no login. */}
+              <Button variant="link" onClick={() => navigate("/auth?cadastro=1")}>Cadastrar</Button>
             </>
           )}
         </div>
 
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />

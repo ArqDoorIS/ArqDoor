@@ -12,7 +12,6 @@ import {
   isSignatureContractStep,
 } from "@/constants/contracts";
 import { Button } from '@/components/ui/button';
-import MessagesLayout from '@/components/layouts/MessagesLayout';
 import { EmptyConversationState } from "@/features/messages/components/EmptyConversationState";
 import { apiRequest, API_BASE_URL } from '@/lib/queryClient';
 import type { AdditionalPayment, Step } from '@/lib/Interfaces';
@@ -2244,7 +2243,7 @@ export default function Messages() {
   }, [currentConversation?.otherUser, setLocation, toast]);
 
   return (
-    <MessagesLayout>
+    <div className="pt-8">
       <div className="flex p-0 md:p-4 bg-gray-100 h-[calc(100dvh-58px)]">
         <div className={`flex flex-col h-full w-full md:w-80 bg-white border-r border-gray-200 ${processedCurrentConversation ? 'hidden md:flex' : 'flex'}`}>
           <ConversationsSidebar
@@ -2309,6 +2308,7 @@ export default function Messages() {
                     onMessageChange={setNewMessage}
                     onSendMessage={handleSendMessage}
                     messagesEndRef={messagesEndRef}
+                    conversationId={currentConversation?.id}
                     composerAction={
                       user?.type === "prestador" || user?.type === "contratante" ? (
                         <DropdownMenu>
@@ -2609,6 +2609,6 @@ export default function Messages() {
         fullscreen={fullscreenPdf}
         setFullscreen={setFullscreenPdf}
       />
-    </MessagesLayout>
+    </div>
   );
 }
