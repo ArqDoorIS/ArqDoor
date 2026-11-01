@@ -4,7 +4,6 @@ import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -161,9 +160,24 @@ export default function SocialFeed() {
   // Data Fetching
   const targetType = currentUser?.type === "prestador" ? "contratante" : "prestador";
 
+  // Busca e filtros vão para o servidor (spec 2026-11-site-ganhos-rapidos). Antes o site
+  // filtrava só os 6 perfis da página que tinha em mãos: "arquiteto Recife" dizia "nenhum
+  // perfil" com resultado em outra página. A espera de 300 ms evita uma consulta por tecla.
+  const [filtros, setFiltros] = useState({ q: "", state: "", city: "" });
+  useEffect(() => {
+    const relogio = setTimeout(() => {
+      setFiltros(
+        searchType === "location"
+          ? { q: "", state: selectedState, city: selectedCity.trim() }
+          : { q: search.trim(), state: "", city: "" }
+      );
+    }, 300);
+    return () => clearTimeout(relogio);
+  }, [search, searchType, selectedState, selectedCity]);
+
   useEffect(() => {
     setCurrentPage(1);
-  }, [targetType]);
+  }, [targetType, filtros]);
 
   const { data: usersRes, isLoading: loadingUsers } = useQuery<{
     users: UserInterface[];
@@ -176,13 +190,18 @@ export default function SocialFeed() {
       hasPrevPage: boolean;
     };
   }>({
-    queryKey: ["allUsers", currentPage, targetType],
+    queryKey: ["allUsers", currentPage, targetType, filtros.q, filtros.state, filtros.city],
+    // Mantém a lista anterior na tela enquanto a busca nova chega, sem piscar "carregando".
+    placeholderData: (anterior) => anterior,
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(currentPage),
         limit: String(PAGE_SIZE),
         type: targetType,
       });
+      if (filtros.q) params.set("q", filtros.q);
+      if (filtros.state) params.set("state", filtros.state);
+      if (filtros.city) params.set("city", filtros.city);
       const response = await apiRequest("GET", `/users?${params.toString()}`);
       const data = await response.json();
       return data;
@@ -234,37 +253,8 @@ export default function SocialFeed() {
       }
     });
 
-    // Filter Logic
-    return combined.filter(item => {
-      const locationData = (item.user as any).LocationUser;
-      const userCity = locationData?.city || "";
-      const userState = locationData?.state || "";
-
-      // Keyword Search
-      const term = search.toLowerCase();
-      // Se tiver termo de busca, verifica nome, profissão, sobre OU a cidade
-      const matchesKeyword = (
-        item.user.name.toLowerCase().includes(term) ||
-        (item.provider?.profession || "").toLowerCase().includes(term) ||
-        (item.provider?.about || "").toLowerCase().includes(term) ||
-        userCity.toLowerCase().includes(term)
-      );
-
-      // Location Filter Strict
-      if (searchType === "location") {
-        // Se selecionou estado
-        if (selectedState && userState !== selectedState) return false;
-
-        // Se digitou cidade (busca parcial no nome da cidade)
-        if (selectedCity && !userCity.toLowerCase().includes(selectedCity.toLowerCase())) return false;
-
-        return true;
-      }
-
-      return matchesKeyword;
-    });
-
-  }, [allUsers, providerMap, isFreelancer, search, searchType, selectedState, selectedCity, loadingUsers, loadingProviders]);
+    return combined;
+  }, [allUsers, providerMap, isFreelancer, loadingUsers, loadingProviders]);
 
   const totalPages = usersRes?.pagination?.totalPages || 1;
   const pageButtons = useMemo(() => {
@@ -295,7 +285,7 @@ export default function SocialFeed() {
   };
 
   return (
-    <ApplicationLayout>
+    <>
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
 
         {/* Hero Carousel */}
@@ -426,9 +416,6 @@ export default function SocialFeed() {
                       </div>
                   )}
 
-                  <Button className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white shadow-md">
-                    Filtrar Perfis
-                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -586,6 +573,6 @@ export default function SocialFeed() {
         <WhatsAppIcon className="mr-2 h-5 w-5 text-white" />
         Entrar em contato
       </a>
-    </ApplicationLayout>
+    </>
   );
 }

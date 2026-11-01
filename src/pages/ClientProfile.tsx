@@ -2,7 +2,6 @@
 // src/pages/ClientProfile.tsx
 import React, { useMemo, useState, useEffect } from "react";
 import { useParams, Link } from "wouter";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest, API_BASE_URL } from "@/lib/queryClient";
 import {
@@ -235,21 +234,21 @@ export default function ClientProfile() {
 
   if (loadingUsers) {
     return (
-      <ApplicationLayout>
+      <>
         <div className="flex justify-center items-center min-h-screen">
           <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
         </div>
-      </ApplicationLayout>
+      </>
     );
   }
 
   if (!user) {
     return (
-      <ApplicationLayout>
+      <>
         <div className="flex justify-center items-center min-h-screen">
           <p className="text-slate-600">Contratante não encontrado.</p>
         </div>
-      </ApplicationLayout>
+      </>
     );
   }
 
@@ -341,7 +340,7 @@ export default function ClientProfile() {
   };
 
   return (
-    <ApplicationLayout>
+    <>
       <div className="max-w-6xl mx-auto p-6 space-y-8">
         {/* Header */}
         {/* Header */}
@@ -558,6 +557,6 @@ export default function ClientProfile() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </ApplicationLayout>
+    </>
   );
 }

@@ -1,0 +1,12 @@
+# ArqDoor. Spec specs/features/2026-11-site-ganhos-rapidos.
+# Só a parte pública interessa à busca; o resto pede login.
+User-agent: *
+Allow: /$
+Allow: /termos-de-uso
+Allow: /docs/
+Allow: /images/
+# Prévia do link de proposta: alguns robôs de prévia (LinkedIn, X) respeitam este arquivo.
+Allow: /convite/
+Disallow: /
+
+Sitemap: https://arqdoor.com/sitemap.xml

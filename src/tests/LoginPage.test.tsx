@@ -6,8 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // --- Mocks ---
 
 // Wouter
+// `buscaDaUrl` e o que vem depois do `?`: "Cadastrar" no menu chega como `?cadastro=1`.
+let buscaDaUrl = '';
 vi.mock('wouter', () => ({
   useLocation: () => ['/auth', vi.fn()],
+  useSearch: () => buscaDaUrl,
   Link: ({ children }: any) => <div>{children}</div>,
 }));
 
@@ -44,7 +47,21 @@ const queryClient = new QueryClient({
 describe('AuthPage Login Flow', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        buscaDaUrl = '';
     });
+
+  it('?cadastro=1 abre direto o cadastro (o "Cadastrar" do menu)', async () => {
+    buscaDaUrl = 'cadastro=1';
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthPage />
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: 'Criar conta' })).toBeInTheDocument();
+    });
+  });
 
   it('opens login modal and submits form', async () => {
     render(

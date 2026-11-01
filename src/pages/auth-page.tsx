@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { AuthModals } from "@/components/modals/AuthModals";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import LoginLayout from "@/components/layouts/LoginLayout";
@@ -12,6 +12,13 @@ export default function AuthPage() {
   const [isRegisterOpen, setIsRegisterOpen] = useState<boolean>(false);
   const { isLoggedIn, isInitialized } = useAuth();
   const [, navigate] = useLocation();
+  const busca = useSearch();
+
+  // "Cadastrar" no menu chega como `/auth?cadastro=1` e abre direto o cadastro
+  // (spec 2026-11-site-ganhos-rapidos).
+  useEffect(() => {
+    if (new URLSearchParams(busca).get("cadastro") === "1") setIsRegisterOpen(true);
+  }, [busca]);
 
   useEffect(() => {
     if (!isInitialized || !isLoggedIn) return;
