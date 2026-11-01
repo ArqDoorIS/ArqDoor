@@ -234,21 +234,21 @@ export default function ClientProfile() {
 
   if (loadingUsers) {
     return (
-      <>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
         </div>
-      </>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <p className="text-slate-600">Contratante não encontrado.</p>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -340,7 +340,7 @@ export default function ClientProfile() {
   };
 
   return (
-    <>
+    <div className="pt-6">
       <div className="max-w-6xl mx-auto p-6 space-y-8">
         {/* Header */}
         {/* Header */}
@@ -557,6 +557,6 @@ export default function ClientProfile() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

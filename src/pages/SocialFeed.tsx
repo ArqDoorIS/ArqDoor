@@ -285,7 +285,7 @@ export default function SocialFeed() {
   };
 
   return (
-    <>
+    <div className="pt-6">
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
 
         {/* Hero Carousel */}
@@ -573,6 +573,6 @@ export default function SocialFeed() {
         <WhatsAppIcon className="mr-2 h-5 w-5 text-white" />
         Entrar em contato
       </a>
-    </>
+    </div>
   );
 }

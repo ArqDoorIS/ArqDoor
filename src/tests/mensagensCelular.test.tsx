@@ -19,13 +19,6 @@ import { ProposalCard } from "@/features/messages/components/ProposalCard";
 import { ContractsPanel } from "@/features/messages/components/ContractsPanel";
 import Messages from "@/pages/Messages";
 
-// Evita que MessagesLayout/Navbar tente acessar QueryClient ou fazer fetch
-vi.mock("@/components/layouts/MessagesLayout", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <main>{children}</main>
-  ),
-}));
-
 function renderComQuery(ui: React.ReactElement) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },

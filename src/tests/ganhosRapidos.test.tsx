@@ -48,3 +48,34 @@ describe('404 (CA-07)', () => {
     expect(screen.queryByText(/forget to add the page/i)).not.toBeInTheDocument();
   });
 });
+
+describe('uma barra de navegação por tela', () => {
+  // O App.tsx já aplica o ApplicationLayout (com a barra) a toda rota logada. Tela que
+  // importa o layout ou a barra de novo ganha uma segunda, escondida atrás da primeira:
+  // eram 10, e duas escaparam de uma busca por "<ApplicationLayout" (nome trocado no
+  // import e um MessagesLayout com barra própria).
+  it('nenhuma tela importa o ApplicationLayout nem a Navbar', () => {
+    const fontes = import.meta.glob(['/src/pages/**/*.tsx', '/src/features/**/*.tsx'], {
+      query: '?raw',
+      import: 'default',
+      eager: true,
+    }) as Record<string, string>;
+    expect(Object.keys(fontes).length).toBeGreaterThan(20);
+    const comBarra = Object.entries(fontes)
+      .filter(([, codigo]) => /components\/(layouts\/ApplicationLayout|Navbar)["']/.test(codigo))
+      .map(([arquivo]) => arquivo);
+    expect(comBarra).toEqual([]);
+  });
+
+  it('só o ApplicationLayout desenha a barra', () => {
+    const layouts = import.meta.glob('/src/components/layouts/*.tsx', {
+      query: '?raw',
+      import: 'default',
+      eager: true,
+    }) as Record<string, string>;
+    const desenham = Object.entries(layouts)
+      .filter(([, codigo]) => /<Navbar\b/.test(codigo))
+      .map(([arquivo]) => arquivo);
+    expect(desenham).toEqual(['/src/components/layouts/ApplicationLayout.tsx']);
+  });
+});

@@ -285,26 +285,26 @@ export default function ProviderProfilePage() {
 
   if (loadingProvider || loadingUser) {
     return (
-      <>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
         </div>
-      </>
+      </div>
     );
   }
 
   if (!provider || !user) {
     return (
-      <>
+      <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
           <p className="text-slate-600">Prestador não encontrado.</p>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="pt-6">
       <div className="w-full max-w-7xl mx-auto p-6 space-y-8">
         <ProviderHeaderCard
           user={user}
@@ -385,7 +385,7 @@ export default function ProviderProfilePage() {
           return handleAddCommentPortfolio(selectedPortfolioItem.id, text);
         }}
       />
-    </>
+    </div>
   );
 }
 

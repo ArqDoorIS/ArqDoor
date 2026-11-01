@@ -132,7 +132,7 @@ export default function ServicesFeed() {
 
   if (loading) {
     return (
-      <>
+      <div className="pt-6">
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
           <div className="flex items-center justify-center h-screen">
             <div className="text-center space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-white/20 shadow-xl">
@@ -144,13 +144,13 @@ export default function ServicesFeed() {
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <>
+      <div className="pt-6">
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
           <div className="flex items-center justify-center h-screen">
             <div className="text-center space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-red-200 shadow-xl">
@@ -172,7 +172,7 @@ export default function ServicesFeed() {
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -231,7 +231,7 @@ export default function ServicesFeed() {
   };
 
   return (
-    <>
+    <div className="pt-6">
       <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
@@ -433,6 +433,6 @@ export default function ServicesFeed() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
