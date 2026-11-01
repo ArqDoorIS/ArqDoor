@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Check, Link2, Loader2, UserRoundPlus, X } from "lucide-react";
-import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -112,7 +111,7 @@ export default function ConnectionsPage() {
   const accepted = connectionsQuery.data?.accepted_connections || [];
 
   return (
-    <ApplicationLayout>
+    <>
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -299,6 +298,6 @@ export default function ConnectionsPage() {
           )}
         </div>
       </div>
-    </ApplicationLayout>
+    </>
   );
 }

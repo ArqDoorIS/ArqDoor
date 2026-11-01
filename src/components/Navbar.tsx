@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, Home, Newspaper, Image, User, LogOut, MessageCircle, Link2, Users, LayoutDashboard } from "lucide-react";
@@ -55,6 +55,12 @@ const Navbar = () => {
   const { user, isLoggedIn, logout } = useAuth();
   const unreadCount = useUnreadCount();
   const { disponivel, toggleDisponibilidade, salvando } = useDisponibilidade();
+  // Menu do celular controlado: sem isto ele continuava aberto por cima da página nova
+  // depois de tocar num link (spec 2026-11-site-ganhos-rapidos).
+  const [menuAberto, setMenuAberto] = useState(false);
+  useEffect(() => {
+    setMenuAberto(false);
+  }, [location]);
 
   const handleLogout = async () => {
     await logout();
@@ -181,13 +187,14 @@ const Navbar = () => {
           ) : (
             <>
               <Button variant="default" onClick={() => navigate("/auth")}>Login</Button>
-              <Button variant="link" onClick={() => navigate("/auth/register")}>Cadastrar</Button>
+              {/* `/auth/register` não existia e caía no login. */}
+              <Button variant="link" onClick={() => navigate("/auth?cadastro=1")}>Cadastrar</Button>
             </>
           )}
         </div>
 
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
