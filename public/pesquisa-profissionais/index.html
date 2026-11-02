@@ -101,7 +101,7 @@ textarea:focus,input:focus{border-color:var(--orange)}
 .card .t .nm{display:block;color:var(--ink)}
 .card .t .ds{display:block;font-weight:400;font-size:14px;color:var(--ink-3);margin-top:2px}
 /* Etapa extra: conhecer o aplicativo (depois do envio) */
-.done .btn{flex:none;width:100%;margin-top:8px}
+.sent{display:flex;align-items:center;gap:8px;background:var(--success-tint);color:var(--success);border-radius:var(--r-lg);padding:10px 12px;font-size:14px;font-weight:500;margin-top:16px}
 .app h1{font-size:30px;margin-top:4px}
 .hero{border-radius:20px;background:linear-gradient(160deg,var(--orange),var(--orange-deep));display:flex;align-items:center;justify-content:center;padding:30px 0;margin:4px 0 18px;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 10%,rgba(255,255,255,.18),transparent 45%)}
@@ -387,17 +387,9 @@ textarea:focus,input:focus{border-color:var(--orange)}
       <div class="nav"><button class="btn ghost" data-back aria-label="Voltar">←</button><button class="btn" id="send">Enviar respostas</button></div>
     </section>
 
-    <!-- FIM -->
-    <section class="step done" data-step="fim">
-      <div class="ok"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h1>Obrigado!</h1>
-      <p class="lead">Suas respostas foram enviadas. Elas vão ajudar a Arqdoor a construir uma ferramenta que faça o profissional fechar mais serviço.</p>
-      <p class="hint">A ferramenta já existe. Quer ver como ela funciona?</p>
-      <button class="btn" id="ver-app">Conhecer o aplicativo →</button>
-    </section>
-
-    <!-- CONHECER O APP (só depois do envio; não interfere no formulário) -->
+    <!-- FIM: respostas enviadas + conhecer o app (só depois do envio; não interfere no formulário) -->
     <section class="step app" data-step="app">
+      <div class="sent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Obrigado! Suas respostas foram enviadas.</div>
       <div class="eyebrow">Aplicativo Arqdoor</div>
       <h1>Feche com quem <em>ainda não te conhece.</em></h1>
       <p class="lead">Arraste para ver o que o app faz por você.</p>
@@ -483,7 +475,7 @@ var LADO = "prestador";
     if(qi>-1){ bar.style.display='block';
       document.getElementById('prog').style.width = ((qi)/(qSteps.length))*100+'%';
       document.getElementById('count').textContent = steps[cur].dataset.step==='perfil' ? 'Último passo' : ('Pergunta '+(qi+1)+' de '+(qSteps.length-1));
-    } else if(steps[cur].dataset.step==='fim'){ document.getElementById('prog').style.width='100%'; document.getElementById('count').textContent='Concluído'; }
+    } else if(steps[cur].dataset.step==='app'){ document.getElementById('prog').style.width='100%'; document.getElementById('count').textContent='Concluído'; }
     else bar.style.display='none';
     refresh(); window.scrollTo({top:0,behavior:'smooth'});
     var ta = steps[cur].querySelector('textarea'); if(ta && !('ontouchstart' in window)) ta.focus();
@@ -531,16 +523,12 @@ var LADO = "prestador";
     fetch(ENDPOINT, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)})
       .then(function(){
         track('Lead', {content_name:'pesquisa_validacao', content_category:LADO});
-        show(steps.indexOf(document.querySelector('[data-step="fim"]')));
+        show(steps.indexOf(document.querySelector('[data-step="app"]')));
       })
       .catch(function(){ btn.disabled=false; btn.textContent='Enviar respostas'; document.getElementById('err').style.display='block'; });
   });
 
-  /* Etapa extra: só navega depois do envio; não bloqueia nem altera o envio das respostas. */
-  document.getElementById('ver-app').addEventListener('click', function(){
-    track('ConhecerApp', {lado:LADO}, true);
-    show(steps.indexOf(document.querySelector('[data-step="app"]')));
-  });
+  /* Etapa final: aparece só depois do envio; não bloqueia nem altera o envio das respostas. */
   var rail = document.getElementById('rail'), dots = document.getElementById('dots');
   rail.addEventListener('scroll', function(){
     var w = rail.firstElementChild.getBoundingClientRect().width + 12, i = Math.round(rail.scrollLeft / w);
