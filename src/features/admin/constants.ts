@@ -4,6 +4,7 @@ import {
   BriefcaseBusiness,
   FileSignature,
   Landmark,
+  Megaphone,
   MessageSquareText,
   Percent,
   Gift,
@@ -27,6 +28,9 @@ export const TABS: AdminTabConfig[] = [
   { key: "verificacao", label: "Verificação", icon: ShieldCheck, papeis: ["owner", "reviewer"] },
   { key: "taxas", label: "Taxas", icon: Percent, papeis: ["owner"] },
   { key: "indicacoes", label: "Indicações", icon: Gift, papeis: ["owner"] },
+  // Demandas que clientes postaram e ofertas que prestadores anunciaram. Daqui o owner
+  // oculta (reversivel) ou apaga (definitivo) uma publicacao.
+  { key: "publicacoes", label: "Publicações", icon: Megaphone, papeis: ["owner"] },
   { key: "conversas", label: "Conversas", icon: MessageSquareText, papeis: ["owner"] },
   { key: "auditoria", label: "Auditoria", icon: ScrollText, papeis: ["owner"] },
   // Gestao do proprio time administrativo. So owner, porque e onde se concede e
@@ -61,6 +65,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   verificacao: 1,
   taxas: 1,
   indicacoes: 1,
+  publicacoes: 1,
   conversas: 1,
   auditoria: 1,
   equipe: 1,
@@ -77,6 +82,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   verificacao: 12,
   taxas: 10,
   indicacoes: 10,
+  publicacoes: 20,
   conversas: 10,
   auditoria: 50,
   equipe: 25,
