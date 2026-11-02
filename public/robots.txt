@@ -5,8 +5,11 @@ Allow: /$
 Allow: /termos-de-uso
 Allow: /docs/
 Allow: /images/
-# Prévia do link de proposta: alguns robôs de prévia (LinkedIn, X) respeitam este arquivo.
+# Prévia do link de proposta e das pesquisas: alguns robôs de prévia (Facebook, LinkedIn, X)
+# respeitam este arquivo.
 Allow: /convite/
+Allow: /pesquisa-clientes/
+Allow: /pesquisa-profissionais/
 Disallow: /
 
 Sitemap: https://arqdoor.com/sitemap.xml
