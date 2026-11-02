@@ -409,11 +409,12 @@ export function useAdminDashboard({
      * Abas que buscam os PROPRIOS dados nao tem secao correspondente no dashboard.
      * `verificacao` entra aqui junto de `indicacoes`: a fila de documentos vem de
      * `/admin/documents`, e pedir uma secao inexistente ao backend so renderia erro.
-     * `equipe` pelo mesmo motivo: ela le `/admin/members`.
+     * `equipe` pelo mesmo motivo: ela le `/admin/members`. `publicacoes` le `/admin/listings`.
      */
     const requestedSection: DashboardSection =
       activeTab === "dashboard" ||
       activeTab === "indicacoes" ||
+      activeTab === "publicacoes" ||
       activeTab === "verificacao" ||
       activeTab === "equipe"
         ? "all"
