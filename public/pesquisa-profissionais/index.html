@@ -100,6 +100,34 @@ textarea:focus,input:focus{border-color:var(--orange)}
 .sub input{margin-bottom:10px}
 .card .t .nm{display:block;color:var(--ink)}
 .card .t .ds{display:block;font-weight:400;font-size:14px;color:var(--ink-3);margin-top:2px}
+/* Etapa extra: conhecer o aplicativo (depois do envio) */
+.done .btn{flex:none;width:100%;margin-top:8px}
+.app h1{font-size:30px;margin-top:4px}
+.hero{border-radius:20px;background:linear-gradient(160deg,var(--orange),var(--orange-deep));display:flex;align-items:center;justify-content:center;padding:30px 0;margin:4px 0 18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 10%,rgba(255,255,255,.18),transparent 45%)}
+.prop{width:272px;background:#fff;border-radius:16px;padding:14px;box-shadow:0 14px 34px rgba(0,0,0,.22);position:relative;z-index:1}
+.prop .k{font-size:10px;color:var(--ink-3)}
+.prop .n{font-size:15px;font-weight:500;margin-bottom:6px}
+.prop .r{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid var(--line)}
+.prop .r b{font-weight:500}
+.prop .f{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:10px}
+.prop .ok{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;background:var(--success-tint);color:var(--success);border-radius:999px;padding:3px 8px;font-size:10px;line-height:1.2;font-weight:500}
+.prop .ex{font-size:9px;line-height:1.2;color:var(--faint);white-space:nowrap}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.slide{flex:0 0 82%;scroll-snap-align:center;background:var(--panel);border-radius:18px;padding:18px;border:1.5px solid var(--orange-border);display:flex;flex-direction:column}
+.slide h3{font-size:19px;font-weight:500;margin:8px 0 6px;line-height:1.25}
+.slide p{font-size:14px;color:var(--ink-2);margin:0 0 12px}
+.slide .rs{margin-top:auto;background:var(--orange-wash);border-radius:10px;padding:9px 10px;font-size:13px;color:var(--orange-deep)}
+.slide.dev{border-style:dashed;border-color:var(--faint)}
+.tag-dev{display:inline-block;font-size:11px;font-weight:500;color:var(--ink-3);background:var(--line);border-radius:999px;padding:2px 8px;vertical-align:middle;white-space:nowrap}
+.dots{display:flex;justify-content:center;gap:6px;margin:12px 0 2px}
+.dots i{width:7px;height:7px;border-radius:9px;background:var(--line);transition:all .2s}
+.dots i.on{width:20px;background:var(--orange)}
+.swipe{font-size:12px;color:var(--ink-3);text-align:center;margin-bottom:6px}
+.app .nav{flex-direction:column;gap:8px}
+.app .btn{flex:none;width:100%;text-decoration:none}
+.psp{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -364,6 +392,43 @@ textarea:focus,input:focus{border-color:var(--orange)}
       <div class="ok"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <h1>Obrigado!</h1>
       <p class="lead">Suas respostas foram enviadas. Elas vão ajudar a Arqdoor a construir uma ferramenta que faça o profissional fechar mais serviço.</p>
+      <p class="hint">A ferramenta já existe. Quer ver como ela funciona?</p>
+      <button class="btn" id="ver-app">Conhecer o aplicativo →</button>
+    </section>
+
+    <!-- CONHECER O APP (só depois do envio; não interfere no formulário) -->
+    <section class="step app" data-step="app">
+      <div class="eyebrow">Aplicativo Arqdoor</div>
+      <h1>Feche com quem <em>ainda não te conhece.</em></h1>
+      <p class="lead">Arraste para ver o que o app faz por você.</p>
+
+      <div class="hero" aria-hidden="true">
+        <div class="prop">
+          <div class="k">Proposta de</div>
+          <div class="n">Carlos · Pedreiro</div>
+          <div class="r"><span>Etapa 1 · Demolição</span><b>R$ 1.200</b></div>
+          <div class="r"><span>Etapa 2 · Alvenaria</span><b>R$ 2.800</b></div>
+          <div class="r"><span>Etapa 3 · Revestimento</span><b>R$ 2.000</b></div>
+          <div class="f"><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Pagamento protegido</span><span class="ex">*valores de exemplo</span></div>
+        </div>
+      </div>
+
+      <div class="rail" id="rail">
+        <div class="slide"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><h3>Proposta por etapas</h3><p>Monte no app e envie por link, com PDF no seu nome.</p><div class="rs">Orçamento em PDF que passa confiança.</div></div>
+        <div class="slide"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><h3>Pagamento garantido</h3><p>O cliente paga antes. O valor fica guardado e sai a cada etapa entregue.</p><div class="rs">Aumente a sua confiabilidade ofertando a garantia de pagamento seguro.</div></div>
+        <div class="slide"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg><h3>Parcelamento no cartão</h3><p>Seu cliente parcela pelo celular. Você recebe o valor que definiu.</p><div class="rs">Forneça parcelamento para clientes que precisam.</div></div>
+        <div class="slide"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><h3>Contrato assinado</h3><p>O cliente assina pelo celular, e tudo fica registrado.</p><div class="rs">Seu cliente assina na hora.</div></div>
+        <div class="slide"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg><h3>Perfil com avaliações</h3><p>Portfólio e notas de clientes para quem ainda não te conhece.</p><div class="rs">Comprove o seu histórico de trabalho.</div></div>
+        <div class="slide dev"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8611a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><h3>Clientes perto de você <span class="tag-dev">(em desenvolvimento)</span></h3><p>Apareça para quem procura serviço na sua região.</p><div class="rs">Consiga mais clientes fora do seu círculo de indicação.</div></div>
+      </div>
+      <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="swipe">← arraste →</div>
+
+      <div class="nav">
+        <a class="btn" id="baixar-app" href="https://play.google.com/store/apps/details?id=com.arqdoor.app&amp;hl=pt_BR" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2.8v18.4c0 .5.5.8.9.6L20.5 12.6c.4-.2.4-.9 0-1.1L4.9 2.2c-.4-.2-.9.1-.9.6z"/></svg>Baixar na Google Play</a>
+        <div class="psp"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Pagamento via Pagar.me, do grupo Stone</div>
+      </div>
     </section>
   </main>
 </div>
@@ -466,9 +531,23 @@ var LADO = "prestador";
     fetch(ENDPOINT, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)})
       .then(function(){
         track('Lead', {content_name:'pesquisa_validacao', content_category:LADO});
-        show(steps.length-1);
+        show(steps.indexOf(document.querySelector('[data-step="fim"]')));
       })
       .catch(function(){ btn.disabled=false; btn.textContent='Enviar respostas'; document.getElementById('err').style.display='block'; });
+  });
+
+  /* Etapa extra: só navega depois do envio; não bloqueia nem altera o envio das respostas. */
+  document.getElementById('ver-app').addEventListener('click', function(){
+    track('ConhecerApp', {lado:LADO}, true);
+    show(steps.indexOf(document.querySelector('[data-step="app"]')));
+  });
+  var rail = document.getElementById('rail'), dots = document.getElementById('dots');
+  rail.addEventListener('scroll', function(){
+    var w = rail.firstElementChild.getBoundingClientRect().width + 12, i = Math.round(rail.scrollLeft / w);
+    [].forEach.call(dots.children, function(d,k){ d.classList.toggle('on', k===i); });
+  });
+  document.getElementById('baixar-app').addEventListener('click', function(){
+    track('CliqueDownloadApp', {lado:LADO, loja:'google_play'}, true);
   });
 
   refresh();
