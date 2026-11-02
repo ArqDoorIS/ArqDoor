@@ -10,6 +10,7 @@ import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
 import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
+import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
 import { AdminLoginView } from "@/features/admin/components/AdminLoginView";
 import { AdminDashboardView } from "@/features/admin/components/AdminOverviewSection";
@@ -163,6 +164,8 @@ export default function Admin() {
         return <AdminFeesSection />;
       case "indicacoes":
         return <AdminReferralsSection />;
+      case "publicacoes":
+        return <AdminListingsSection />;
       case "conversas":
         return (
           <AdminConversationsSection

@@ -12,6 +12,7 @@ export type AdminTab =
   | "verificacao"
   | "taxas"
   | "indicacoes"
+  | "publicacoes"
   | "conversas"
   | "auditoria";
 
