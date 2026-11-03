@@ -137,9 +137,9 @@ export default function LandingComparisonSection() {
             viewport={{ once: true }}
             animate={{
               boxShadow: [
-                "0 10px 25px rgba(249,115,22,0.15)",
-                "0 18px 40px rgba(249,115,22,0.35)",
-                "0 10px 25px rgba(249,115,22,0.15)",
+                "0 10px 25px rgba(231,88,18,0.15)",
+                "0 18px 40px rgba(231,88,18,0.35)",
+                "0 10px 25px rgba(231,88,18,0.15)",
               ],
             }}
             transition={{
@@ -147,9 +147,9 @@ export default function LandingComparisonSection() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="rounded-[28px] border-2 border-[#f97316] bg-[#fbf7f4] p-5 sm:p-6"
+            className="rounded-[28px] border-2 border-brand bg-surface-soft p-5 sm:p-6"
           >
-            <div className="mx-auto mb-6 w-fit rounded-[18px] bg-[#f97316] px-6 py-3 shadow-[0_10px_20px_rgba(249,115,22,0.25)]">
+            <div className="mx-auto mb-6 w-fit rounded-[18px] bg-brand px-6 py-3 shadow-[0_10px_20px_rgba(231,88,18,0.25)]">
               <img
                 src="/images/landing/logo_branca.png"
                 alt="ArqDoor"
@@ -170,7 +170,7 @@ export default function LandingComparisonSection() {
                   variants={listItem}
                   className="flex items-start gap-3 rounded-[14px] border border-[#f6d8c7] bg-white px-4 py-3"
                 >
-                  <span className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f97316] text-white">
+                  <span className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand text-white">
                     <Check className="h-4 w-4" strokeWidth={3} />
                   </span>
 

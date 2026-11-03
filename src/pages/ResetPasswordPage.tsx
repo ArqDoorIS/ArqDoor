@@ -67,14 +67,14 @@ export default function ResetPasswordPage() {
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
             <h2 className="text-xl font-semibold text-zinc-900">Senha redefinida!</h2>
             <p className="text-sm text-zinc-500">Você já pode fazer login com a nova senha.</p>
-            <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white" onClick={() => navigate("/auth")}>
+            <Button className="w-full" onClick={() => navigate("/auth")}>
               Ir para o login
             </Button>
           </div>
         ) : (
           <>
             <div className="flex items-center gap-2 mb-6">
-              <KeyRound className="w-5 h-5 text-amber-500" />
+              <KeyRound className="w-5 h-5 text-brand" />
               <h2 className="text-xl font-semibold text-zinc-900">Nova senha</h2>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
                   required
                 />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-white">
+              <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Redefinir senha
               </Button>

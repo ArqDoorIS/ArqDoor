@@ -16,7 +16,7 @@ const features = [
       />
     ),
     tone:
-      "bg-[#f4f4f4] text-[#404040] border border-transparent hover:border-[#e7e7e7]",
+      "bg-white text-ink border border-line hover:border-brand-disabled",
   },
   {
     title: "Previsibilidade de Pagamento",
@@ -24,7 +24,7 @@ const features = [
       "Utilize a ArqDoor Escrow para intermediar os pagamentos. Anule a barreira de desconfiança com a nossa ferramenta e receba o valor do seu serviço em dia.",
     icon: <GiStrongbox className="h-[150px] w-[150px] text-white" />,
     tone:
-      "bg-[#F05B10] text-white border border-transparent hover:border-[#ffb088]",
+      "bg-brand text-white border border-transparent hover:border-brand-light",
   },
   {
     title: "Acompanhamento de Obras",
@@ -32,7 +32,7 @@ const features = [
       "Organize cada projeto com o nosso sistema, e torne cada contrato em uma experiência simples de acompanhar para o seu cliente.",
     icon: <PiListChecksLight className="h-[150px] w-[150px] text-white" />,
     tone:
-      "bg-[#4a423d] text-white border border-transparent hover:border-[#7b726c]",
+      "bg-ink text-white border border-transparent hover:border-[#7b726c]",
   },
 ];
 
@@ -66,7 +66,7 @@ const cardVariant = {
 
 export default function LandingFeaturesSection() {
   return (
-    <section className="bg-[#f9fafb] py-16">
+    <section className="bg-surface py-16">
       <div className="mx-auto w-full max-w-[1360px] px-4">
         <motion.h2
           className={`text-center font-semibold ${landingType.sectionTitle}`}

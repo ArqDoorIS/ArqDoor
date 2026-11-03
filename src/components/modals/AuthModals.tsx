@@ -29,6 +29,16 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { apiRequest } from "@/lib/queryClient";
 
 // --- Small helpers -----------------------------------------------------------
+
+// O modal de cadastro passa da altura de um celular (1011 px numa tela de 844). Sem teto e
+// sem rolagem, o título, o X e o fim do formulário ficavam fora da tela.
+// Spec 2026-11-site-paleta-do-app.
+const CONTEUDO_DO_MODAL =
+  "w-[calc(100%-1rem)] max-h-[calc(100dvh-1rem)] overflow-y-auto border-0 bg-transparent p-0 shadow-none";
+
+// Mesma altura, fonte e foco do <Input>.
+const CAMPO_DE_SELECAO =
+  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 function DialogShell({
   title,
   description,
@@ -41,8 +51,8 @@ function DialogShell({
       <div className="relative p-7 sm:p-8">
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-600/10 ring-1 ring-amber-600/30">
-              <BadgeCheck className="h-5 w-5 text-amber-600" />
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-soft ring-1 ring-brand/30">
+              <BadgeCheck className="h-5 w-5 text-brand" />
             </div>
             <div>
               <DialogTitle className="text-xl font-semibold tracking-tight">
@@ -487,7 +497,7 @@ export const AuthModals: React.FC<{
 
         {/* LOGIN */}
         <Dialog open={isLoginOpen} onOpenChange={onLoginClose}>
-          <DialogContent className="max-w-md border-0 bg-transparent p-0">
+          <DialogContent className={CONTEUDO_DO_MODAL + " max-w-md"}>
             <DialogShell title="Login" description="Entre com seu e‑mail e senha.">
               <Form {...loginForm}>
                 <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
@@ -549,10 +559,14 @@ export const AuthModals: React.FC<{
                     )}
                     Fazer login com Google
                   </Button>
-                  <div className="text-center text-sm text-muted-foreground">
-                    <span className="cursor-pointer hover:underline" onClick={onSwitchToRegister}>
+                  <div className="text-center text-sm">
+                    <button
+                      type="button"
+                      className="font-medium text-brand hover:underline"
+                      onClick={onSwitchToRegister}
+                    >
                       Criar uma conta
-                    </span>
+                    </button>
                   </div>
                 </form>
               </Form>
@@ -562,7 +576,7 @@ export const AuthModals: React.FC<{
 
         {/* REGISTER */}
         <Dialog open={isRegisterOpen} onOpenChange={onRegisterClose}>
-          <DialogContent className="max-w-lg border-0 bg-transparent p-0">
+          <DialogContent className={CONTEUDO_DO_MODAL + " max-w-lg"}>
             <DialogShell title="Criar conta" description="Preencha os dados para começar.">
               <Form {...registerForm}>
                 <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-5">
@@ -609,7 +623,10 @@ export const AuthModals: React.FC<{
                         <FormItem>
                           <FormLabel>Gênero</FormLabel>
                           <FormControl>
-                            <select {...field} className="w-full rounded-md border bg-background p-2">
+                            <select
+                              {...field}
+                              className={`${CAMPO_DE_SELECAO} ${field.value ? "text-foreground" : "text-muted-foreground"}`}
+                            >
                               <option value="" disabled>
                                 Selecione...
                               </option>
@@ -644,7 +661,7 @@ export const AuthModals: React.FC<{
                     control={registerForm.control}
                     name="type"
                     render={({ field }) => (
-                      <FormItem className="rounded-xl border bg-orange-50/50 p-3 space-y-2">
+                      <FormItem className="rounded-xl border border-line bg-brand-tint p-3 space-y-2">
                         <div className="space-y-0.5">
                           <p className="text-sm font-semibold text-slate-900">
                             Utilize a ArqDoor como profissional.
@@ -715,7 +732,7 @@ export const AuthModals: React.FC<{
                         {[0, 1, 2, 3].map((i) => (
                           <div
                             key={i}
-                            className={`h-1 rounded ${i < passwordScore ? "bg-amber-500" : "bg-muted"}`}
+                            className={`h-1 rounded ${i < passwordScore ? "bg-brand" : "bg-muted"}`}
                           />
                         ))}
                       </motion.div>
@@ -738,11 +755,11 @@ export const AuthModals: React.FC<{
                         <div className="space-y-1">
                           <p className="text-sm font-medium leading-none">
                             Declaro que li e aceito os {" "}
-                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">
+                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-brand underline">
                               Termos de uso
                             </a>
                             {" e "}
-                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">
+                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-brand underline">
                               Política de privacidade
                             </a>
                           </p>
@@ -751,7 +768,7 @@ export const AuthModals: React.FC<{
                     )}
                   />
 
-                  <Button type="submit" disabled={registerLoading} className="w-full bg-amber-600 hover:bg-amber-600/90">
+                  <Button type="submit" disabled={registerLoading} className="w-full">
                     {registerLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Cadastrar
                   </Button>
@@ -771,13 +788,15 @@ export const AuthModals: React.FC<{
                     )}
                     Registrar com o Google
                   </Button>
-                  <div className="text-center">
-                    <a
+                  <div className="text-center text-sm text-muted-foreground">
+                    Já tem cadastro?{" "}
+                    <button
+                      type="button"
                       onClick={onSwitchToLogin}
-                      className="text-sm text-muted-foreground hover:underline cursor-pointer"
+                      className="font-medium text-brand hover:underline"
                     >
-                      Já tem cadastro? Faça login!
-                    </a>
+                      Faça login
+                    </button>
                   </div>
                 </form>
               </Form>

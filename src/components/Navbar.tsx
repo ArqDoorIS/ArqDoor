@@ -40,8 +40,8 @@ const NavLink = ({ href, location, icon: Icon, children }: NavLinkProps) => {
         aria-current={isActive ? "page" : undefined}
         className={`flex items-center gap-1 text-sm transition-colors ${
           isActive
-            ? "text-amber-600 font-semibold"
-            : "text-gray-700 hover:text-amber-500"
+            ? "text-brand font-semibold"
+            : "text-gray-700 hover:text-brand"
         }`}
       >
         <Icon className="w-4 h-4" /> {children}
@@ -203,38 +203,38 @@ const Navbar = () => {
             <SheetContent>
               <div className="mt-6 space-y-4">
                 <Link href="/home">
-                  <div className="text-gray-700 hover:text-amber-500">Início</div>
+                  <div className="text-gray-700 hover:text-brand">Início</div>
                 </Link>
                 {user?.type === "contratante" && (
                   <Link href="/services">
-                    <div className="text-gray-700 hover:text-amber-500">Serviços</div>
+                    <div className="text-gray-700 hover:text-brand">Serviços</div>
                   </Link>
                 )}
                 {user?.type === "contratante" && (
                   <Link href="/connections">
-                    <div className="text-gray-700 hover:text-amber-500">Conexões</div>
+                    <div className="text-gray-700 hover:text-brand">Conexões</div>
                   </Link>
                 )}
                 {user?.type === "prestador" && (
                   <Link href="/demands">
-                    <div className="text-gray-700 hover:text-amber-500">Demandas</div>
+                    <div className="text-gray-700 hover:text-brand">Demandas</div>
                   </Link>
                 )}
                 {isLoggedIn && user?.type === "prestador" && (
                   <Link href="/convites">
-                    <div className="text-gray-700 hover:text-amber-500">Convites</div>
+                    <div className="text-gray-700 hover:text-brand">Convites</div>
                   </Link>
                 )}
                 {isLoggedIn && (
                   <Link href="/kanban">
-                    <div className="flex items-center gap-1 text-gray-700 hover:text-amber-500">
+                    <div className="flex items-center gap-1 text-gray-700 hover:text-brand">
                       <LayoutDashboard className="h-4 w-4" /> Kanban
                     </div>
                   </Link>
                 )}
                 {isLoggedIn && (
                   <Link href="/messages">
-                    <div className="relative flex items-center gap-1 text-gray-700 hover:text-amber-500">
+                    <div className="relative flex items-center gap-1 text-gray-700 hover:text-brand">
                       <MessageCircle className="h-5 w-5" /> 
                       Mensagens
                       {unreadCount > 0 && (
@@ -247,7 +247,7 @@ const Navbar = () => {
                 )}
                 {isLoggedIn && user ? (
                   <Link href="/profile">
-                    <div className="text-gray-700 hover:text-amber-500">Perfil</div>
+                    <div className="text-gray-700 hover:text-brand">Perfil</div>
                   </Link>
                 ) : (
                   <Button onClick={() => navigate("/auth")}>Login</Button>
