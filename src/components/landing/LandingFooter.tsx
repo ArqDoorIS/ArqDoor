@@ -5,7 +5,7 @@ export default function LandingFooter() {
   return (
     <footer
       id="contato-vendas"
-      className="bg-[#F05B10] pt-8 pb-8 text-white md:pt-12 md:pb-12"
+      className="bg-brand pt-8 pb-8 text-white md:pt-12 md:pb-12"
     >
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 lg:flex-row lg:justify-between">
         

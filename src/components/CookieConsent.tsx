@@ -47,7 +47,7 @@ const CookieConsent = () => {
               <Button variant="outline" onClick={handleDecline}>
                 Recusar
               </Button>
-              <Button onClick={handleAccept} className="bg-amber-600 hover:bg-amber-700">
+              <Button onClick={handleAccept}>
                 Aceitar e Continuar
               </Button>
               <button 

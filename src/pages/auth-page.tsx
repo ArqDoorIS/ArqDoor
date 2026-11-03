@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import LoginLayout from "@/components/layouts/LoginLayout";
 import { getResumeRoute } from "@/lib/utils";
+import { Check } from "lucide-react";
 
 export default function AuthPage() {
   const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
@@ -36,14 +37,25 @@ export default function AuthPage() {
   };
 
   const handleAuthSuccess = () => undefined;
+  const vantagens = [
+    "Encontre o projetista perfeito para o seu projeto",
+    "Compare portfólios e escolha o melhor profissional",
+    "Compartilhe projetos e obtenha feedbacks valiosos",
+  ];
+
   return (
     <LoginLayout>
       <div className="flex min-h-screen">
-        <div className="w-full lg:w-1/2 p-8 flex flex-col justify-center items-center bg-white">
+        <div className="flex w-full flex-col items-center justify-center bg-surface p-8 lg:w-1/2">
           <div className="w-full max-w-md space-y-8">
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-2">Bem vindo ArqDoor!</h1>
-              <p className="text-gray-600 mb-8">
+              <img
+                src="/images/landing/logo.png"
+                alt="ArqDoor"
+                className="mx-auto mb-8 h-10 w-auto"
+              />
+              <h1 className="mb-2 text-4xl font-bold text-ink-strong">Bem-vindo ao ArqDoor!</h1>
+              <p className="mb-8 text-ink">
                 Faça login ou crie uma conta para começar na plataforma.
               </p>
             </div>
@@ -51,7 +63,7 @@ export default function AuthPage() {
             <div className="space-y-4">
               <Button
                 onClick={() => setIsLoginOpen(true)}
-                className="w-full"
+                className="w-full rounded-xl shadow-brand"
                 size="lg"
               >
                 Entrar
@@ -59,40 +71,33 @@ export default function AuthPage() {
               <Button
                 onClick={() => setIsRegisterOpen(true)}
                 variant="outline"
-                className="w-full"
+                className="w-full rounded-xl border-brand/40 bg-white text-brand hover:bg-brand-soft hover:text-brand-dark"
                 size="lg"
               >
                 Criar conta
               </Button>
             </div>
             <div className="mt-4 text-center">
-              <Button variant="link" onClick={() => navigate("/")}> Voltar ao menu principal</Button>
+              <Button variant="link" onClick={() => navigate("/")}>Voltar ao menu principal</Button>
             </div>
           </div>
         </div>
 
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-tr from-amber-600 to-amber-600/50 items-center justify-center">
-          <div className="max-w-md p-8 text-white">
-            <h2 className="text-3xl font-bold mb-6">Descubra profissionais incríveis</h2>
+        <div className="relative hidden items-center justify-center overflow-hidden bg-gradient-to-br from-brand to-brand-dark lg:flex lg:w-1/2">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-white/5" />
+          <div className="relative max-w-md p-8 text-white">
+            <img src="/images/landing/logo_branca.png" alt="" className="mb-10 h-10 w-auto" />
+            <h2 className="mb-6 text-3xl font-bold">Descubra profissionais incríveis</h2>
             <ul className="space-y-4">
-              <li className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                  ✓
-                </div>
-                <p>Encontre o projetista perfeito para o seu projeto</p>
-              </li>
-              <li className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                  ✓
-                </div>
-                <p>Compare portfólios e escolha o melhor Profissional</p>
-              </li>
-              <li className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                  ✓
-                </div>
-                <p>Compartilhe projetos e obtenha feedbacks valiosos</p>
-              </li>
+              {vantagens.map((texto) => (
+                <li key={texto} className="flex items-start">
+                  <span className="mr-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <Check className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <p className="pt-1">{texto}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

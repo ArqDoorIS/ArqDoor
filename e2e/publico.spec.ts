@@ -10,7 +10,7 @@ test.describe("J-01 paginas publicas", () => {
 
   test("a tela de acesso abre o formulario de login", async ({ page }) => {
     await page.goto("/auth");
-    await expect(page.getByRole("heading", { name: "Bem vindo ArqDoor!" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Bem-vindo ao ArqDoor!" })).toBeVisible();
 
     await page.getByRole("button", { name: "Entrar" }).click();
 
@@ -21,6 +21,6 @@ test.describe("J-01 paginas publicas", () => {
 
   test("rota desconhecida sem sessao leva para o login", async ({ page }) => {
     await page.goto("/rota-que-nao-existe-e2e");
-    await expect(page.getByRole("heading", { name: "Bem vindo ArqDoor!" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Bem-vindo ao ArqDoor!" })).toBeVisible();
   });
 });
