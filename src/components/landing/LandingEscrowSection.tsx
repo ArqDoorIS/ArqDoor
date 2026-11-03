@@ -60,12 +60,12 @@ export default function LandingEscrowSection() {
   return (
     <section
       id="escrow"
-      className="relative overflow-hidden bg-gradient-to-br from-[#E75812] via-[#EA580C] to-[#C2410C] py-16 text-white"
+      className="relative overflow-hidden bg-gradient-to-br from-brand via-brand to-brand-dark py-16 text-white"
     >
       <div className="pointer-events-none absolute -left-16 top-20 h-56 w-56 rounded-full bg-white/10 blur-[2px]" />
-      <div className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-[#FDBA74]/20 blur-[4px]" />
+      <div className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-brand-light/20 blur-[4px]" />
       <div className="pointer-events-none absolute right-[-80px] top-[-40px] h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-      <div className="pointer-events-none absolute bottom-10 right-[12%] h-32 w-32 rounded-full bg-[#FB923C]/20 blur-xl" />
+      <div className="pointer-events-none absolute bottom-10 right-[12%] h-32 w-32 rounded-full bg-brand-lighter/20 blur-xl" />
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.10),transparent_28%),radial-gradient(circle_at_85%_20%,rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.06),transparent_20%)]" />
 
@@ -90,7 +90,7 @@ export default function LandingEscrowSection() {
 
           <motion.p
             variants={fadeUp}
-            className={`mt-6 text-orange-50 ${landingType.sectionBody}`}
+            className={`mt-6 text-brand-tint ${landingType.sectionBody}`}
           >
             Você nunca mais precisará cobrar o pagamento dos seus clientes. Com a
             ArqDoor Escrow, o pagamento é efetuado pelo seu cliente antes de
@@ -107,10 +107,10 @@ export default function LandingEscrowSection() {
                 variants={stepItem}
                 className="grid grid-cols-[56px_1fr] items-center gap-3"
               >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#F9B18A] bg-[#F17B2F] text-xl font-bold leading-none text-white shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand-disabled bg-brand-lighter text-xl font-bold leading-none text-white shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
                   {index + 1}
                 </span>
-                <span className={`text-orange-50 ${landingType.cardBody}`}>
+                <span className={`text-brand-tint ${landingType.cardBody}`}>
                   {step}
                 </span>
               </motion.li>
@@ -119,7 +119,7 @@ export default function LandingEscrowSection() {
 
           <motion.p
             variants={fadeUp}
-            className="mt-6 inline-flex gap-3 rounded-2xl border-2 border-[#f9b18ac4] bg-white/15 px-4 py-3 text-base font-semibold leading-snug backdrop-blur-sm sm:text-lg"
+            className="mt-6 inline-flex gap-3 rounded-2xl border-2 border-brand-disabled/80 bg-white/15 px-4 py-3 text-base font-semibold leading-snug backdrop-blur-sm sm:text-lg"
           >
             <svg
               viewBox="0 0 36 36"

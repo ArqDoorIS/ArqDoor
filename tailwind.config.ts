@@ -11,6 +11,30 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Paleta do app (arqdoor-mobile/tailwind.config.js), mesmos nomes e valores.
+        // Spec 2026-11-site-paleta-do-app. Mudou lá, muda aqui.
+        brand: {
+          DEFAULT: "#e75812",
+          dark: "#c44a0a",
+          darker: "#e65100",
+          light: "#ff9444",
+          lighter: "#ff7a3d",
+          soft: "#fff0ea",
+          tint: "#fff8f3",
+          disabled: "#f0b090",
+        },
+        ink: {
+          DEFAULT: "#4a423d",
+          strong: "#2d2420",
+        },
+        surface: {
+          DEFAULT: "#fffaf3",
+          card: "#ffffff",
+          cream: "#f5ede4",
+          warm: "#f5f0ea",
+          soft: "#fff9f5",
+        },
+        line: "#f0e8e0",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -61,6 +85,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      boxShadow: {
+        brand: "0 6px 20px rgba(231,88,18,0.3)",
+        "brand-lg": "0 8px 24px rgba(231,88,18,0.3)",
       },
       keyframes: {
         "accordion-down": {

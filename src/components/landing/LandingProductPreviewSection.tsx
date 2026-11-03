@@ -10,21 +10,21 @@ const featureCards = [
     title: "Clareza",
     description: "Etapas e entregas definidas",
     icon: (
-      <HiOutlineLightBulb className="h-20 w-20 text-[#fffffe] transition-colors duration-300 group-hover:text-[#e85a0c]" />
+      <HiOutlineLightBulb className="h-20 w-20 text-[#fffffe] transition-colors duration-300 group-hover:text-brand" />
     ),
   },
   {
     title: "Proteção",
     description: "Assinatura eletrônica",
     icon: (
-      <ShieldCheck className="h-10 w-10 text-[#fffffe] transition-colors duration-300 group-hover:text-[#e85a0c]" />
+      <ShieldCheck className="h-10 w-10 text-[#fffffe] transition-colors duration-300 group-hover:text-brand" />
     ),
   },
   {
     title: "Segurança",
     description: "Pagamento intermediado",
     icon: (
-      <LockKeyhole className="h-10 w-10 text-[#fffffe] transition-colors duration-300 group-hover:text-[#e85a0c]" />
+      <LockKeyhole className="h-10 w-10 text-[#fffffe] transition-colors duration-300 group-hover:text-brand" />
     ),
   },
 ];
@@ -94,7 +94,7 @@ export default function LandingProductPreviewSection() {
   const isTypingComplete = typedText.length === fullTypedText.length;
 
   return (
-    <section id="sobre" className="overflow-hidden bg-[#f9fafb] py-24">
+    <section id="sobre" className="overflow-hidden bg-white py-24">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-6 lg:flex-row lg:items-center lg:gap-10 xl:gap-16">
         <motion.div
           className="w-full min-w-0 lg:w-[50%]"
@@ -133,14 +133,14 @@ export default function LandingProductPreviewSection() {
                 {typedPrefixIsComplete ? (
                   <>
                     {typedPrefix}
-                    <span className="text-[#e85a0c]">{typedHighlightPortion}</span>
+                    <span className="text-brand">{typedHighlightPortion}</span>
                   </>
                 ) : (
                   typedText
                 )}
 
                 <span
-                  className={`text-[#e85a0c] ${
+                  className={`text-brand ${
                     isTypingComplete ? "animate-pulse" : ""
                   }`}
                 >
@@ -186,10 +186,10 @@ export default function LandingProductPreviewSection() {
               <motion.article
                 key={card.title}
                 variants={cardVariant}
-                className="group mx-auto flex w-full max-w-[320px] flex-col items-center rounded-[18px] bg-[#F05A0F] px-2 py-5 text-center text-[#1F2937] shadow-[0_10px_28px_rgba(240,90,15,0.16)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#fffffe] hover:text-[#F05A0F] hover:shadow-[0_16px_34px_rgba(240,90,15,0.35)]"
+                className="group mx-auto flex w-full max-w-[320px] flex-col items-center rounded-[18px] bg-brand px-2 py-5 text-center text-[#1F2937] shadow-[0_10px_28px_rgba(231,88,18,0.16)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#fffffe] hover:text-brand hover:shadow-[0_16px_34px_rgba(231,88,18,0.35)]"
               >
                 <h3
-                  className={`${landingType.miniCardTitle} text-[#fffffe] transition-colors duration-300 group-hover:text-[#e85a0c]`}
+                  className={`${landingType.miniCardTitle} text-[#fffffe] transition-colors duration-300 group-hover:text-brand`}
                 >
                   {card.title}
                 </h3>
@@ -198,7 +198,7 @@ export default function LandingProductPreviewSection() {
                   {card.icon}
                 </div>
 
-                <p className="mt-4 font-normal text-[#fffffe] transition-colors duration-300 group-hover:text-[#e85a0c]">
+                <p className="mt-4 font-normal text-[#fffffe] transition-colors duration-300 group-hover:text-brand">
                   {card.description}
                 </p>
               </motion.article>

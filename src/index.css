@@ -11,6 +11,15 @@
 @tailwind utilities;
 
 @layer base {
+  /* Primária e foco no laranja do app (#e75812), por cima do que o plugin do theme.json
+     gera. O plugin injeta o tema no começo do <head>, então estas linhas ganham.
+     Spec 2026-11-site-paleta-do-app. */
+  :root {
+    --primary: 20 86% 49%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 20 86% 49%;
+  }
+
   * {
     @apply border-border;
   }
