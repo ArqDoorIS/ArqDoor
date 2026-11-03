@@ -84,6 +84,15 @@ describe('favicon', () => {
     expect(hrefs).toEqual(['/favicon.ico', '/favicon-32x32.png', '/icon-192.png', '/apple-touch-icon.png']);
     for (const href of hrefs) expect(existsSync(path.join(raiz, 'public', href))).toBe(true);
   });
+
+  it('a prévia de link (WhatsApp, redes) usa o ícone do app', () => {
+    const html = ler('index.html');
+    expect(html).toContain('<meta property="og:image" content="https://arqdoor.com/images/arqdoor-previa.png" />');
+    expect(html).toContain('<meta name="twitter:image" content="https://arqdoor.com/images/arqdoor-previa.png" />');
+    expect(html).not.toContain('arqdoorlogo.jpg');
+    // A API monta a prévia do convite apontando para o mesmo arquivo (getInvitePreviaService).
+    expect(existsSync(path.join(raiz, 'public/images/arqdoor-previa.png'))).toBe(true);
+  });
 });
 
 describe('login e cadastro', () => {
