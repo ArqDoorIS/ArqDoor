@@ -11,6 +11,7 @@ export type AdminTab =
   | "documentos"
   | "verificacao"
   | "taxas"
+  | "ia"
   | "indicacoes"
   | "publicacoes"
   | "conversas"
