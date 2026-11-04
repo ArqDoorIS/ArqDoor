@@ -9,6 +9,7 @@ import { AdminDocumentsSection } from "@/features/admin/components/AdminDocument
 import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
 import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
+import { AdminAiSection } from "@/features/admin/components/AdminAiSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
@@ -78,7 +79,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "auditoria"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "auditoria"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -162,6 +163,8 @@ export default function Admin() {
         return <AdminTeamSection />;
       case "taxas":
         return <AdminFeesSection />;
+      case "ia":
+        return <AdminAiSection />;
       case "indicacoes":
         return <AdminReferralsSection />;
       case "publicacoes":
