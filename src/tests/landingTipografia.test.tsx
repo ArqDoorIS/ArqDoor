@@ -79,6 +79,11 @@ describe('fonte da landing', () => {
     expect(landingType.subtitle).toContain('max-w-[65ch]');
   });
 
+  it('o destaque do título segue o título: só a cor muda, sem caixa', () => {
+    expect(landingType.heroSpan).toContain('text-brand');
+    expect(landingType.heroSpan).not.toMatch(/\bbg-|\bpx-|\bpy-|\brounded/);
+  });
+
   it('todo H2 usa o mesmo token', () => {
     for (const nome of ['LandingFeaturesSection', 'LandingEscrowSection', 'LandingComparisonSection', 'LandingFinalCTASection', 'LandingProductPreviewSection']) {
       expect({ nome, usa: ler(`${pasta}/${nome}.tsx`).includes('landingType.sectionTitle') }).toEqual({ nome, usa: true });
