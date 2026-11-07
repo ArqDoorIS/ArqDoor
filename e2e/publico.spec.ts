@@ -8,6 +8,20 @@ test.describe("J-01 paginas publicas", () => {
     await expect(page.locator("body")).not.toBeEmpty();
   });
 
+  test("a landing tem header baixo, usa a Inter e nao rola para o lado", async ({ page }) => {
+    await page.goto("/");
+
+    const header = await page.locator("header").boundingBox();
+    expect(header!.height).toBeLessThanOrEqual(65);
+    await expect(page.locator("h1")).toHaveCSS("font-family", /Inter Variable/);
+
+    const larguras = await page.evaluate(() => ({
+      conteudo: document.documentElement.scrollWidth,
+      tela: document.documentElement.clientWidth,
+    }));
+    expect(larguras.conteudo).toBeLessThanOrEqual(larguras.tela);
+  });
+
   test("a tela de acesso ja mostra o formulario de login", async ({ page }) => {
     await page.goto("/auth");
     await expect(page.getByRole("heading", { name: "Bem-vindo ao ArqDoor!" })).toBeVisible();

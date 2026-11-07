@@ -65,10 +65,10 @@ const listItem = {
 
 export default function LandingComparisonSection() {
   return (
-    <section className="w-full bg-white py-16">
+    <section className="w-full overflow-hidden bg-white py-16">
       <div className="mx-auto max-w-[1280px] px-6">
         <motion.h2
-          className={`mx-auto max-w-[880px] text-center ${landingType.comparisonTitle}`}
+          className={`mx-auto max-w-[880px] text-center ${landingType.sectionTitle}`}
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -80,7 +80,7 @@ export default function LandingComparisonSection() {
         </motion.h2>
 
         <motion.p
-          className={landingType.sectionSubtitle}
+          className={landingType.subtitle}
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -100,7 +100,7 @@ export default function LandingComparisonSection() {
             viewport={{ once: true }}
             className="rounded-[28px] border border-[#d2d7de] bg-[#f8f8f8] p-5 sm:p-6"
           >
-            <div className="mx-auto mb-6 w-fit rounded-[18px] bg-[#d4d4d4] px-6 py-3 text-center text-[16px] font-bold text-[#4B5563] sm:text-[17px]">
+            <div className={`mx-auto mb-6 w-fit rounded-[18px] bg-[#d4d4d4] px-6 py-3 text-center text-[#4B5563] ${landingType.strong}`}>
               Modelo tradicional
             </div>
 
@@ -121,7 +121,7 @@ export default function LandingComparisonSection() {
                     <X className="h-4 w-4" strokeWidth={3} />
                   </span>
 
-                  <p className="leading-snug text-[#5d6878] sm:text-sm font-medium">
+                  <p className={`text-[#5d6878] ${landingType.cardBody}`}>
                     {item}
                   </p>
                 </motion.div>
@@ -174,7 +174,7 @@ export default function LandingComparisonSection() {
                     <Check className="h-4 w-4" strokeWidth={3} />
                   </span>
 
-                  <p className="leading-snug text-[#444444] sm:text-sm font-medium">
+                  <p className={`text-ink ${landingType.cardBody}`}>
                     {item}
                   </p>
                 </motion.div>
