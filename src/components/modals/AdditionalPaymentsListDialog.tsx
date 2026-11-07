@@ -70,7 +70,7 @@ export function AdditionalPaymentsListDialog({
         </DialogHeader>
 
         {!hasTicketOptions ? (
-          <div className="text-sm text-gray-600 border rounded-lg p-4 bg-gray-50">
+          <div className="text-sm text-muted-foreground border rounded-lg p-4 bg-surface-soft">
             Nenhuma proposta encontrada para listar cobranças adicionais.
           </div>
         ) : (

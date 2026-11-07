@@ -1,7 +1,7 @@
 /**
  * Bolinha indicadora de presenca (spec 2026-10-presenca-no-chat).
  *
- * Online: #22c55e (verde forte)
+ * Online: #4caf50 (success do app)
  * Disponivel: #a7dcb8 (verde apagado)
  * Indisponivel: nenhuma bolinha
  *
@@ -19,7 +19,7 @@ interface PresencaDotProps {
 
 export function PresencaDot({ presenca, tamanho = 10 }: PresencaDotProps) {
   const cor = presenca.online
-    ? "#22c55e"
+    ? "#4caf50"
     : presenca.disponivel
     ? "#a7dcb8"
     : null;

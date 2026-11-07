@@ -31,7 +31,7 @@ export function DocumentsCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {loading ? (
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> Carregando dados...
           </div>
         ) : (
@@ -54,13 +54,13 @@ export function DocumentsCard({
                 maxLength={18}
               />
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Essas informações são usadas apenas para processar pagamentos e não são exibidas para outros usuários.
             </p>
             <div className="flex gap-2">
               <Button
                 size="sm"
-                className="bg-orange-600 text-white"
+                className="bg-brand text-white"
                 onClick={onSave}
                 disabled={!changed || saving}
               >

@@ -82,16 +82,16 @@ export function ChatPanel({
                 <div
                   className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                     m.sender_id === currentUserId
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-white border border-gray-200 text-gray-900'
+                      ? 'bg-brand text-white'
+                      : 'bg-white border border-line text-ink-strong'
                   }`}
                 >
                   <p className="text-sm">{m.content}</p>
                   <p
                     className={`text-xs mt-1 ${
                       m.sender_id === currentUserId
-                        ? 'text-orange-100'
-                        : 'text-gray-500'
+                        ? 'text-brand-soft'
+                        : 'text-muted-foreground'
                     }`}
                   >
                     {formatMessageTime(m.created_at)}
@@ -109,7 +109,7 @@ export function ChatPanel({
         </ScrollArea>
       </div>
 
-      <div className="p-4 bg-white border-t border-gray-200">
+      <div className="p-4 bg-white border-t border-line">
         <form onSubmit={handleSubmit} className="flex gap-2 items-center">
           {composerAction ? <div className="shrink-0">{composerAction}</div> : null}
           <Input
@@ -122,7 +122,7 @@ export function ChatPanel({
           <Button
             type="submit"
             disabled={!newMessage.trim() || sendingMessage}
-            className="bg-orange-600 hover:bg-orange-700"
+            className="bg-brand hover:bg-brand-dark"
           >
             {sendingMessage ? (
               <Loader2 className="h-4 w-4 animate-spin" />

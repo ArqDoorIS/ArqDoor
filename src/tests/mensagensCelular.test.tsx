@@ -193,7 +193,7 @@ describe("ProposalCard - prop highlighted", () => {
     render(<ProposalCard {...baseCardProps} highlighted={true} />);
     const card = screen.getByTestId("proposal-card");
     expect(card.className).toContain("ring-2");
-    expect(card.className).toContain("ring-orange-400");
+    expect(card.className).toContain("ring-brand");
   });
 
   it("data-ticket-id esta no elemento raiz", () => {
@@ -235,8 +235,8 @@ describe("ContractsPanel - highlightTicketId", () => {
     const cards = screen.getAllByTestId("proposal-card");
     const card42 = cards.find((c) => c.getAttribute("data-ticket-id") === "42");
     const card7 = cards.find((c) => c.getAttribute("data-ticket-id") === "7");
-    expect(card42?.className).toContain("ring-orange-400");
-    expect(card7?.className).not.toContain("ring-orange-400");
+    expect(card42?.className).toContain("ring-brand");
+    expect(card7?.className).not.toContain("ring-brand");
   });
 
   it("mostra a proposta destacada mesmo quando ela e mais antiga que as duas recentes", () => {
@@ -282,7 +282,7 @@ describe("ContractsPanel - highlightTicketId", () => {
     );
     const cards = screen.getAllByTestId("proposal-card");
     cards.forEach((card) => {
-      expect(card.className).not.toContain("ring-orange-400");
+      expect(card.className).not.toContain("ring-brand");
     });
   });
 });

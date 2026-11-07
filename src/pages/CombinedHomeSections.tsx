@@ -23,7 +23,7 @@ const CombinedHomeSections = () => {
 
   return (
     <main
-      className="overflow-x-hidden bg-white text-slate-900"
+      className="overflow-x-hidden bg-white text-ink-strong"
       style={{ fontFamily: '"Nunito Sans", ui-sans-serif, system-ui, sans-serif' }}
     >
       <LandingHeader primaryCta={primaryCta} />

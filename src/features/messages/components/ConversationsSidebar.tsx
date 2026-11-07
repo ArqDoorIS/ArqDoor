@@ -35,8 +35,8 @@ function ConversationRow({
       onClick={onSelect}
       className={`p-3 rounded-lg cursor-pointer transition-colors mb-2 ${
         isSelected
-          ? 'bg-orange-50 border border-orange-200'
-          : 'hover:bg-gray-50'
+          ? 'bg-brand-tint border border-brand-disabled'
+          : 'hover:bg-surface-soft'
       }`}
     >
       <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ function ConversationRow({
         <div className="relative shrink-0">
           <Avatar className="h-10 w-10">
             <AvatarImage src={conversation.otherUser.avatar || conversation.otherUser.perfil || undefined} />
-            <AvatarFallback className="bg-orange-100 text-orange-700">
+            <AvatarFallback className="bg-brand-soft text-brand-dark">
               {getInitials(conversation.otherUser.name)}
             </AvatarFallback>
           </Avatar>
@@ -61,23 +61,22 @@ function ConversationRow({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <p className="font-medium text-gray-900 truncate">
+            <p className="font-medium text-ink-strong truncate">
               {conversation.otherUser.name}
             </p>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {formatConversationTime(conversation.updated_at)}
             </span>
           </div>
           <div className="flex items-center justify-between">
             {digitando ? (
               <p
-                className="text-sm truncate"
-                style={{ color: '#c2410c' }}
+                className="text-sm truncate text-brand-dark"
               >
                 digitando...
               </p>
             ) : (
-              <p className="text-sm text-gray-600 truncate">
+              <p className="text-sm text-muted-foreground truncate">
                 {conversation.lastMessage?.content || 'Nenhuma mensagem'}
               </p>
             )}
@@ -109,10 +108,10 @@ export function ConversationsSidebar({
   onSelectConversation,
 }: ConversationsSidebarProps) {
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
-      <div className="p-4 border-b border-gray-200">
+    <div className="w-80 bg-white border-r border-line flex flex-col overflow-hidden">
+      <div className="p-4 border-b border-line">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <h1 className="text-xl font-semibold text-ink-strong flex items-center gap-2">
             <MessageCircle className="h-5 w-5" /> Messages
           </h1>
           {unreadMessageCount > 0 && (
@@ -127,16 +126,16 @@ export function ConversationsSidebar({
         {loading ? (
           <div className="p-4 text-center">
             <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Carregando conversas...</p>
+            <p className="text-sm text-muted-foreground">Carregando conversas...</p>
           </div>
         ) : conversationsError ? (
           <div className="p-4 text-center">
-            <p className="text-sm text-red-600">Erro ao carregar conversas</p>
+            <p className="text-sm text-danger-dark">Erro ao carregar conversas</p>
           </div>
         ) : conversations.length === 0 ? (
           <div className="p-4 text-center">
-            <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Nenhuma conversa encontrada</p>
+            <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Nenhuma conversa encontrada</p>
           </div>
         ) : (
           <div className="p-2">

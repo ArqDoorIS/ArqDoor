@@ -1,10 +1,6 @@
 import { Link } from "wouter";
 import {
   ClipboardList,
-  PlayCircle,
-  CheckCircle2,
-  CreditCard,
-  BadgeCheck,
   RefreshCw,
   User,
   ArrowRight,
@@ -15,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { statusTone } from "@/lib/statusTone";
 import { useKanban, type KanbanContract, type KanbanStep } from "@/hooks/use-kanban";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
@@ -36,18 +33,17 @@ function formatDate(iso: string) {
 /* ─── Column header ───────────────────────────────────────── */
 
 interface ColHeaderProps {
-  icon: React.ReactNode;
   label: string;
   count: number;
-  colorClass: string;
+  ponto: string;
 }
 
-function ColumnHeader({ icon, label, count, colorClass }: ColHeaderProps) {
+function ColumnHeader({ label, count, ponto }: ColHeaderProps) {
   return (
-    <div className={`flex items-center gap-2.5 px-4 py-3.5 rounded-t-xl ${colorClass}`}>
-      <span className="opacity-90">{icon}</span>
+    <div className="flex items-center gap-2.5 px-4 py-3.5 rounded-t-xl border-b border-line bg-white text-ink-strong">
+      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${ponto}`} aria-hidden="true" />
       <span className="font-semibold text-sm tracking-wide leading-none">{label}</span>
-      <span className="ml-auto bg-white/25 text-xs font-bold px-2.5 py-1 rounded-full min-w-[28px] text-center">
+      <span className="ml-auto bg-surface-warm text-ink text-xs font-bold px-2.5 py-1 rounded-full min-w-[28px] text-center">
         {count}
       </span>
     </div>
@@ -58,38 +54,38 @@ function ColumnHeader({ icon, label, count, colorClass }: ColHeaderProps) {
 
 function ContractCard({ item }: { item: KanbanContract }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-zinc-100 p-5 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-default">
+    <div className="bg-white rounded-xl shadow-sm border border-line p-5 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-default">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar className="h-9 w-9 shrink-0 ring-2 ring-amber-100">
+          <Avatar className="h-9 w-9 shrink-0 ring-2 ring-warning/30">
             <AvatarImage src={item.other_user?.perfil ?? undefined} className="object-cover" />
-            <AvatarFallback className="text-xs bg-amber-50 text-amber-700 font-semibold">
+            <AvatarFallback className="text-xs bg-warning-bg text-warning-text font-semibold">
               {item.other_user ? getInitials(item.other_user.name) : <User className="w-4 h-4" />}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-zinc-900 truncate leading-tight">
+            <p className="text-sm font-semibold text-ink-strong truncate leading-tight">
               {item.other_user?.name ?? "Usuário"}
             </p>
-            <p className="text-xs text-zinc-400 capitalize leading-tight mt-0.5">
+            <p className="text-xs text-muted-foreground capitalize leading-tight mt-0.5">
               {item.other_user?.type === "prestador" ? "Prestador" : "Cliente"}
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="text-xs shrink-0 border-amber-200 text-amber-700 bg-amber-50 font-mono">
+        <Badge variant="outline" className={`text-xs shrink-0 font-mono ${statusTone.aviso.selo}`}>
           #{item.ticket_id}
         </Badge>
       </div>
 
       {/* Status */}
       <div className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-        <span className="text-xs text-zinc-500 font-medium capitalize">{item.ticket_status}</span>
+        <span className={`w-2 h-2 rounded-full shrink-0 ${statusTone.aviso.ponto}`} />
+        <span className="text-xs text-muted-foreground font-medium capitalize">{item.ticket_status}</span>
       </div>
 
       {/* Date */}
-      <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <CalendarDays className="w-3.5 h-3.5 shrink-0" />
         <span>Criado em {formatDate(item.created_at)}</span>
       </div>
@@ -99,7 +95,7 @@ function ContractCard({ item }: { item: KanbanContract }) {
         <Button
           variant="outline"
           size="sm"
-          className="w-full text-xs h-8 text-amber-700 border-amber-200 hover:bg-amber-50 hover:border-amber-300 gap-1.5"
+          className="w-full text-xs h-8 text-warning-text border-warning/30 hover:bg-warning-bg hover:border-warning/30 gap-1.5"
         >
           Ver conversa <ArrowRight className="w-3 h-3" />
         </Button>
@@ -111,10 +107,10 @@ function ContractCard({ item }: { item: KanbanContract }) {
 /* ─── Step card ───────────────────────────────────────────── */
 
 const variantConfig = {
-  progress:        { dot: "bg-blue-400",    badge: "border-blue-200 text-blue-700 bg-blue-50"    },
-  done:            { dot: "bg-emerald-400", badge: "border-emerald-200 text-emerald-700 bg-emerald-50" },
-  "payment-pending": { dot: "bg-orange-400", badge: "border-orange-200 text-orange-700 bg-orange-50" },
-  "payment-done":    { dot: "bg-teal-400",   badge: "border-teal-200 text-teal-700 bg-teal-50"   },
+  progress: { dot: statusTone.andamento.ponto, badge: statusTone.andamento.selo },
+  done: { dot: statusTone.sucesso.ponto, badge: statusTone.sucesso.selo },
+  "payment-pending": { dot: statusTone.aviso.ponto, badge: statusTone.aviso.selo },
+  "payment-done": { dot: statusTone.sucesso.ponto, badge: statusTone.sucesso.selo },
 } as const;
 
 interface StepCardProps {
@@ -126,10 +122,10 @@ function StepCard({ item, variant = "progress" }: StepCardProps) {
   const cfg = variantConfig[variant];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-zinc-100 p-5 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-default">
+    <div className="bg-white rounded-xl shadow-sm border border-line p-5 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-default">
       {/* Title + ticket id */}
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-semibold text-zinc-900 leading-snug line-clamp-2 flex-1">
+        <p className="text-sm font-semibold text-ink-strong leading-snug line-clamp-2 flex-1">
           {item.step_title}
         </p>
         <Badge variant="outline" className={`text-xs shrink-0 font-mono ${cfg.badge}`}>
@@ -140,8 +136,8 @@ function StepCard({ item, variant = "progress" }: StepCardProps) {
       {/* Price */}
       {item.step_price > 0 && (
         <div className="flex items-center gap-1.5">
-          <DollarSign className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-          <span className="text-sm font-bold text-zinc-800">
+          <DollarSign className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <span className="text-sm font-bold text-ink">
             {formatCurrency(item.step_price)}
           </span>
         </div>
@@ -150,24 +146,24 @@ function StepCard({ item, variant = "progress" }: StepCardProps) {
       {/* Status dot */}
       <div className="flex items-center gap-1.5">
         <span className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
-        <span className="text-xs text-zinc-500 font-medium">{item.step_status}</span>
+        <span className="text-xs text-muted-foreground font-medium">{item.step_status}</span>
       </div>
 
       {/* User */}
       <div className="flex items-center gap-2.5">
-        <Avatar className="h-7 w-7 shrink-0 ring-1 ring-zinc-100">
+        <Avatar className="h-7 w-7 shrink-0 ring-1 ring-line">
           <AvatarImage src={item.other_user?.perfil ?? undefined} className="object-cover" />
-          <AvatarFallback className="text-[10px] bg-zinc-100 text-zinc-600 font-semibold">
+          <AvatarFallback className="text-[10px] bg-surface-warm text-muted-foreground font-semibold">
             {item.other_user ? getInitials(item.other_user.name) : "?"}
           </AvatarFallback>
         </Avatar>
-        <span className="text-xs text-zinc-500 truncate font-medium">
+        <span className="text-xs text-muted-foreground truncate font-medium">
           {item.other_user?.name ?? "Usuário"}
         </span>
       </div>
 
       {/* Date */}
-      <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <CalendarDays className="w-3.5 h-3.5 shrink-0" />
         <span>
           {item.started_at
@@ -181,7 +177,7 @@ function StepCard({ item, variant = "progress" }: StepCardProps) {
         <Button
           variant="outline"
           size="sm"
-          className="w-full text-xs h-8 text-zinc-600 border-zinc-200 hover:bg-zinc-50 gap-1.5"
+          className="w-full text-xs h-8 text-muted-foreground border-line hover:bg-surface-soft gap-1.5"
         >
           Ver contrato <ArrowRight className="w-3 h-3" />
         </Button>
@@ -194,11 +190,11 @@ function StepCard({ item, variant = "progress" }: StepCardProps) {
 
 function EmptyCol({ label }: { label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-zinc-300 gap-2">
-      <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center">
-        <ClipboardList className="w-5 h-5 text-zinc-300" />
+    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
+      <div className="w-10 h-10 rounded-full bg-surface-warm flex items-center justify-center">
+        <ClipboardList className="w-5 h-5 text-muted-foreground" />
       </div>
-      <span className="text-xs text-zinc-400 text-center px-4">Sem itens em<br />"{label}"</span>
+      <span className="text-xs text-muted-foreground text-center px-4">Sem itens em<br />"{label}"</span>
     </div>
   );
 }
@@ -218,24 +214,23 @@ function ColSkeleton() {
 /* ─── Kanban column ───────────────────────────────────────── */
 
 interface KanbanColumnProps {
-  icon: React.ReactNode;
   label: string;
-  colorClass: string;
+  ponto: string;
   items: React.ReactNode[];
   isLoading: boolean;
 }
 
-function KanbanColumn({ icon, label, colorClass, items, isLoading }: KanbanColumnProps) {
+function KanbanColumn({ label, ponto, items, isLoading }: KanbanColumnProps) {
   return (
     <div className="
-      flex flex-col rounded-xl border border-zinc-100 shadow-sm bg-zinc-50/80
+      flex flex-col rounded-xl border border-line shadow-sm bg-surface-soft/80
       w-full
       sm:w-[calc(50%-8px)]
       lg:w-[calc(33.333%-11px)]
       xl:flex-1 xl:w-auto xl:min-w-0
       shrink-0 xl:shrink
     ">
-      <ColumnHeader icon={icon} label={label} count={items.length} colorClass={colorClass} />
+      <ColumnHeader label={label} count={items.length} ponto={ponto} />
       <div className="flex-1 flex flex-col gap-3 p-3 overflow-y-auto"
            style={{ maxHeight: "calc(100vh - 196px)" }}>
         {isLoading ? (
@@ -259,8 +254,7 @@ export default function KanbanPage() {
   const columns: KanbanColumnProps[] = [
     {
       label: "Contratos Pendentes",
-      icon: <ClipboardList className="w-4 h-4" />,
-      colorClass: "bg-amber-500 text-white",
+      ponto: statusTone.aviso.ponto,
       isLoading,
       items: kanban.pendingContracts.map((item) => (
         <ContractCard key={`contract-${item.ticket_id}`} item={item} />
@@ -268,8 +262,7 @@ export default function KanbanPage() {
     },
     {
       label: "Etapas em Andamento",
-      icon: <PlayCircle className="w-4 h-4" />,
-      colorClass: "bg-blue-500 text-white",
+      ponto: statusTone.andamento.ponto,
       isLoading,
       items: kanban.stepsInProgress.map((item) => (
         <StepCard key={`step-prog-${item.step_id}`} item={item} variant="progress" />
@@ -277,8 +270,7 @@ export default function KanbanPage() {
     },
     {
       label: "Etapas Concluídas",
-      icon: <CheckCircle2 className="w-4 h-4" />,
-      colorClass: "bg-emerald-500 text-white",
+      ponto: statusTone.sucesso.ponto,
       isLoading,
       items: kanban.completedSteps.map((item) => (
         <StepCard key={`step-done-${item.step_id}`} item={item} variant="done" />
@@ -286,8 +278,7 @@ export default function KanbanPage() {
     },
     {
       label: "Pagamentos a Fazer",
-      icon: <CreditCard className="w-4 h-4" />,
-      colorClass: "bg-orange-500 text-white",
+      ponto: statusTone.aviso.ponto,
       isLoading,
       items: kanban.pendingPayments.map((item) => (
         <StepCard key={`pay-pend-${item.step_id}`} item={item} variant="payment-pending" />
@@ -295,8 +286,7 @@ export default function KanbanPage() {
     },
     {
       label: "Pagamentos Concluídos",
-      icon: <BadgeCheck className="w-4 h-4" />,
-      colorClass: "bg-teal-600 text-white",
+      ponto: statusTone.sucesso.ponto,
       isLoading,
       items: kanban.completedPayments.map((item) => (
         <StepCard key={`pay-done-${item.step_id}`} item={item} variant="payment-done" />
@@ -312,14 +302,14 @@ export default function KanbanPage() {
     kanban.completedPayments.length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 pt-20 pb-10">
+    <div className="min-h-screen pt-20 pb-10">
 
       {/* Page header */}
       <div className="px-4 sm:px-6 mb-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Kanban de Contratos</h1>
-            <p className="text-sm text-zinc-500 mt-0.5">
+            <h1 className="text-2xl font-bold text-ink-strong">Kanban de Contratos</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
               {user?.type === "prestador"
                 ? "Acompanhe o andamento dos seus contratos e etapas"
                 : "Acompanhe o progresso dos serviços contratados"}
@@ -329,7 +319,7 @@ export default function KanbanPage() {
             variant="outline"
             size="sm"
             onClick={() => refetch()}
-            className="flex items-center gap-1.5 text-zinc-600"
+            className="flex items-center gap-1.5 text-muted-foreground"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Atualizar
@@ -337,14 +327,14 @@ export default function KanbanPage() {
         </div>
 
         {!isLoading && totalItems === 0 && (
-          <div className="mt-6 rounded-xl border border-dashed border-zinc-200 bg-white p-10 text-center">
-            <ClipboardList className="w-10 h-10 text-zinc-300 mx-auto mb-3" />
-            <p className="text-zinc-500 font-medium">Nenhum contrato encontrado</p>
-            <p className="text-zinc-400 text-sm mt-1">
+          <div className="mt-6 rounded-xl border border-dashed border-line bg-white p-10 text-center">
+            <ClipboardList className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground font-medium">Nenhum contrato encontrado</p>
+            <p className="text-muted-foreground text-sm mt-1">
               Quando você tiver contratos ativos, eles aparecerão aqui.
             </p>
             <Link href="/messages">
-              <Button variant="default" size="sm" className="mt-4 bg-amber-500 hover:bg-amber-600 text-white">
+              <Button variant="default" size="sm" className="mt-4">
                 Ir para Mensagens
               </Button>
             </Link>

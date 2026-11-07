@@ -40,7 +40,7 @@ export function ProfessionCard({
                 size="sm"
                 onClick={onSave}
                 disabled={saving || !providerProfile}
-                className="bg-green-600 text-white"
+                className="bg-success-dark text-white"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                 {saving ? "Salvando..." : "Salvar"}
@@ -59,7 +59,7 @@ export function ProfessionCard({
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
-            <p className="text-slate-700">
+            <p className="text-ink">
               {profession?.trim() || "Profissão ainda não informada"}
             </p>
             <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>

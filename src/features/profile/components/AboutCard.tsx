@@ -33,12 +33,12 @@ export function AboutCard({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
             Carregando descrição...
           </div>
         ) : error ? (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-danger-dark">{error}</p>
         ) : isEditing ? (
           <div className="space-y-3">
             <Textarea value={about} onChange={(e) => setAbout(e.target.value)} rows={4} />
@@ -47,7 +47,7 @@ export function AboutCard({
                 size="sm"
                 onClick={onSave}
                 disabled={saving || !providerProfile}
-                className="bg-green-600 text-white"
+                className="bg-success-dark text-white"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                 {saving ? "Salvando..." : "Salvar"}
@@ -59,7 +59,7 @@ export function AboutCard({
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <p className="text-slate-700 whitespace-pre-wrap break-words">
+            <p className="text-ink whitespace-pre-wrap break-words">
               {about && about.trim() !== "" ? about : "Nenhum 'Sobre mim' cadastrado ainda."}
             </p>
             <Button size="sm" variant="outline" onClick={() => setIsEditing(true)} className="w-fit">

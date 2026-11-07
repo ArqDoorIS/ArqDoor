@@ -162,7 +162,7 @@ export default function PortfolioModal({
               size="sm"
               variant="ghost"
               onClick={() => onDelete(item.id)}
-              className="text-white hover:bg-red-500/20 rounded-full w-10 h-10 p-0"
+              className="text-white hover:bg-danger/20 rounded-full w-10 h-10 p-0"
             >
               <Trash2 className="w-5 h-5" />
             </Button>
@@ -228,7 +228,7 @@ export default function PortfolioModal({
             <div className="absolute bottom-4 right-4">
               <Button
                 onClick={() => setShowComments(!showComments)}
-                className="bg-white/90 hover:bg-white text-gray-800 rounded-full px-4 py-2 text-sm font-medium shadow-lg backdrop-blur-sm transition-all duration-200"
+                className="bg-white/90 hover:bg-white text-ink rounded-full px-4 py-2 text-sm font-medium shadow-lg backdrop-blur-sm transition-all duration-200"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 {showComments ? 'Ocultar comentários' : 'Ver comentários'}
@@ -240,9 +240,9 @@ export default function PortfolioModal({
           {showComments && (
             <div className="w-1/4 bg-white h-full flex flex-col shadow-2xl">
               {/* Header dos comentários */}
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="font-semibold text-lg text-gray-800">Comentários</h3>
-                <p className="text-sm text-gray-500">{comments.length} comentário{comments.length !== 1 ? 's' : ''}</p>
+              <div className="p-4 border-b border-line">
+                <h3 className="font-semibold text-lg text-ink">Comentários</h3>
+                <p className="text-sm text-muted-foreground">{comments.length} comentário{comments.length !== 1 ? 's' : ''}</p>
               </div>
 
               {/* Lista de comentários */}
@@ -251,16 +251,16 @@ export default function PortfolioModal({
                   <div key={comment.id} className="flex gap-3">
                     <Avatar className="w-8 h-8 flex-shrink-0">
                       <AvatarImage src={comment.avatar} alt={comment.user} />
-                      <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
+                      <AvatarFallback className="bg-surface-warm text-muted-foreground text-xs">
                         {comment.user.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="font-medium text-sm text-gray-800">{comment.user}</p>
-                        <p className="text-sm text-gray-700 mt-1">{comment.text}</p>
+                      <div className="bg-surface-soft rounded-lg p-3">
+                        <p className="font-medium text-sm text-ink">{comment.user}</p>
+                        <p className="text-sm text-ink mt-1">{comment.text}</p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1 ml-3">
+                      <p className="text-xs text-muted-foreground mt-1 ml-3">
                         {comment.date ? new Date(comment.date).toLocaleString("pt-BR") : ""}
                       </p>
                     </div>
@@ -269,11 +269,11 @@ export default function PortfolioModal({
               </div>
 
               {/* Campo para novo comentário */}
-              <div className="p-4 border-t border-gray-200">
+              <div className="p-4 border-t border-line">
                 <div className="flex gap-2">
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={viewerAvatar} alt={viewerName} />
-                    <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                    <AvatarFallback className="bg-brand-soft text-brand-dark text-xs">
                       {viewerName?.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -289,7 +289,7 @@ export default function PortfolioModal({
                       onClick={handleAddComment}
                       disabled={!newComment.trim() || !onAddComment}
                       size="sm"
-                      className="bg-amber-600 hover:bg-amber-700 text-white px-3"
+                      className="bg-brand hover:bg-brand-dark text-white px-3"
                     >
                       <Send className="w-4 h-4" />
                     </Button>

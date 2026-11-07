@@ -438,7 +438,7 @@ export function ProposalDetailsDialog({
                   <Badge variant="outline">{receivingMethodLabel}</Badge>
                 )}
                 {paymentPhasesProgress && (
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-sm font-semibold text-ink-strong">
                     {paymentPhasesProgress.paid} de {paymentPhasesProgress.total} {paymentPhasesProgress.total === 1 ? "Fase" : "Fases"} de pagamento {paymentPhasesProgress.paid === 1 ? "realizada" : "realizadas"}
                   </span>
                 )}
@@ -453,7 +453,7 @@ export function ProposalDetailsDialog({
               <div className={`mt-1 text-sm font-semibold ${workflowToneClasses.title}`}>
                 {workflowSummary.title}
               </div>
-              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 {workflowSummary.description}
               </p>
             </div>
@@ -462,8 +462,8 @@ export function ProposalDetailsDialog({
           <div className="flex-1 flex flex-col md:flex-row gap-4 overflow-hidden">
             {/* Sidebar de progresso — empilha em cima do conteúdo em mobile */}
             {steps.length > 0 && (
-              <aside className="md:w-72 md:flex-shrink-0 md:overflow-y-auto rounded-xl border border-slate-200 bg-slate-50/60 p-4">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 mb-4">
+              <aside className="md:w-72 md:flex-shrink-0 md:overflow-y-auto rounded-xl border border-line bg-surface-soft/60 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-4">
                   Progresso
                 </h3>
                 <div>
@@ -474,10 +474,10 @@ export function ProposalDetailsDialog({
                     // (pinta o trecho até a próxima etapa). Caso contrário cinza.
                     const lineColorClass =
                       item.kind === "step" && item.status === "concluido"
-                        ? "bg-emerald-400"
+                        ? "bg-success"
                         : item.kind === "group" && item.paid
-                          ? "bg-emerald-400"
-                          : "bg-slate-300";
+                          ? "bg-success"
+                          : "bg-line";
 
                     if (item.kind === "group") {
                       return (
@@ -492,8 +492,8 @@ export function ProposalDetailsDialog({
                             <div
                               className={`inline-block rounded-md px-2.5 py-1 text-xs font-medium ${
                                 item.paid
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-slate-100 text-slate-600"
+                                  ? "bg-success-bg text-success-dark"
+                                  : "bg-surface-warm text-muted-foreground"
                               }`}
                             >
                               {item.name} —{" "}
@@ -509,10 +509,10 @@ export function ProposalDetailsDialog({
 
                     const dotClass =
                       item.status === "concluido"
-                        ? "bg-emerald-500 border-emerald-500 text-white"
+                        ? "bg-success-dark border-success-dark text-white"
                         : item.status === "andamento"
-                          ? "bg-blue-500 border-blue-500"
-                          : "bg-white border-slate-300";
+                          ? "bg-info border-info"
+                          : "bg-white border-line";
 
                     const statusLabel =
                       item.status === "concluido"
@@ -530,11 +530,11 @@ export function ProposalDetailsDialog({
                               className={`absolute top-0 left-1/2 -translate-x-1/2 w-0.5 ${
                                 progressSidebarItems[idx - 1].kind === "step" &&
                                 (progressSidebarItems[idx - 1] as any).status === "concluido"
-                                  ? "bg-emerald-400"
+                                  ? "bg-success"
                                   : progressSidebarItems[idx - 1].kind === "group" &&
                                     (progressSidebarItems[idx - 1] as any).paid
-                                    ? "bg-emerald-400"
-                                    : "bg-slate-300"
+                                    ? "bg-success"
+                                    : "bg-line"
                               }`}
                               style={{ height: "calc(50% - 10px)" }}
                             />
@@ -558,13 +558,13 @@ export function ProposalDetailsDialog({
                         <div className="flex-1 min-w-0 py-2">
                           <p
                             className={`text-sm font-medium truncate ${
-                              item.status === "pendente" ? "text-slate-400" : "text-slate-900"
+                              item.status === "pendente" ? "text-muted-foreground" : "text-ink-strong"
                             }`}
                             title={item.step.title}
                           >
                             {item.step.title}
                           </p>
-                          <p className="text-xs text-slate-500">{statusLabel}</p>
+                          <p className="text-xs text-muted-foreground">{statusLabel}</p>
                         </div>
                       </div>
                     );
@@ -572,12 +572,12 @@ export function ProposalDetailsDialog({
                 </div>
 
                 {(contractSummary.total > 0 || contractSummary.durationDays) && (
-                  <div className="mt-6 pt-4 border-t border-slate-200">
+                  <div className="mt-6 pt-4 border-t border-line">
                     {contractSummary.total > 0 && (
-                      <p className="text-xs text-slate-500">Total do contrato</p>
+                      <p className="text-xs text-muted-foreground">Total do contrato</p>
                     )}
                     {contractSummary.total > 0 && (
-                      <p className="text-base font-semibold text-slate-900">
+                      <p className="text-base font-semibold text-ink-strong">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -585,7 +585,7 @@ export function ProposalDetailsDialog({
                       </p>
                     )}
                     {contractSummary.durationDays && (
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {contractSummary.durationDays} {contractSummary.durationDays === 1 ? "dia" : "dias"} de duração
                       </p>
                     )}
@@ -599,7 +599,7 @@ export function ProposalDetailsDialog({
           {loading ? (
             <div className="text-center py-8">Carregando…</div>
           ) : steps.length === 0 ? (
-            <div className="text-center py-8 text-sm text-gray-600">
+            <div className="text-center py-8 text-sm text-muted-foreground">
               Nenhuma etapa encontrada para este ticket.
             </div>
           ) : (
@@ -607,7 +607,7 @@ export function ProposalDetailsDialog({
               {groupedSteps.map((group) => (
                 <div key={group.id} className="space-y-2">
                   {isCustomPayment && group.name && (
-                    <h3 className="text-base font-semibold text-gray-900 px-1">
+                    <h3 className="text-base font-semibold text-ink-strong px-1">
                       {group.name}
                     </h3>
                   )}
@@ -615,14 +615,14 @@ export function ProposalDetailsDialog({
                     className={`space-y-2 ${
                       isCustomPayment
                         ? `border rounded-xl p-4 ${
-                            group.paid ? "bg-emerald-50 border-green-200" : "bg-gray-50"
+                            group.paid ? "bg-success-bg border-success/30" : "bg-surface-soft"
                           }`
                         : ""
                     }`}
                   >
                   {isCustomPayment && group.total > 0 && (
-                    <div className="mb-2 pb-2 border-b border-gray-200 flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">
+                    <div className="mb-2 pb-2 border-b border-line flex justify-between items-center">
+                      <span className="text-sm font-medium text-ink">
                         Total do grupo: {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL"
@@ -633,7 +633,7 @@ export function ProposalDetailsDialog({
                         {userType === "contratante" && !group.paid && (
                           <Button
                             size="sm"
-                            className="bg-orange-600 hover:bg-orange-700 text-white h-8"
+                            className="bg-brand hover:bg-brand-dark text-white h-8"
                             onClick={() => onPaySteps?.(group.steps)}
                           >
                             <QrCode className="h-3.5 w-3.5 mr-1.5" />
@@ -641,7 +641,7 @@ export function ProposalDetailsDialog({
                           </Button>
                         )}
                         {userType === "contratante" && group.paid && (
-                          <span className="text-sm text-green-600 flex items-center shrink-0" title="Pagamento realizado">
+                          <span className="text-sm text-success-dark flex items-center shrink-0" title="Pagamento realizado">
                             <CheckCircle className="h-4 w-4 mr-1" /> Pagamento realizado
                           </span>
                         )}
@@ -711,10 +711,10 @@ export function ProposalDetailsDialog({
 
                 // adiciona cores de fundo com base no status da etapa
                   const stepBackgroundClass = (() => {
-                    if (stepConcluded) return "bg-green-50 border-green-300";
-                    if (isRejected) return "bg-red-50 border-red-200";
-                    if (status === "em andamento") return "bg-blue-50 border-blue-200";
-                    return "bg-white border-gray-200";
+                    if (stepConcluded) return "bg-success-bg border-success/30";
+                    if (isRejected) return "bg-danger-bg border-danger/30";
+                    if (status === "em andamento") return "bg-info-bg border-info/30";
+                    return "bg-white border-line";
                   })();
 
                 // condições de bloqueio
@@ -738,10 +738,10 @@ export function ProposalDetailsDialog({
                       </div>
                       <Badge variant="outline">{statusLabel}</Badge>
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       {formatDate((step as any).start_date)} – {formatDate((step as any).end_date)}
                     </p>
-                    <p className="text-gray-700 mb-2">{step.title}</p>
+                    <p className="text-ink mb-2">{step.title}</p>
                     <p className="font-semibold text-lg">
                       {isSignatureStep
                         ? "Contrato PDF (sem custo)"
@@ -752,7 +752,7 @@ export function ProposalDetailsDialog({
                     </p>
 
                     {userType === "contratante" && paid && !group.paid &&(
-                      <span className="mt-[10px] inline-block text-s text-green-600" title="Etapa Paga">
+                      <span className="mt-[10px] inline-block text-s text-success-dark" title="Etapa Paga">
                         <CheckCircle className="inline mr-1" /> Pagamento realizado
                       </span>
                     )}
@@ -780,7 +780,7 @@ export function ProposalDetailsDialog({
                         if (requiresSequentialPayment && prev && !prevDone) {
                           return (
                             <div className="w-full">
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="text-sm text-muted-foreground mb-2">
                                 {prevIsSignature ? 'Aguardando assinatura do contrato' : 'Aguardando a conclusão da etapa anterior.'}
                               </p>
                             </div>
@@ -790,7 +790,7 @@ export function ProposalDetailsDialog({
                         if (requiresSequentialPayment && prevDone && !prevPaid && !prevIsSignature) {
                           return (
                             <div className="w-full">
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="text-sm text-muted-foreground mb-2">
                                 Aguardando pagamento do cliente.
                               </p>
                             </div>
@@ -800,7 +800,7 @@ export function ProposalDetailsDialog({
                         if (isCustomPayment && needsPaymentToStart && !providerMarkedDone) {
                           return (
                             <div className="w-full">
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="text-sm text-muted-foreground mb-2">
                                 Aguardando pagamento do cliente para iniciar a etapa.
                               </p>
                             </div>
@@ -821,7 +821,7 @@ export function ProposalDetailsDialog({
                             }
                             return (
                               <div className="w-full">
-                                <p className="text-sm text-gray-500 mb-2">{countdownMessage}</p>
+                                <p className="text-sm text-muted-foreground mb-2">{countdownMessage}</p>
                               </div>
                             );
                           }
@@ -830,7 +830,7 @@ export function ProposalDetailsDialog({
                         if (providerMarkedDone && !isConcluded(step)) {
                           return (
                             <div className="w-full">
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="text-sm text-muted-foreground mb-2">
                                 Aguardando a confirmação do cliente.
                               </p>
                             </div>
@@ -840,7 +840,7 @@ export function ProposalDetailsDialog({
                         if (requiresSequentialPayment && (step as any).confirm_contractor && !paid) {
                           return (
                             <div className="w-full">
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="text-sm text-muted-foreground mb-2">
                                 Aguardando pagamento do cliente.
                               </p>
                             </div>
@@ -856,7 +856,7 @@ export function ProposalDetailsDialog({
                             isStepPayment && status === 'pendente' && !isRework ? (
                             <Button
                               size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-success-dark hover:bg-success-dark/90 text-white"
                               onClick={() => onStartPhase(step.id)}
                               disabled={!ticketIsActive || prevBlocking || needsPaymentToStart}
                               title={
@@ -871,7 +871,7 @@ export function ProposalDetailsDialog({
                             ) : (
                               <Button
                                 size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
+                                className="bg-success-dark hover:bg-success-dark/90 text-white"
                                 onClick={() => onMarkProviderCompleted(step.id, (step as any).ticket_id)}
                                 disabled={
                                   !ticketIsActive ||
@@ -911,7 +911,7 @@ export function ProposalDetailsDialog({
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-red-400 text-red-600 hover:text-red-700 hover:border-red-500 disabled:border-slate-200 disabled:text-slate-400"
+                              className="border-danger text-danger-dark hover:text-danger-dark hover:border-danger disabled:border-line disabled:text-muted-foreground"
                               onClick={() => openFeedbackModal(step, 'problem')}
                               disabled={isBlocked || (!ticketIsActive && !stepConcluded)}
                             >
@@ -937,7 +937,7 @@ export function ProposalDetailsDialog({
                                     <Edit2 className="h-4 w-4 mr-2" /> Editar
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    className="text-red-600"
+                                    className="text-danger-dark"
                                     onClick={() => onDeleteStep(step.id)}
                                   >
                                     <Trash2 className="h-4 w-4 mr-2" /> Excluir
@@ -963,14 +963,14 @@ export function ProposalDetailsDialog({
                           <>
                           <Button
                             size="sm"
-                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            className="bg-brand hover:bg-brand-dark text-white"
                             onClick={() => onPaySteps?.([step])}
                             // disabled={!ticketIsActive}
                           >
                             <QrCode className="h-4 w-4 mr-2" /> Pagar esta etapa
                           </Button>
                           <Button
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="bg-success-dark hover:bg-success-dark/90 text-white"
                             variant="outline"
                             onClick={() => onConfirmStepPayment?.(step.id)}
                             disabled={!!confirmingStepPaymentIds?.[step.id]}
@@ -991,7 +991,7 @@ export function ProposalDetailsDialog({
 
                         if (isRework && !providerMarkedDone && !isConcluded(step)) {
                           return (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               Aguardando o prestador realizar uma reentrega.
                             </p>
                           );
@@ -999,7 +999,7 @@ export function ProposalDetailsDialog({
 
                         if (isStepPayment && status === 'em andamento' && !providerMarkedDone) {
                           return (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               Aguardando finalização do prestador.
                             </p>
                           );
@@ -1010,7 +1010,7 @@ export function ProposalDetailsDialog({
                               <div className="flex flex-wrap gap-2">
                                 <Button
                                   size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  className="bg-success-dark hover:bg-success-dark/90 text-white"
                                   onClick={() => onClientAccept(step)}
                                   disabled={!ticketIsActive}
                                 >
@@ -1040,7 +1040,7 @@ export function ProposalDetailsDialog({
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="border-red-400 text-red-600 hover:text-red-700 hover:border-red-500"
+                                  className="border-danger text-danger-dark hover:text-danger-dark hover:border-danger"
                                   onClick={() => openFeedbackModal(step, 'problem')}
                                   disabled={!ticketIsActive}
                                 >
@@ -1055,7 +1055,7 @@ export function ProposalDetailsDialog({
                         if (isConcluded(step) && (!isStepPayment || paid)) {
                           const conclusionDate = (step as any).updated_at || (step as any).updatedAt;
                           return (
-                            <p className="text-sm text-green-700 font-medium">
+                            <p className="text-sm text-success-dark font-medium">
                               Fase finalizada em: {conclusionDate ? formatDate(conclusionDate) : 'data indisponível'}.
                             </p>
                           );
@@ -1063,7 +1063,7 @@ export function ProposalDetailsDialog({
                         
                         if (prevDone && !providerMarkedDone && status !== 'em andamento') {
                           return (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               Aguardando o prestador iniciar a etapa.
                             </p>
                           );
@@ -1098,7 +1098,7 @@ export function ProposalDetailsDialog({
                       })()}
 
                       {userType === "contratante" && isSignatureStep && signatureSigned && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           Contrato assinado. Não é mais possível recusar esta proposta.
                         </p>
                       )}
@@ -1149,7 +1149,7 @@ export function ProposalDetailsDialog({
               </div>
               ))}
 
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-surface-soft p-4 rounded-lg">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Total:</span>
                   <span className="text-xl font-bold">
@@ -1210,7 +1210,7 @@ export function ProposalDetailsDialog({
               );
               if (filtered.length === 0) {
                 return (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {feedbackModalType === 'problem'
                       ? 'Nenhum problema relatado para esta etapa.'
                       : 'Nenhum feedback encontrado para esta etapa.'}
@@ -1222,13 +1222,13 @@ export function ProposalDetailsDialog({
                   key={fb.id}
                   className={`border p-3 rounded-lg flex justify-between gap-3 ${
                     fb.isProblem
-                      ? 'border-red-300 bg-red-50 text-red-900'
-                      : 'border-gray-200 bg-gray-50'
+                      ? 'border-danger/30 bg-danger-bg text-danger-dark'
+                      : 'border-line bg-surface-soft'
                   }`}
                 >
                   <div>
                     <p className="text-sm">{fb.comment}</p>
-                    <p className={`text-xs mt-1 ${fb.isProblem ? 'text-red-700/80' : 'text-gray-500'}`}>
+                    <p className={`text-xs mt-1 ${fb.isProblem ? 'text-danger-dark/80' : 'text-muted-foreground'}`}>
                       {formatDate(fb.createdAt)}
                     </p>
                   </div>
@@ -1248,7 +1248,7 @@ export function ProposalDetailsDialog({
                         </Button>
                       </>
                     ) : (
-                      <span className="text-xs text-gray-500">Somente visualização</span>
+                      <span className="text-xs text-muted-foreground">Somente visualização</span>
                     )}
                   </div>
                 </div>
@@ -1295,14 +1295,14 @@ export function ProposalDetailsDialog({
                 )}
               </div>
               {pendingRejectStep && feedbackModalType === 'problem' && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-danger-dark">
                   Ao enviar o problema a etapa será recusada automaticamente.
                 </p>
               )}
             </div>
           ) : (
             <div className="pt-3 border-t">
-              <p className="text-sm text-gray-500">Somente visualização — você não pode adicionar, editar ou excluir feedbacks.</p>
+              <p className="text-sm text-muted-foreground">Somente visualização — você não pode adicionar, editar ou excluir feedbacks.</p>
             </div>
           )}
         </DialogContent>

@@ -46,18 +46,18 @@ export function TrustCard({ userId }: TrustCardProps) {
       <CardContent className="space-y-3">
         {isLoading ? (
           <div className="flex justify-center py-4">
-            <Loader2 className="h-5 w-5 animate-spin text-orange-600" />
+            <Loader2 className="h-5 w-5 animate-spin text-brand-dark" />
           </div>
         ) : isError || !nivel ? (
-          <p className="text-sm text-slate-600">Não foi possível carregar o nível de confiança agora.</p>
+          <p className="text-sm text-muted-foreground">Não foi possível carregar o nível de confiança agora.</p>
         ) : (
           <>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-600">Dados validados</span>
-              <span className="font-semibold text-slate-900">{nivel.percentual}%</span>
+              <span className="text-muted-foreground">Dados validados</span>
+              <span className="font-semibold text-ink-strong">{nivel.percentual}%</span>
             </div>
             <Progress value={nivel.percentual} />
-            <div className="space-y-1 text-sm text-slate-600">
+            <div className="space-y-1 text-sm text-muted-foreground">
               {nivel.linhas.map((linha) => (
                 <div key={linha.chave} className="flex items-center gap-2">
                   <Badge variant={VARIANTE[linha.estado]}>{linha.rotulo}</Badge>
@@ -66,7 +66,7 @@ export function TrustCard({ userId }: TrustCardProps) {
               ))}
             </div>
             {dono ? (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Cada item só conta quando o documento que o comprova é aprovado. Os documentos
                 são enviados pelo app ArqDoor, em Validação de dados.
               </p>

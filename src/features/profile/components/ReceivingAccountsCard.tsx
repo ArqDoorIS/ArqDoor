@@ -203,7 +203,7 @@ export function ReceivingAccountsCard({
               <Wallet className="h-4 w-4" />
               Carteira de recebimento
             </CardTitle>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Cadastre dados para reaproveitar no método padrão. Você pode salvar uma conta
               bancária, só uma chave PIX, ou os dois juntos.
             </p>
@@ -215,12 +215,12 @@ export function ReceivingAccountsCard({
         </CardHeader>
         <CardContent className="space-y-4">
           {loading ? (
-            <div className="flex items-center justify-center py-6 text-slate-500">
+            <div className="flex items-center justify-center py-6 text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Carregando carteira...
             </div>
           ) : accounts.length === 0 ? (
-            <div className="rounded-xl border border-dashed p-4 text-sm text-slate-500">
+            <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
               Nenhuma conta cadastrada ainda. Adicione pelo menos uma opção para usar o método
               padrão nos contratos e links.
             </div>
@@ -233,21 +233,21 @@ export function ReceivingAccountsCard({
                 return (
                   <div
                     key={account.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                    className="rounded-2xl border border-line bg-white p-4 shadow-sm"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700">
+                          <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand-dark">
                             {account.nickname}
                           </span>
                           {showBank ? (
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                            <span className="rounded-full bg-surface-warm px-2.5 py-1 text-xs font-medium text-ink">
                               Conta bancária
                             </span>
                           ) : null}
                           {showPix ? (
-                            <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-medium text-sky-700">
+                            <span className="rounded-full bg-info-bg px-2.5 py-1 text-xs font-medium text-info-dark">
                               PIX
                             </span>
                           ) : null}
@@ -255,14 +255,14 @@ export function ReceivingAccountsCard({
 
                         {showBank ? (
                           <div className="space-y-1">
-                            <p className="text-sm font-medium text-slate-900">
+                            <p className="text-sm font-medium text-ink-strong">
                               {formatBankLabel(account)}
                             </p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                               Agência {account.bank_agency || "—"} · Conta{" "}
                               {maskAccount(account.bank_account)}
                             </p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                               Documento {formatDocument(account.bank_document || "") || "—"}
                             </p>
                           </div>
@@ -270,8 +270,8 @@ export function ReceivingAccountsCard({
 
                         {showPix ? (
                           <div className="space-y-1">
-                            <p className="text-sm font-medium text-slate-900">Chave PIX</p>
-                            <p className="text-sm text-slate-500 break-all">
+                            <p className="text-sm font-medium text-ink-strong">Chave PIX</p>
+                            <p className="text-sm text-muted-foreground break-all">
                               {account.pix_key}
                             </p>
                           </div>
@@ -285,7 +285,7 @@ export function ReceivingAccountsCard({
                         <Button
                           variant="outline"
                           size="icon"
-                          className="text-red-600 hover:text-red-700"
+                          className="text-danger-dark hover:text-danger-dark"
                           onClick={() => handleDelete(account.id)}
                           disabled={deletingId === account.id}
                         >
@@ -308,8 +308,8 @@ export function ReceivingAccountsCard({
       <Dialog open={editingId !== null} onOpenChange={(open) => !open && closeEditor()}>
         <DialogContent className="max-w-3xl">
           <DialogHeader className="pr-8">
-            <DialogTitle className="flex items-center gap-2 text-slate-900">
-              <Landmark className="h-4 w-4 text-orange-600" />
+            <DialogTitle className="flex items-center gap-2 text-ink-strong">
+              <Landmark className="h-4 w-4 text-brand-dark" />
               {editingId && editingId > 0 ? "Editar conta" : "Nova conta"}
             </DialogTitle>
             <DialogDescription>
@@ -332,11 +332,11 @@ export function ReceivingAccountsCard({
             </div>
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4">
+              <section className="space-y-4 rounded-2xl border border-line bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Conta bancária</p>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="text-sm font-semibold text-ink-strong">Conta bancária</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Opcional. Se quiser, selecione o banco pelo código ou nome e complete os
                       demais dados da conta.
                     </p>
@@ -395,10 +395,10 @@ export function ReceivingAccountsCard({
                                   )}
                                 />
                                 <div className="min-w-0">
-                                  <p className="truncate text-sm font-medium text-slate-900">
+                                  <p className="truncate text-sm font-medium text-ink-strong">
                                     {bank.code} · {bank.name}
                                   </p>
-                                  <p className="truncate text-xs text-slate-500">
+                                  <p className="truncate text-xs text-muted-foreground">
                                     ISPB {bank.ispb} · {bank.shortName}
                                   </p>
                                 </div>
@@ -449,14 +449,14 @@ export function ReceivingAccountsCard({
                 </div>
               </section>
 
-              <section className="space-y-4 rounded-2xl border border-sky-200 bg-sky-50/60 p-4">
+              <section className="space-y-4 rounded-2xl border border-info/30 bg-info-bg/60 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="rounded-xl bg-sky-100 p-2 text-sky-700">
+                  <div className="rounded-xl bg-info-bg p-2 text-info-dark">
                     <QrCode className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">PIX independente</p>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="text-sm font-semibold text-ink-strong">PIX independente</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Opcional. Você pode cadastrar só a chave PIX e deixar a conta bancária em
                       branco se preferir.
                     </p>
@@ -474,7 +474,7 @@ export function ReceivingAccountsCard({
                   />
                 </div>
 
-                <div className="rounded-xl border border-sky-200 bg-white/80 px-3 py-3 text-sm text-slate-600">
+                <div className="rounded-xl border border-info/30 bg-white/80 px-3 py-3 text-sm text-muted-foreground">
                   O administrador verá exatamente os dados cadastrados aqui quando houver repasse
                   pronto para o prestador.
                 </div>

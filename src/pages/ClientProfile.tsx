@@ -236,7 +236,7 @@ export default function ClientProfile() {
     return (
       <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
-          <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
+          <Loader2 className="animate-spin w-8 h-8 text-brand-dark" />
         </div>
       </div>
     );
@@ -246,7 +246,7 @@ export default function ClientProfile() {
     return (
       <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
-          <p className="text-slate-600">Contratante não encontrado.</p>
+          <p className="text-muted-foreground">Contratante não encontrado.</p>
         </div>
       </div>
     );
@@ -347,10 +347,9 @@ export default function ClientProfile() {
         <Card className="overflow-hidden">
            {/* Banner */}
            <div 
-             className="h-32 sm:h-48 w-full bg-slate-100 bg-cover bg-center"
+             className="h-32 sm:h-48 w-full bg-surface-warm bg-cover bg-center"
              style={{ 
                backgroundImage: (user as any).banner ? `url(${buildImageUrl((user as any).banner)})` : undefined,
-               backgroundColor: !(user as any).banner ? '#FEF8C3' : undefined 
              }} 
            />
 
@@ -361,7 +360,7 @@ export default function ClientProfile() {
             </Avatar>
             <div className="flex-1 text-center sm:text-left pt-2 sm:pt-0">
               <h1 className="text-2xl font-bold mt-1">{user.name}</h1>
-              <p className="text-slate-600">Contratante</p>
+              <p className="text-muted-foreground">Contratante</p>
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 <Badge className="text-xs">Membro desde {new Date(user.createdAt).toLocaleDateString()}</Badge>
                 {isProviderViewer && canMessage ? (
@@ -378,7 +377,7 @@ export default function ClientProfile() {
                 ) : null}
               </div>
               {isProviderViewer ? (
-                <p className="mt-3 max-w-2xl text-sm text-slate-500">
+                <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
                   {canMessage
                     ? "Esse cliente já aceitou sua conexão, então a conversa está liberada."
                     : hasDemandContext
@@ -402,13 +401,13 @@ export default function ClientProfile() {
                 {canShowEmail ? (
                   <p><User className="w-4 h-4 inline mr-2" /> {user.email}</p>
                 ) : (
-                  <p className="text-sm text-slate-500">Email oculto para prestadores.</p>
+                  <p className="text-sm text-muted-foreground">Email oculto para prestadores.</p>
                 )}
                 <p><Clock className="w-4 h-4 inline mr-2" /> Desde {new Date(user.createdAt).toLocaleDateString()}</p>
                 <div className="pt-2">
                   <p className="text-sm font-medium">Nível de confiança</p>
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <span className="font-semibold text-slate-900">{trustPercent}%</span>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="font-semibold text-ink-strong">{trustPercent}%</span>
                     <span>{trustLabel}</span>
                   </div>
                   <Progress value={trustPercent} className="mt-2" />
@@ -427,14 +426,14 @@ export default function ClientProfile() {
                 {loadingDm ? (
                   <Loader2 className="animate-spin w-6 h-6 mx-auto" />
                 ) : demands.length === 0 ? (
-                  <p className="text-slate-500">Nenhuma demanda publicada.</p>
+                  <p className="text-muted-foreground">Nenhuma demanda publicada.</p>
                 ) : (
                   demands.map((d) => (
                     <div key={d.id_demand} className="p-3 border rounded-lg space-y-2">
                       <div>
                         <h3 className="font-semibold">{d.title}</h3>
-                        <p className="text-slate-600 line-clamp-2">{d.description}</p>
-                        <p className="text-green-600 font-bold">R$ {d.price}</p>
+                        <p className="text-muted-foreground line-clamp-2">{d.description}</p>
+                        <p className="text-success-dark font-bold">R$ {d.price}</p>
                       </div>
                       {isProviderViewer ? (
                         <div className="space-y-2">
@@ -448,7 +447,7 @@ export default function ClientProfile() {
                                 : "Usar esta demanda para solicitar conexão"}
                             </Button>
                           </Link>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-muted-foreground">
                             O contato só será liberado se o cliente aceitar a solicitação.
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -480,7 +479,7 @@ export default function ClientProfile() {
                           </div>
                         </div>
                       ) : (
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           Perfil visível apenas para acompanhamento do contratante.
                         </p>
                       )}
@@ -504,36 +503,36 @@ export default function ClientProfile() {
           {detailsDemand ? (
             <div className="space-y-4">
               <div className="space-y-1">
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   Projeto
                 </p>
-                <h3 className="text-xl font-semibold text-slate-900">
+                <h3 className="text-xl font-semibold text-ink-strong">
                   {detailsDemand.title}
                 </h3>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-lg border bg-slate-50 p-3">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Status</p>
-                  <p className="mt-1 font-medium capitalize text-slate-900">
+                <div className="rounded-lg border bg-surface-soft p-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Status</p>
+                  <p className="mt-1 font-medium capitalize text-ink-strong">
                     {detailsDemand.status}
                   </p>
                 </div>
-                <div className="rounded-lg border bg-slate-50 p-3">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Valor</p>
-                  <p className="mt-1 font-medium text-slate-900">R$ {detailsDemand.price}</p>
+                <div className="rounded-lg border bg-surface-soft p-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Valor</p>
+                  <p className="mt-1 font-medium text-ink-strong">R$ {detailsDemand.price}</p>
                 </div>
-                <div className="rounded-lg border bg-slate-50 p-3">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Publicada em</p>
-                  <p className="mt-1 font-medium text-slate-900">
+                <div className="rounded-lg border bg-surface-soft p-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Publicada em</p>
+                  <p className="mt-1 font-medium text-ink-strong">
                     {new Date(detailsDemand.created_at).toLocaleDateString()}
                   </p>
                 </div>
               </div>
               <div className="rounded-xl border p-4">
-                <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                   Descrição
                 </p>
-                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-ink">
                   {detailsDemand.description}
                 </p>
               </div>

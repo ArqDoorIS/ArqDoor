@@ -94,20 +94,20 @@ const SearchBar = ({
       <form onSubmit={handleSubmit} className="w-full">
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-4 w-4 text-muted-foreground" />
           </div>
           <Input
             type="text"
             placeholder={placeholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10 rounded-full border-gray-300"
+            className="pl-10 pr-10 rounded-full border-line"
           />
           <Button
             type="submit"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary"
           >
             <Search className="h-4 w-4" />
           </Button>
@@ -132,7 +132,7 @@ const SearchBar = ({
             type="submit"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary"
           >
             <Search className="h-4 w-4" />
           </Button>
@@ -148,7 +148,7 @@ const SearchBar = ({
           {/* Search input */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
+              <Search className="h-4 w-4 text-muted-foreground" />
             </div>
             <Input
               type="text"
@@ -165,7 +165,7 @@ const SearchBar = ({
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="w-full">
                   <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
                     <SelectValue placeholder="Location" />
                   </div>
                 </SelectTrigger>
@@ -185,7 +185,7 @@ const SearchBar = ({
               <Select value={selectedService} onValueChange={setSelectedService}>
                 <SelectTrigger className="w-full">
                   <div className="flex items-center">
-                    <Briefcase className="h-4 w-4 mr-2 text-gray-400" />
+                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
                     <SelectValue placeholder="Service" />
                   </div>
                 </SelectTrigger>

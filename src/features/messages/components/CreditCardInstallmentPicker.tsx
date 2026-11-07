@@ -80,18 +80,18 @@ export function CreditCardInstallmentPicker({
   }, [amount, onChange]);
 
   return (
-    <div className="rounded-md border border-orange-100 bg-orange-50/40 p-3">
-      <p className="text-sm font-medium text-gray-900">Em quantas vezes você quer pagar?</p>
-      <p className="mb-3 text-xs text-gray-600">
+    <div className="rounded-md border border-brand-soft bg-brand-tint/40 p-3">
+      <p className="text-sm font-medium text-ink-strong">Em quantas vezes você quer pagar?</p>
+      <p className="mb-3 text-xs text-muted-foreground">
         {selectedCount == null
           ? "Escolha o parcelamento para continuar. Os valores abaixo já são os finais."
           : "Valores finais para pagamento no cartão."}
       </p>
 
       {loading ? (
-        <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-orange-600" /></div>
+        <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-brand-dark" /></div>
       ) : failed ? (
-        <p className="text-xs text-red-600">Não foi possível calcular as parcelas agora.</p>
+        <p className="text-xs text-danger-dark">Não foi possível calcular as parcelas agora.</p>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {options.map((option) => {
@@ -105,10 +105,10 @@ export function CreditCardInstallmentPicker({
                   setSelectedCount(option.installment_count);
                   onChange(option.installment_count, option);
                 }}
-                className={active ? "h-auto justify-between border-orange-500 bg-orange-50 px-3 py-2 text-left" : "h-auto justify-between px-3 py-2 text-left"}
+                className={active ? "h-auto justify-between border-brand bg-brand-tint px-3 py-2 text-left" : "h-auto justify-between px-3 py-2 text-left"}
               >
                 <span>{option.installment_count}x de {formatPrice(option.installment_value)}</span>
-                <span className="flex flex-col items-end text-xs font-normal text-gray-500">
+                <span className="flex flex-col items-end text-xs font-normal text-muted-foreground">
                   {option.last_installment_value != null ? <span>Última {formatPrice(option.last_installment_value)}</span> : null}
                   <span>Total {formatPrice(option.total_amount)}</span>
                 </span>

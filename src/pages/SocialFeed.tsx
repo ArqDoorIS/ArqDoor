@@ -1,6 +1,5 @@
 // src/pages/SocialFeed.tsx
 import { useState, useMemo, useEffect } from "react";
-import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
@@ -93,7 +92,7 @@ const UserBanner = ({ user, className = '' }: { user: UserInterface; className?:
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundColor: !imageUrl ? '#FEF8C3' : 'transparent',
+    backgroundColor: !imageUrl ? 'hsl(var(--muted))' : 'transparent',
     backgroundImage: imageUrl ? `url(${imageUrl})` : 'none'
   };
 
@@ -115,8 +114,8 @@ const UserAvatar = ({ user, className = '', size = 'md' }: { user: UserInterface
 
   if (!imageUrl) {
     return (
-      <div className={`${sizeClasses[size]} rounded-full bg-orange-100 flex items-center justify-center ${className}`}>
-        <User className="w-6 h-6 text-orange-600" />
+      <div className={`${sizeClasses[size]} rounded-full bg-brand-soft flex items-center justify-center ${className}`}>
+        <User className="w-6 h-6 text-brand-dark" />
       </div>
     );
   }
@@ -266,14 +265,6 @@ export default function SocialFeed() {
   }, [currentPage, totalPages]);
 
 
-  const quickStartStyle = {
-    "--paper": "#fff7ed", // Amber-50
-    "--glow": "#fed7aa",  // Orange-200
-    "--honey": "#fde68a", // Amber-200
-    backgroundImage:
-      "radial-gradient(1200px 500px at -10% -40%, var(--paper) 0%, transparent 70%), radial-gradient(900px 400px at 110% -20%, var(--glow) 0%, transparent 60%), radial-gradient(700px 280px at 50% 120%, var(--honey) 0%, transparent 70%)",
-  } as CSSProperties;
-
   const getProfileLink = (item: { user: UserInterface; provider: any }) => {
     if (item.provider) return `/providers/${item.provider.provider_id}`;
     return `/user/${item.user.id}`;
@@ -286,7 +277,7 @@ export default function SocialFeed() {
 
   return (
     <div className="pt-6">
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      <div className="min-h-screen ">
 
         {/* Hero Carousel */}
         <div className="relative h-48 sm:h-64 lg:h-72 overflow-hidden">
@@ -336,13 +327,13 @@ export default function SocialFeed() {
             <div className="lg:w-80 space-y-6">
 
               {/* Filter Widget */}
-              <Card className="border-0 bg-white/90 shadow-lg backdrop-blur-sm sticky top-24" style={quickStartStyle}>
+              <Card className="border border-line bg-white shadow-sm sticky top-24">
                 <CardHeader>
-                  <div className="flex items-center gap-2 text-orange-600 mb-2">
+                  <div className="flex items-center gap-2 text-brand-dark mb-2">
                     <Filter className="h-5 w-5" />
                     <span className="font-bold uppercase tracking-wider text-xs">Filtros</span>
                   </div>
-                  <CardTitle className="text-xl text-slate-800">
+                  <CardTitle className="text-xl text-ink">
                     Encontre Profissionais
                   </CardTitle>
                   <CardDescription>
@@ -351,12 +342,12 @@ export default function SocialFeed() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Toggle Mode */}
-                  <div className="flex p-1 bg-orange-100/50 rounded-xl">
+                  <div className="flex p-1 bg-brand-soft/50 rounded-xl">
                     <button
                       onClick={() => setSearchType("keyword")}
                       className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${searchType === "keyword"
-                        ? "bg-white text-orange-600 shadow-sm"
-                        : "text-slate-500 hover:text-orange-500"
+                        ? "bg-white text-brand-dark shadow-sm"
+                        : "text-muted-foreground hover:text-brand"
                         }`}
                     >
                       Busca
@@ -364,8 +355,8 @@ export default function SocialFeed() {
                     <button
                       onClick={() => setSearchType("location")}
                       className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${searchType === "location"
-                        ? "bg-white text-orange-600 shadow-sm"
-                        : "text-slate-500 hover:text-orange-500"
+                        ? "bg-white text-brand-dark shadow-sm"
+                        : "text-muted-foreground hover:text-brand"
                         }`}
                     >
                       Local
@@ -375,25 +366,25 @@ export default function SocialFeed() {
                   {/* Inputs */}
                   {searchType === "keyword" ? (
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Palavras-chave</label>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">Palavras-chave</label>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input 
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                           placeholder="Nome, profissão, cidade..."
-                          className="pl-9 bg-white/50 border-orange-200 focus:border-orange-400 focus:ring-orange-100"
+                          className="pl-9 bg-white/50 border-brand-disabled focus:border-brand focus:ring-brand-soft"
                         />
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-xs font-semibold text-slate-500 uppercase">Estado (UF)</label>
+                        <label className="text-xs font-semibold text-muted-foreground uppercase">Estado (UF)</label>
                         <select 
                             value={selectedState}
                             onChange={(e) => setSelectedState(e.target.value)}
-                            className="w-full h-10 px-3 rounded-md border border-orange-200 bg-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400"
+                            className="w-full h-10 px-3 rounded-md border border-brand-disabled bg-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand"
                           >
                             <option value="">Selecione...</option>
                             {BR_STATES.map((uf) => (
@@ -402,14 +393,14 @@ export default function SocialFeed() {
                           </select>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-xs font-semibold text-slate-500 uppercase">Cidade</label>
+                          <label className="text-xs font-semibold text-muted-foreground uppercase">Cidade</label>
                           <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                               value={selectedCity}
                               onChange={(e) => setSelectedCity(e.target.value)}
                               placeholder="Digite a cidade..."
-                              className="pl-9 bg-white/50 border-orange-200 focus:border-orange-400 focus:ring-orange-100"
+                              className="pl-9 bg-white/50 border-brand-disabled focus:border-brand focus:ring-brand-soft"
                             />
                           </div>
                         </div>
@@ -423,17 +414,17 @@ export default function SocialFeed() {
             {/* Main Content Feed (Original Card Design) */}
             <div className="flex-1 space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-slate-800">
+                <h2 className="text-2xl font-bold text-ink">
                   {isFreelancer ? "Clientes Disponíveis" : "Profissionais em Destaque"}
                 </h2>
-                <Badge variant="outline" className="text-slate-500 border-slate-300">
+                <Badge variant="outline" className="text-muted-foreground border-line">
                   {usersRes?.pagination?.totalItems ?? displayList.length} encontrados
                 </Badge>
               </div>
 
               {(loadingUsers || loadingProviders) ? (
                 <div className="flex justify-center py-20">
-                  <Loader2 className="h-10 w-10 text-orange-500 animate-spin" />
+                  <Loader2 className="h-10 w-10 text-brand animate-spin" />
                 </div>
               ) : displayList.length > 0 ? (
                 <>
@@ -450,29 +441,29 @@ export default function SocialFeed() {
                         <UserAvatar user={item.user} />
 
                         <div className="mt-3 text-center w-full">
-                          <h3 className="text-lg font-bold text-slate-800 truncate px-2">{item.user.name}</h3>
+                          <h3 className="text-lg font-bold text-ink truncate px-2">{item.user.name}</h3>
 
                           {/* Profession Badge (Explicit) */}
                           {item.provider && (
-                            <Badge variant="secondary" className="mt-1 bg-orange-100 text-orange-700 hover:bg-orange-200">
+                            <Badge variant="secondary" className="mt-1 bg-brand-soft text-brand-dark hover:bg-brand-soft">
                               {item.provider.profession}
                             </Badge>
                           )}
                           {!item.provider && (
-                            <Badge variant="secondary" className="mt-1 bg-blue-100 text-blue-700 hover:bg-blue-200">
+                            <Badge variant="secondary" className="mt-1 bg-info-bg text-info-dark hover:bg-info-bg">
                               Cliente
                             </Badge>
                           )}
 
                           {item.provider?.about && (
-                            <p className="text-sm text-slate-500 mt-3 line-clamp-3 leading-relaxed">
+                            <p className="text-sm text-muted-foreground mt-3 line-clamp-3 leading-relaxed">
                               {item.provider.about}
                             </p>
                           )}
                         </div>
 
                         <div className="w-full mt-auto pt-6 pb-2">
-                          <div className="flex items-center justify-center gap-4 text-xs text-slate-400 mb-4">
+                          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-4">
                             {/* New City Display */}
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
@@ -488,13 +479,13 @@ export default function SocialFeed() {
 
                           <div className="flex gap-2">
                             <Link href={getProfileLink(item)} className="flex-1">
-                              <Button className="w-full bg-slate-100 hover:bg-orange-100 text-slate-700 hover:text-orange-700 font-semibold border border-transparent hover:border-orange-200 transition-all rounded-xl h-10 px-0">
+                              <Button className="w-full bg-surface-warm hover:bg-brand-soft text-ink hover:text-brand-dark font-semibold border border-transparent hover:border-brand-disabled transition-all rounded-xl h-10 px-0">
                                 Ver Perfil
                               </Button>
                             </Link>
                             <Button
                               onClick={() => handleStartChat(item.user.id)}
-                              className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white shadow-md rounded-xl h-10 w-10 p-0 flex items-center justify-center"
+                              className="bg-brand hover:bg-brand-dark text-white shadow-md rounded-xl h-10 w-10 p-0 flex items-center justify-center"
                               title="Enviar mensagem"
                             >
                               <MessageCircle className="h-5 w-5" />
@@ -524,7 +515,7 @@ export default function SocialFeed() {
                           key={page}
                           variant={page === currentPage ? "default" : "outline"}
                           onClick={() => setCurrentPage(page)}
-                          className={`h-9 w-9 p-0 ${page === currentPage ? "bg-orange-600 hover:bg-orange-700" : ""}`}
+                          className={`h-9 w-9 p-0 ${page === currentPage ? "bg-brand hover:bg-brand-dark" : ""}`}
                         >
                           {page}
                         </Button>
@@ -539,20 +530,20 @@ export default function SocialFeed() {
                         Próxima <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                       Página {currentPage} de {totalPages}
                     </p>
                   </div>
                 )}
                 </>
                 ) : (
-                  <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-10 text-center border-2 border-dashed border-slate-200">
-                    <Search className="h-8 w-8 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-700">Nenhum perfil encontrado</h3>
-                    <p className="text-slate-500 mt-2">Ajuste os filtros para encontrar o que precisa.</p>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-10 text-center border-2 border-dashed border-line">
+                    <Search className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-ink">Nenhum perfil encontrado</h3>
+                    <p className="text-muted-foreground mt-2">Ajuste os filtros para encontrar o que precisa.</p>
                     <Button 
                         variant="link"
-                        className="mt-4 text-orange-600"
+                        className="mt-4 text-brand-dark"
                         onClick={() => { setSearch(""); setSearchType("keyword"); }}
                   >
                         Limpar filtros
@@ -568,7 +559,7 @@ export default function SocialFeed() {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-5 right-5 z-50 inline-flex items-center rounded-full bg-green-500 px-5 py-3 text-sm font-semibold text-white shadow-none transition hover:bg-green-600"
+        className="fixed bottom-5 right-5 z-50 inline-flex items-center rounded-full bg-success-dark px-5 py-3 text-sm font-semibold text-white shadow-none transition hover:bg-success-dark"
       >
         <WhatsAppIcon className="mr-2 h-5 w-5 text-white" />
         Entrar em contato

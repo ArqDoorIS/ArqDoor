@@ -694,12 +694,12 @@ export function NewProposalDialog({
 
         {draftRestoredFileName ? (
           <div className="shrink-0 px-6 pt-3">
-            <div className="flex items-start justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm">
+            <div className="flex items-start justify-between gap-3 rounded-xl border border-info/30 bg-info-bg px-3 py-2 text-sm">
               <div className="flex-1">
-                <p className="font-semibold text-blue-900">
+                <p className="font-semibold text-info-dark">
                   Rascunho restaurado
                 </p>
-                <p className="mt-0.5 text-xs text-blue-700">
+                <p className="mt-0.5 text-xs text-info-dark">
                   Suas etapas e configurações foram recuperadas. Reanexe o PDF do contrato <span className="font-mono">{draftRestoredFileName}</span>.
                 </p>
               </div>
@@ -707,7 +707,7 @@ export function NewProposalDialog({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-blue-700 hover:bg-blue-100"
+                  className="text-info-dark hover:bg-info-bg"
                   onClick={() => onClearDraft()}
                 >
                   Limpar rascunho
@@ -732,10 +732,10 @@ export function NewProposalDialog({
                     className={cn(
                       "rounded-2xl border px-4 py-3 text-left transition",
                       isActive
-                        ? "border-orange-300 bg-white shadow-sm"
+                        ? "border-brand-disabled bg-white shadow-sm"
                         : isCompleted
-                          ? "border-emerald-200 bg-emerald-50"
-                          : "border-transparent bg-transparent hover:border-slate-200 hover:bg-white"
+                          ? "border-success/30 bg-success-bg"
+                          : "border-transparent bg-transparent hover:border-line hover:bg-white"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -743,17 +743,17 @@ export function NewProposalDialog({
                         className={cn(
                           "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold",
                           isCompleted
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-success-dark text-white"
                             : isActive
-                              ? "bg-orange-500 text-white"
-                              : "bg-slate-200 text-slate-700"
+                              ? "bg-brand text-white"
+                              : "bg-surface-cream text-ink"
                         )}
                       >
                         {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : stage.shortLabel}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{stage.title}</p>
-                        <p className="text-xs text-slate-500">{stage.description}</p>
+                        <p className="text-sm font-semibold text-ink-strong">{stage.title}</p>
+                        <p className="text-xs text-muted-foreground">{stage.description}</p>
                       </div>
                     </div>
                   </button>
@@ -770,7 +770,7 @@ export function NewProposalDialog({
                 <div className="rounded-2xl border bg-muted/20 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-ink-strong">
                         Etapas do contrato
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground">
@@ -792,7 +792,7 @@ export function NewProposalDialog({
                     <div key={step.id} className="rounded-2xl border bg-white p-4 shadow-sm space-y-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">Etapa {idx + 1}</p>
+                          <p className="text-sm font-semibold text-ink-strong">Etapa {idx + 1}</p>
                           <p className="text-xs text-muted-foreground">
                             Nomeie o entregável e defina a cobrança desta fase.
                           </p>
@@ -802,7 +802,7 @@ export function NewProposalDialog({
                             variant="ghost"
                             size="sm"
                             onClick={() => onRemoveStep(step.id)}
-                            className="text-red-500 hover:text-red-600"
+                            className="text-danger-dark hover:text-danger-dark"
                           >
                             Remover
                           </Button>
@@ -1032,7 +1032,7 @@ export function NewProposalDialog({
                       <div className="text-sm text-muted-foreground">
                         Total do projeto ({proposalSteps.length} etapas)
                       </div>
-                      <div className="text-xl font-semibold text-gray-900">
+                      <div className="text-xl font-semibold text-ink-strong">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -1040,7 +1040,7 @@ export function NewProposalDialog({
                       </div>
                     </div>
                     {platformFee > 0 && (
-                      <div className="text-xs text-orange-700">
+                      <div className="text-xs text-brand-dark">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -1064,7 +1064,7 @@ export function NewProposalDialog({
                   </div>
 
                   {platformFee > 0 && (
-                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 leading-relaxed">
+                    <div className="rounded-xl border border-warning/30 bg-warning-bg px-4 py-3 text-xs text-warning-text leading-relaxed">
                       <strong className="font-semibold">Sobre a taxa:</strong> A
                       ArqDoor recebe apenas quando você recebe. A taxa de 5% (teto
                       de R$ 1.500) é distribuída entre as fases e só descontada no
@@ -1082,7 +1082,7 @@ export function NewProposalDialog({
               <aside className="space-y-4 xl:sticky xl:top-0">
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Info className="h-4 w-4 text-orange-500" />
+                    <Info className="h-4 w-4 text-brand" />
                     Como preencher bem
                   </div>
                   <div className="space-y-3 text-sm">
@@ -1116,37 +1116,37 @@ export function NewProposalDialog({
                   </div>
                 </div>
 
-                <div className="rounded-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50/50 to-white p-4 space-y-4">
+                <div className="rounded-2xl border-2 border-brand-disabled bg-brand-tint p-4 space-y-4">
                   <div className="space-y-1">
-                    <Label className="text-base font-bold text-gray-900 flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500">
+                    <Label className="text-base font-bold text-ink-strong flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand">
                         <span className="text-sm font-semibold text-white">G</span>
                       </div>
                       Grupos de cobrança
                     </Label>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-muted-foreground">
                       Monte a ordem em que o cliente poderá pagar o projeto.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     {groupedSteps.map((group) => (
-                      <div key={group.id} className="rounded-xl border-2 border-orange-200 bg-white p-3 space-y-2">
+                      <div key={group.id} className="rounded-xl border-2 border-brand-disabled bg-white p-3 space-y-2">
                         <div className="flex items-center gap-2">
-                          <Badge className="h-6 w-6 shrink-0 p-0 flex items-center justify-center bg-orange-500 text-white text-xs font-semibold">
+                          <Badge className="h-6 w-6 shrink-0 p-0 flex items-center justify-center bg-brand text-white text-xs font-semibold">
                             {group.id}
                           </Badge>
                           <Input
                             value={group.name}
                             onChange={(event) => handleUpdateGroupName(group.id, event.target.value)}
-                            className="h-8 text-xs flex-1 border-orange-200 focus-visible:ring-orange-500"
+                            className="h-8 text-xs flex-1 border-brand-disabled focus-visible:ring-brand"
                             placeholder={`Grupo ${group.id}`}
                           />
                           {paymentGroups.length > 1 ? (
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 text-red-500 hover:bg-red-100"
+                              className="h-6 w-6 text-danger-dark hover:bg-danger-bg"
                               onClick={() => handleRemoveGroup(group.id)}
                             >
                               <X className="h-3 w-3" />
@@ -1158,12 +1158,12 @@ export function NewProposalDialog({
                           {group.steps.length > 0 ? (
                             <>
                               {group.steps.map((step) => (
-                                <div key={step.id} className="flex items-center gap-1 text-xs text-gray-600">
-                                  <span className="text-orange-500">•</span>
+                                <div key={step.id} className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <span className="text-brand">•</span>
                                   <span className="truncate flex-1">
                                     {step.title || `Etapa ${proposalSteps.indexOf(step) + 1}`}
                                   </span>
-                                  <span className="text-[10px] text-gray-500 font-mono">
+                                  <span className="text-[10px] text-muted-foreground font-mono">
                                     {new Intl.NumberFormat("pt-BR", {
                                       style: "currency",
                                       currency: "BRL",
@@ -1182,16 +1182,16 @@ export function NewProposalDialog({
                                     currency: "BRL",
                                   }).format(v);
                                 return (
-                                  <div className="border-t border-orange-100 pt-1 space-y-0.5">
-                                    <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                  <div className="border-t border-brand-soft pt-1 space-y-0.5">
+                                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                                       <span>Subtotal</span>
                                       <span className="font-mono">{brl(group.total)}</span>
                                     </div>
-                                    <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                                       <span>+ Taxa ArqDoor (5%)</span>
                                       <span className="font-mono">{brl(groupFee)}</span>
                                     </div>
-                                    <div className="flex items-center justify-between text-xs font-semibold text-orange-600 pt-0.5">
+                                    <div className="flex items-center justify-between text-xs font-semibold text-brand-dark pt-0.5">
                                       <span>Total cobrado</span>
                                       <span className="font-mono">
                                         {brl(group.total + groupFee)}
@@ -1202,7 +1202,7 @@ export function NewProposalDialog({
                               })()}
                             </>
                           ) : (
-                            <p className="text-[10px] text-gray-400 italic">
+                            <p className="text-[10px] text-muted-foreground italic">
                               Nenhuma etapa atribuída
                             </p>
                           )}
@@ -1216,7 +1216,7 @@ export function NewProposalDialog({
                       placeholder="Nome do novo grupo"
                       value={newGroupName}
                       onChange={(event) => setNewGroupName(event.target.value)}
-                      className="h-9 text-sm border-orange-200 focus-visible:ring-orange-500"
+                      className="h-9 text-sm border-brand-disabled focus-visible:ring-brand"
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
                           event.preventDefault();
@@ -1227,7 +1227,7 @@ export function NewProposalDialog({
                     <Button
                       size="sm"
                       onClick={handleAddGroup}
-                      className="w-full h-9 bg-orange-500 hover:bg-orange-600 text-white"
+                      className="w-full h-9 bg-brand hover:bg-brand text-white"
                     >
                       <Plus className="mr-2 h-4 w-4" />
                       Adicionar grupo
@@ -1242,7 +1242,7 @@ export function NewProposalDialog({
             <div className="grid min-h-full gap-5 xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_440px] xl:items-start">
               <section className="space-y-4">
                 <div className="rounded-2xl border bg-muted/20 p-4">
-                  <p className="text-sm font-semibold text-slate-900">Como o prestador vai receber?</p>
+                  <p className="text-sm font-semibold text-ink-strong">Como o prestador vai receber?</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     O contrato continua usando grupos de cobrança. Aqui você define apenas a forma de repasse ao prestador.
                   </p>
@@ -1255,20 +1255,20 @@ export function NewProposalDialog({
                     className={cn(
                       "relative rounded-2xl border p-5 text-left transition-colors",
                       receivingMethod === "escrow"
-                        ? "border-orange-500 bg-white shadow-sm"
-                        : "border-orange-200 bg-orange-50/40 hover:bg-white"
+                        ? "border-brand bg-white shadow-sm"
+                        : "border-brand-disabled bg-brand-tint/40 hover:bg-white"
                     )}
                   >
-                    <span className="absolute -top-2 right-4 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                    <span className="absolute -top-2 right-4 rounded-full bg-success-bg px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-success-dark">
                       Recomendado
                     </span>
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 rounded-xl bg-orange-100 p-2 text-orange-600">
+                      <div className="mt-0.5 rounded-xl bg-brand-soft p-2 text-brand-dark">
                         <ShieldCheck className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Escrow</div>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                        <div className="font-medium text-ink-strong">Escrow</div>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                           Proteja 100% do valor cobrado antes de iniciar a obra. O dinheiro fica em uma conta intermediária, e você recebe após finalizar o serviço.
                         </p>
                       </div>
@@ -1281,17 +1281,17 @@ export function NewProposalDialog({
                     className={cn(
                       "rounded-2xl border p-5 text-left transition-colors",
                       receivingMethod === "standard"
-                        ? "border-orange-500 bg-white shadow-sm"
-                        : "border-orange-200 bg-orange-50/40 hover:bg-white"
+                        ? "border-brand bg-white shadow-sm"
+                        : "border-brand-disabled bg-brand-tint/40 hover:bg-white"
                     )}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 rounded-xl bg-orange-100 p-2 text-orange-600">
+                      <div className="mt-0.5 rounded-xl bg-brand-soft p-2 text-brand-dark">
                         <Landmark className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Padrão</div>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                        <div className="font-medium text-ink-strong">Padrão</div>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                           O cliente paga direto na sua conta bancária ou chave PIX cadastrada. Sem intermediação financeira da plataforma.
                         </p>
                       </div>
@@ -1301,22 +1301,22 @@ export function NewProposalDialog({
 
                 {receivingMethod ? (
                   <div className="rounded-2xl border bg-white p-4 space-y-3">
-                    <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                      <Wallet className="h-4 w-4 text-orange-600" />
+                    <Label className="text-sm font-semibold text-ink-strong flex items-center gap-2">
+                      <Wallet className="h-4 w-4 text-brand-dark" />
                       Conta da carteira
                       {receivingMethod === "escrow" && (
-                        <span className="ml-1 text-xs font-normal text-slate-500">
+                        <span className="ml-1 text-xs font-normal text-muted-foreground">
                           (destino do repasse após finalização)
                         </span>
                       )}
                     </Label>
 
                     {loadingReceivingAccounts ? (
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                      <div className="rounded-xl border border-line bg-surface-soft px-3 py-3 text-sm text-muted-foreground">
                         Carregando contas cadastradas...
                       </div>
                     ) : !hasReceivingAccounts ? (
-                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+                      <div className="rounded-xl border border-warning/30 bg-warning-bg px-3 py-3 text-sm text-warning-text">
                         Você não tem bancos cadastrado para selecionar esse método, cadastre um no seu perfil.
                       </div>
                     ) : (
@@ -1339,8 +1339,8 @@ export function NewProposalDialog({
                         </select>
 
                         {selectedReceivingAccount ? (
-                          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
-                            <p className="font-medium text-slate-900">
+                          <div className="rounded-xl border border-line bg-surface-soft px-3 py-3 text-sm text-muted-foreground">
+                            <p className="font-medium text-ink-strong">
                               {selectedReceivingAccount.nickname}
                             </p>
                             {formatReceivingAccountDetails(selectedReceivingAccount).map((line) => (
@@ -1358,15 +1358,15 @@ export function NewProposalDialog({
 
               <aside className="space-y-4 xl:sticky xl:top-0">
                 <div className="rounded-2xl border border-dashed bg-white p-4 space-y-3">
-                  <Label className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                    <FileText className="h-4 w-4 text-orange-500" />
+                  <Label className="flex items-center gap-2 text-sm font-semibold text-ink-strong">
+                    <FileText className="h-4 w-4 text-brand" />
                     PDF de Memorial descritivo ou Contrato
                   </Label>
                   <p className="text-sm text-muted-foreground">
                     O PDF é obrigatório para enviar a proposta. Anexe o contrato ou memorial descritivo completo com os detalhes combinados.
                   </p>
                   <Input type="file" accept="application/pdf" onChange={handleContractInputChange} />
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                  <div className="rounded-xl border border-line bg-surface-soft px-3 py-3 text-sm text-muted-foreground">
                     {selectedContractFileName
                       ? `Arquivo selecionado: ${selectedContractFileName}`
                       : hasExistingContractFile
@@ -1377,8 +1377,8 @@ export function NewProposalDialog({
 
                 {onLinkValidityChange ? (
                   <div className="rounded-2xl border bg-white p-4 space-y-3">
-                    <Label htmlFor="validade-do-link" className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                      <Clock className="h-4 w-4 text-orange-500" />
+                    <Label htmlFor="validade-do-link" className="flex items-center gap-2 text-sm font-semibold text-ink-strong">
+                      <Clock className="h-4 w-4 text-brand" />
                       Validade do link
                     </Label>
                     <select
@@ -1401,8 +1401,8 @@ export function NewProposalDialog({
 
                 {onDestinatarioModeChange ? (
                   <div className="rounded-2xl border bg-white p-4 space-y-3">
-                    <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                      <Users className="h-4 w-4 text-orange-500" />
+                    <p className="flex items-center gap-2 text-sm font-semibold text-ink-strong">
+                      <Users className="h-4 w-4 text-brand" />
                       Quem pode aceitar
                     </p>
                     <div className="space-y-2">
@@ -1413,25 +1413,25 @@ export function NewProposalDialog({
                         className={cn(
                           "flex items-start gap-3 w-full rounded-xl border p-3 text-left transition-colors",
                           destinatarioMode === "todos"
-                            ? "border-orange-400 bg-orange-50"
-                            : "border-slate-200 bg-white hover:border-slate-300"
+                            ? "border-brand bg-brand-tint"
+                            : "border-line bg-white hover:border-line"
                         )}
                       >
                         <span
                           className={cn(
                             "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center",
                             destinatarioMode === "todos"
-                              ? "border-orange-500"
-                              : "border-slate-300"
+                              ? "border-brand"
+                              : "border-line"
                           )}
                         >
                           {destinatarioMode === "todos" && (
-                            <span className="h-2 w-2 rounded-full bg-orange-500 block" />
+                            <span className="h-2 w-2 rounded-full bg-brand block" />
                           )}
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">Qualquer pessoa com o link</p>
-                          <p className="text-xs text-slate-500 mt-0.5">Quem abrir primeiro e aceitar vira o cliente.</p>
+                          <p className="text-sm font-semibold text-ink-strong">Qualquer pessoa com o link</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Quem abrir primeiro e aceitar vira o cliente.</p>
                         </div>
                       </button>
 
@@ -1442,35 +1442,35 @@ export function NewProposalDialog({
                         className={cn(
                           "flex items-start gap-3 w-full rounded-xl border p-3 text-left transition-colors",
                           destinatarioMode === "cpf"
-                            ? "border-orange-400 bg-orange-50"
-                            : "border-slate-200 bg-white hover:border-slate-300"
+                            ? "border-brand bg-brand-tint"
+                            : "border-line bg-white hover:border-line"
                         )}
                       >
                         <span
                           className={cn(
                             "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center",
                             destinatarioMode === "cpf"
-                              ? "border-orange-500"
-                              : "border-slate-300"
+                              ? "border-brand"
+                              : "border-line"
                           )}
                         >
                           {destinatarioMode === "cpf" && (
-                            <span className="h-2 w-2 rounded-full bg-orange-500 block" />
+                            <span className="h-2 w-2 rounded-full bg-brand block" />
                           )}
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">
-                            <Lock className="inline h-3.5 w-3.5 text-orange-500 mr-1 -mt-0.5" />
+                          <p className="text-sm font-semibold text-ink-strong">
+                            <Lock className="inline h-3.5 w-3.5 text-brand mr-1 -mt-0.5" />
                             Só um CPF
                           </p>
-                          <p className="text-xs text-slate-500 mt-0.5">Só quem tiver esse CPF na conta consegue aceitar.</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Só quem tiver esse CPF na conta consegue aceitar.</p>
                         </div>
                       </button>
                     </div>
 
                     {destinatarioMode === "cpf" && (
                       <div className="space-y-1.5 pt-1">
-                        <Label htmlFor="cpf-destinatario" className="text-xs font-semibold text-slate-700">
+                        <Label htmlFor="cpf-destinatario" className="text-xs font-semibold text-ink">
                           CPF do cliente
                         </Label>
                         <Input
@@ -1483,7 +1483,7 @@ export function NewProposalDialog({
                           value={destinatarioCpf}
                           onChange={(e) => onDestinatarioCpfChange?.(mascaraCpf(e.target.value))}
                         />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           Só a conta com esse CPF consegue aceitar. Para trocar o CPF depois, crie um link novo.
                         </p>
                       </div>
@@ -1494,8 +1494,8 @@ export function NewProposalDialog({
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">Mostrar detalhes na prévia</p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-sm font-semibold text-ink-strong">Mostrar detalhes na prévia</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Seu nome, o título e o valor aparecem no WhatsApp antes de abrir o link.
                       </p>
                     </div>
@@ -1506,8 +1506,8 @@ export function NewProposalDialog({
                       data-testid="toggle-previa-detalhada"
                       onClick={() => onPreviaDetalhadaChange?.(!previaDetalhada)}
                       className={cn(
-                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
-                        previaDetalhada ? "bg-orange-500" : "bg-slate-200"
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                        previaDetalhada ? "bg-brand" : "bg-surface-cream"
                       )}
                     >
                       <span
@@ -1519,13 +1519,13 @@ export function NewProposalDialog({
                     </button>
                   </div>
 
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 space-y-1.5">
-                    <p className="text-xs font-semibold text-emerald-700">Como o cliente vai ver</p>
+                  <div className="rounded-xl bg-success-bg border border-success/30 p-3 space-y-1.5">
+                    <p className="text-xs font-semibold text-success-dark">Como o cliente vai ver</p>
                     <div
                       data-testid="previa-amostra"
-                      className="rounded-lg bg-white border border-slate-100 overflow-hidden flex"
+                      className="rounded-lg bg-white border border-line overflow-hidden flex"
                     >
-                      <div className="w-12 shrink-0 bg-orange-600 flex items-center justify-center text-white text-[10px] font-bold leading-tight text-center px-1">
+                      <div className="w-12 shrink-0 bg-brand flex items-center justify-center text-white text-[10px] font-bold leading-tight text-center px-1">
                         ArqDoor
                       </div>
                       <div className="flex-1 px-3 py-2 min-w-0 space-y-0.5">
@@ -1533,12 +1533,12 @@ export function NewProposalDialog({
                           <>
                             <p
                               data-testid="previa-titulo"
-                              className="text-xs font-semibold text-slate-900 line-clamp-2"
+                              className="text-xs font-semibold text-ink-strong line-clamp-2"
                             >
                               {/* O convite do site nao tem titulo proprio: a previa real e "Proposta de <nome>". */}
                               {providerName ? `Proposta de ${providerName}` : "Proposta no ArqDoor"}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               {[
                                 projectTotal > 0
                                   ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(projectTotal)
@@ -1555,21 +1555,21 @@ export function NewProposalDialog({
                           <>
                             <p
                               data-testid="previa-titulo"
-                              className="text-xs font-semibold text-slate-900"
+                              className="text-xs font-semibold text-ink-strong"
                             >
                               Proposta no ArqDoor
                             </p>
-                            <p className="text-xs text-slate-500">Abra o link para ver os detalhes.</p>
+                            <p className="text-xs text-muted-foreground">Abra o link para ver os detalhes.</p>
                           </>
                         )}
-                        <p className="text-xs text-slate-400">arqdoor.com</p>
+                        <p className="text-xs text-muted-foreground">arqdoor.com</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
-                  <p className="text-sm font-semibold text-slate-900">Resumo rápido</p>
+                  <p className="text-sm font-semibold text-ink-strong">Resumo rápido</p>
                   <div className="grid gap-2">
                     <SummaryLine
                       label="Cobrança"
@@ -1591,7 +1591,7 @@ export function NewProposalDialog({
                       }).format(projectTotalWithFee)}
                     />
                     {platformFee > 0 && (
-                      <p className="text-[11px] text-orange-700 -mt-1">
+                      <p className="text-[11px] text-brand-dark -mt-1">
                         Inclui taxa de {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -1608,7 +1608,7 @@ export function NewProposalDialog({
             <div className="grid min-h-full gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
               <section className="space-y-4">
                 <div className="rounded-2xl border bg-white p-4">
-                  <p className="text-sm font-semibold text-slate-900">Revisão do envio</p>
+                  <p className="text-sm font-semibold text-ink-strong">Revisão do envio</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Confira o pacote completo antes de enviar a proposta ou salvar o convite.
                   </p>
@@ -1642,7 +1642,7 @@ export function NewProposalDialog({
                 <div className="rounded-2xl border bg-white p-4 space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">Etapas por grupo</p>
+                      <p className="text-sm font-semibold text-ink-strong">Etapas por grupo</p>
                       <p className="text-sm text-muted-foreground">
                         O cliente verá este agrupamento para pagamento.
                       </p>
@@ -1657,15 +1657,15 @@ export function NewProposalDialog({
 
                   <div className="space-y-3">
                     {groupedSteps.map((group) => (
-                      <div key={group.id} className="rounded-2xl border bg-slate-50 p-4 space-y-3">
+                      <div key={group.id} className="rounded-2xl border bg-surface-soft p-4 space-y-3">
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
-                            <Badge className="bg-orange-500 text-white hover:bg-orange-500">
+                            <Badge className="bg-brand text-white hover:bg-brand">
                               Grupo {group.id}
                             </Badge>
-                            <p className="text-sm font-semibold text-slate-900">{group.name}</p>
+                            <p className="text-sm font-semibold text-ink-strong">{group.name}</p>
                           </div>
-                          <span className="text-sm font-semibold text-slate-700">
+                          <span className="text-sm font-semibold text-ink">
                             {new Intl.NumberFormat("pt-BR", {
                               style: "currency",
                               currency: "BRL",
@@ -1682,16 +1682,16 @@ export function NewProposalDialog({
                               >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                   <div>
-                                    <p className="font-medium text-slate-900">
+                                    <p className="font-medium text-ink-strong">
                                       {step.title || `Etapa ${index + 1}`}
                                     </p>
-                                    <p className="mt-1 text-xs text-slate-500">
+                                    <p className="mt-1 text-xs text-muted-foreground">
                                       {step.startDate && step.endDate
                                         ? `${step.startDate} até ${step.endDate}`
                                         : "Sem prazo definido"}
                                     </p>
                                   </div>
-                                  <span className="font-semibold text-slate-700">
+                                  <span className="font-semibold text-ink">
                                     {new Intl.NumberFormat("pt-BR", {
                                       style: "currency",
                                       currency: "BRL",
@@ -1701,7 +1701,7 @@ export function NewProposalDialog({
                               </div>
                             ))
                           ) : (
-                            <div className="rounded-xl border border-dashed bg-white px-3 py-3 text-sm text-slate-500">
+                            <div className="rounded-xl border border-dashed bg-white px-3 py-3 text-sm text-muted-foreground">
                               Esse grupo ainda não tem etapas atribuídas.
                             </div>
                           )}
@@ -1714,7 +1714,7 @@ export function NewProposalDialog({
 
               <aside className="space-y-4 xl:sticky xl:top-0">
                 <div className="rounded-2xl border bg-white p-4 space-y-3">
-                  <p className="text-sm font-semibold text-slate-900">Checklist final</p>
+                  <p className="text-sm font-semibold text-ink-strong">Checklist final</p>
                   <ChecklistItem
                     label="Etapas preenchidas"
                     done={proposalSteps.every(
@@ -1732,8 +1732,8 @@ export function NewProposalDialog({
                 </div>
 
                 <div className="rounded-2xl border bg-white p-4 space-y-2">
-                  <p className="text-sm font-semibold text-slate-900">O que acontece depois</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm font-semibold text-ink-strong">O que acontece depois</p>
+                  <p className="text-sm text-muted-foreground">
                     Assim que você enviar, o cliente verá o contrato com as etapas, os grupos de cobrança e a forma de recebimento configurada.
                   </p>
                 </div>
@@ -1759,12 +1759,12 @@ export function NewProposalDialog({
             <Button
               onClick={() => onSendProposal(paymentGroups)}
               disabled={sendingProposal}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-brand hover:bg-brand-dark text-white"
             >
               {sendingProposal ? "Enviando..." : submitLabel}
             </Button>
           ) : (
-            <Button onClick={handleNextStage} className="bg-orange-600 hover:bg-orange-700 text-white">
+            <Button onClick={handleNextStage} className="bg-brand hover:bg-brand-dark text-white">
               Continuar
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -1777,9 +1777,9 @@ export function NewProposalDialog({
 
 function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border bg-slate-50 px-3 py-2">
-      <span className="text-sm text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-900">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border bg-surface-soft px-3 py-2">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-semibold text-ink-strong">{value}</span>
     </div>
   );
 }
@@ -1796,10 +1796,10 @@ function ReviewCard({
   tone: "emerald" | "amber" | "sky" | "slate";
 }) {
   const toneMap = {
-    emerald: "border-emerald-200 bg-emerald-50 text-emerald-800",
-    amber: "border-amber-200 bg-amber-50 text-amber-800",
-    sky: "border-sky-200 bg-sky-50 text-sky-800",
-    slate: "border-slate-200 bg-slate-50 text-slate-800",
+    emerald: "border-success/30 bg-success-bg text-success-dark",
+    amber: "border-warning/30 bg-warning-bg text-warning-text",
+    sky: "border-info/30 bg-info-bg text-info-dark",
+    slate: "border-line bg-surface-soft text-ink",
   };
 
   return (
@@ -1813,16 +1813,16 @@ function ReviewCard({
 
 function ChecklistItem({ label, done }: { label: string; done: boolean }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border bg-slate-50 px-3 py-3">
+    <div className="flex items-center gap-3 rounded-xl border bg-surface-soft px-3 py-3">
       <div
         className={cn(
           "flex h-6 w-6 items-center justify-center rounded-full",
-          done ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-500"
+          done ? "bg-success-dark text-white" : "bg-surface-cream text-muted-foreground"
         )}
       >
         <CheckCircle2 className="h-4 w-4" />
       </div>
-      <span className="text-sm text-slate-700">{label}</span>
+      <span className="text-sm text-ink">{label}</span>
     </div>
   );
 }

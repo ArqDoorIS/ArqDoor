@@ -642,10 +642,10 @@ export const AuthForms: React.FC<{
                     render={({ field }) => (
                       <FormItem className="rounded-xl border border-line bg-brand-tint p-3 space-y-2">
                         <div className="space-y-0.5">
-                          <p className="text-sm font-semibold text-slate-900">
+                          <p className="text-sm font-semibold text-ink-strong">
                             Utilize a ArqDoor como profissional.
                           </p>
-                          <p className="text-xs text-slate-600 leading-relaxed">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
                             Marque a opção "sou prestador" e utilize a ArqDoor para
                             realizar o seu trabalho e receber propostas de clientes.
                           </p>
