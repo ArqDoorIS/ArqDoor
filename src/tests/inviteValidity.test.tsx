@@ -19,8 +19,6 @@ vi.mock("@/hooks/use-auth", () => ({
   useAuth: () => ({ user: null, isLoggedIn: false, updateUserLocal: vi.fn() }),
 }));
 
-vi.mock("@/components/modals/AuthModals", () => ({ AuthModals: () => null }));
-
 function responder(status: number, body: unknown) {
   vi.spyOn(queryClientLib, "apiRequest").mockResolvedValue({
     ok: status >= 200 && status < 300,

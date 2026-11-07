@@ -58,7 +58,7 @@ describe('paleta do app no site', () => {
   it('login, cadastro, nova senha e aviso de cookies não usam âmbar', () => {
     for (const arquivo of [
       'src/pages/auth-page.tsx',
-      'src/components/modals/AuthModals.tsx',
+      'src/components/AuthForms.tsx',
       'src/pages/ResetPasswordPage.tsx',
       'src/components/CookieConsent.tsx',
     ]) {
@@ -103,16 +103,33 @@ describe('login e cadastro', () => {
       </QueryClientProvider>,
     );
 
+  it('login, cadastro, esqueci a senha e nova senha não têm sombra', () => {
+    for (const arquivo of [
+      'src/pages/auth-page.tsx',
+      'src/components/AuthForms.tsx',
+      'src/pages/ResetPasswordPage.tsx',
+    ]) {
+      const sombra = ler(arquivo).match(/\bshadow-(?!none\b)[\w-]+/)?.[0] ?? null;
+      expect({ arquivo, sombra }).toEqual({ arquivo, sombra: null });
+    }
+  });
+
+  it('o modal de "Esqueci minha senha" desliga a sombra padrão do Dialog', async () => {
+    renderizar();
+    fireEvent.click(screen.getByRole('button', { name: 'Esqueci minha senha' }));
+    const modal = await screen.findByRole('dialog', { name: /senha/i });
+    expect(modal.className).toContain('shadow-none');
+    expect(modal.className).not.toContain('shadow-lg');
+  });
+
   it('o título está certo', () => {
     renderizar();
     expect(screen.getByRole('heading', { name: 'Bem-vindo ao ArqDoor!' })).toBeInTheDocument();
   });
 
-  it('"Criar uma conta" e "Faça login" são botões (recebem foco pelo teclado)', async () => {
+  it('"Criar conta" e "Faça login" são botões (recebem foco pelo teclado)', async () => {
     renderizar();
-    fireEvent.click(screen.getByText('Entrar', { selector: 'button' }));
-    const criar = await screen.findByRole('button', { name: 'Criar uma conta' });
-    fireEvent.click(criar);
+    fireEvent.click(screen.getByRole('button', { name: 'Criar conta' }));
     await waitFor(() => expect(screen.getByRole('dialog', { name: 'Criar conta' })).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Faça login' })).toBeInTheDocument();
   });
