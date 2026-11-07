@@ -78,6 +78,11 @@ describe('telas logadas', () => {
     expect(ler('src/features/home/ClientHomeDashboard.tsx')).not.toContain('<div className="bg-white xl:');
   });
 
+  it('assinar é ação principal: usa a marca, não o roxo', () => {
+    expect(ler('src/features/messages/components/ProposalCard.tsx')).not.toContain('bg-category-dark');
+    expect(ler('src/components/modals/SignatureDialog.tsx')).not.toContain('category');
+  });
+
   it('nenhum botão ou fundo em azul-marinho no lugar da marca', () => {
     expect(ler('src/pages/DemandsFeed.tsx')).not.toContain('bg-ink-strong');
     expect(ler('src/pages/ServicesFeed.tsx')).not.toContain('bg-ink-strong');

@@ -112,7 +112,7 @@ export function SignatureDialog({
                 Voltar
               </Button>
               <Button
-                className="flex-1 bg-category-dark hover:bg-category-dark/90"
+                className="flex-1"
                 onClick={() => {
                   onOpenChange(false)
                   navigate("/profile?tab=security")
@@ -140,7 +140,7 @@ export function SignatureDialog({
             <p className="text-sm text-muted-foreground">Escolha como você quer confirmar.</p>
 
             <Button
-              className="w-full bg-category-dark hover:bg-category-dark/90"
+              className="w-full"
               disabled={(requireAck && !ackChecked) || signingDocument}
               onClick={() => onConfirmWithGoogle?.()}
             >
@@ -154,7 +154,7 @@ export function SignatureDialog({
 
             <Button
               variant="outline"
-              className="w-full border-category/30 text-category-dark hover:bg-category-bg"
+              className="w-full border-brand-disabled text-brand-dark hover:bg-brand-soft"
               disabled={requireAck && !ackChecked}
               onClick={() => setEtapa(signaturePasswordConfigured ? 'senha' : 'cadastrar')}
             >
@@ -184,7 +184,7 @@ export function SignatureDialog({
               <Button
                 onClick={onAgree}
                 disabled={requireAck ? !ackChecked : false}
-                className="w-full bg-category-dark hover:bg-category-dark/90"
+                className="w-full"
               >
                 {agreeLabel}
               </Button>
@@ -197,7 +197,7 @@ export function SignatureDialog({
                   onChange={e => setSignaturePassword(e.target.value)}
                 />
                 <Button
-                  className="w-full bg-category-dark hover:bg-category-dark/90"
+                  className="w-full"
                   onClick={onConfirm}
                   disabled={signingDocument || !signaturePassword.trim()}
                 >
