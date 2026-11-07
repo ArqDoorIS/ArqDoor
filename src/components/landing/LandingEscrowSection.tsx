@@ -140,6 +140,8 @@ export default function LandingEscrowSection() {
         >
           <img
             src="/images/landing/esquema_escrow.png"
+            width={2300}
+            height={1975}
             alt="Fluxo de proteção de pagamento via Escrow"
           />
         </motion.div>

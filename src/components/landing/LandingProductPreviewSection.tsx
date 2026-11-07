@@ -105,6 +105,8 @@ export default function LandingProductPreviewSection() {
         >
           <img
             src="/images/landing/arqdoor_links.png"
+            width={2086}
+            height={1821}
             alt="Prévia de contrato digital ArqDoor"
             className="block w-full object-contain"
           />

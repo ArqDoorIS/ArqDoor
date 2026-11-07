@@ -91,6 +91,19 @@ describe('fonte da landing', () => {
   });
 });
 
+describe('imagens da landing', () => {
+  it('as imagens grandes reservam o espaço antes de carregar, para a página não pular', () => {
+    for (const [nome, imagem] of [
+      ['LandingHeroSection', 'Imagem_pag1.png'],
+      ['LandingProductPreviewSection', 'arqdoor_links.png'],
+      ['LandingEscrowSection', 'esquema_escrow.png'],
+    ]) {
+      const tag = ler(`${pasta}/${nome}.tsx`).match(new RegExp(`<img[^>]*${imagem}[^>]*/>`))?.[0] ?? '';
+      expect({ imagem, largura: /width=\{\d+\}/.test(tag), altura: /height=\{\d+\}/.test(tag) }).toEqual({ imagem, largura: true, altura: true });
+    }
+  });
+});
+
 describe('contraste da landing', () => {
   it('texto laranja pequeno em fundo claro usa o brand-dark', () => {
     expect(ler(`${pasta}/LandingHeroSection.tsx`)).toContain('text-brand-dark');
