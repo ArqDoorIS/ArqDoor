@@ -22,10 +22,10 @@ import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useDisponibilidade } from "@/hooks/use-disponibilidade";
 import { getInitials } from "@/lib/utils";
 
-// Header laranja nas telas logadas: logo branca, texto branco e nada em laranja por cima.
+// Header em laranja suave com texto escuro: o laranja cheio pesava, e o branco sobre ele dava 3,62:1.
 // Spec 2026-11-webapp-cores-do-app, decisão 5.
-const logoSrc = "/images/landing/logo_branca.png";
-const BOTAO_NO_HEADER = "text-white hover:bg-white/15 hover:text-white focus-visible:ring-white focus-visible:ring-offset-brand";
+const logoSrc = "/images/landing/logo.png";
+const BOTAO_NO_HEADER = "text-ink-strong hover:bg-white/60 hover:text-ink-strong";
 
 type NavLinkProps = {
   href: string;
@@ -40,10 +40,10 @@ const NavLink = ({ href, location, icon: Icon, children }: NavLinkProps) => {
     <Link href={href}>
       <div
         aria-current={isActive ? "page" : undefined}
-        className={`flex items-center gap-1 text-sm text-white transition-colors ${
+        className={`flex items-center gap-1 text-sm text-ink-strong transition-colors ${
           isActive
-            ? "font-semibold underline decoration-2 underline-offset-8"
-            : "font-medium hover:text-brand-soft"
+            ? "font-semibold underline decoration-brand decoration-2 underline-offset-8"
+            : "font-medium hover:text-brand-dark"
         }`}
       >
         <Icon className="w-4 h-4" /> {children}
@@ -70,7 +70,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 h-16 bg-brand">
+    <nav className="fixed top-0 w-full z-50 h-16 border-b border-brand-disabled bg-peach">
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -110,10 +110,10 @@ const Navbar = () => {
             <Link href="/messages">
               <div className="relative">
                 <Button variant="ghost" size="icon" aria-label="Messages" className={BOTAO_NO_HEADER}>
-                  <MessageCircle className="h-5 w-5 text-white" />
+                  <MessageCircle className="h-5 w-5 text-ink-strong" />
                   {unreadCount > 0 && (
                     <span 
-                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-white text-brand-dark font-bold border-2 border-brand ${
+                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-brand-dark text-white font-bold border-2 border-peach ${
                         unreadCount > 10 ? "h-3 w-3 p-0" : "h-5 w-5 text-[10px]"
                       }`}
                     >
@@ -188,21 +188,9 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button
-                variant="default"
-                className="bg-white text-brand-dark hover:bg-brand-soft focus-visible:ring-white focus-visible:ring-offset-brand"
-                onClick={() => navigate("/auth")}
-              >
-                Login
-              </Button>
+              <Button variant="default" onClick={() => navigate("/auth")}>Login</Button>
               {/* `/auth/register` não existia e caía no login. */}
-              <Button
-                variant="link"
-                className="text-white focus-visible:ring-white focus-visible:ring-offset-brand"
-                onClick={() => navigate("/auth?cadastro=1")}
-              >
-                Cadastrar
-              </Button>
+              <Button variant="link" className="text-ink-strong" onClick={() => navigate("/auth?cadastro=1")}>Cadastrar</Button>
             </>
           )}
         </div>

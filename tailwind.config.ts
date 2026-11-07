@@ -39,6 +39,8 @@ export default {
           soft: "#fff9f5",
         },
         line: "#f0e8e0",
+        // Só do site: laranja suave do header. Texto ink-strong dá 11,81:1 sobre ele.
+        peach: "#ffdccb",
         // Status do app. text é só do site: o warning.dark dá 2,41:1 como texto.
         success: { DEFAULT: "#4caf50", dark: "#2e7d32", bg: "#e8f5e9" },
         info: { DEFAULT: "#2196f3", dark: "#1565c0", bg: "#e3f2fd" },
