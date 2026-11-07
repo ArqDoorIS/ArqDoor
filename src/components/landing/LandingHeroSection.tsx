@@ -110,6 +110,8 @@ export default function LandingHeroSection({ primaryCta }: LandingHeroSectionPro
         >
           <img
             src="/images/landing/Imagem_pag1.png"
+            width={2134}
+            height={2084}
             alt="Fluxo de etapas do projeto na ArqDoor"
             className="w-full max-w-[620px]"
           />
