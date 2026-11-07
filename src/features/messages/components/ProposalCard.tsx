@@ -267,7 +267,7 @@ export function ProposalCard({
               <Button
                 size="sm"
                 onClick={() => onStartSignature(ticket)}
-                className="bg-category-dark hover:bg-category-dark/90 text-white flex-1 min-w-[160px]"
+                className="flex-1 min-w-[160px]"
               >
                 <Shield className="h-4 w-4 mr-2" /> Eu assino e confirmo os termos
               </Button>
