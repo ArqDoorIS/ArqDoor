@@ -4,6 +4,7 @@
  */
 
 import { useState } from "react";
+import { statusTone } from "@/lib/statusTone";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -34,11 +35,11 @@ type Props = {
 function BadgeStatus({ status }: { status: string }) {
   const { texto, cor } = labelStatus(status);
   const cls = {
-    azul: "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-    laranja: "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-    verde: "bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-    vermelho: "bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-    cinza: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+    azul: statusTone.andamento.selo,
+    laranja: statusTone.aviso.selo,
+    verde: statusTone.sucesso.selo,
+    vermelho: statusTone.erro.selo,
+    cinza: statusTone.neutro.selo,
   }[cor];
   return (
     <span
@@ -54,14 +55,14 @@ function ProgressoBar({ total, aprovadas }: { total: number; aprovadas: number }
   const concluido = pct === 100;
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex justify-between text-xs text-stone-500 dark:text-stone-400">
+      <div className="flex justify-between text-xs text-muted-foreground dark:text-stone-400">
         <span>
           {aprovadas} de {total} etapa{total !== 1 ? "s" : ""} aprovada{total !== 1 ? "s" : ""}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-stone-100 dark:bg-stone-700">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-surface-warm dark:bg-stone-700">
         <div
-          className={`h-full rounded-full transition-all ${concluido ? "bg-green-500" : "bg-orange-500"}`}
+          className={`h-full rounded-full transition-all ${concluido ? "bg-success" : "bg-brand"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -93,20 +94,20 @@ function BlocoResumo({
   return (
     <section
       data-testid="bloco-resumo"
-      className="rounded-2xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 p-5 flex flex-col gap-4"
+      className="rounded-2xl border border-line bg-white dark:border-stone-700 dark:bg-stone-900 p-5 flex flex-col gap-4"
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500">
+        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground dark:text-stone-500">
           {labelContrato}
         </span>
         <BadgeStatus status={contrato.status} />
       </div>
 
-      <h1 className="text-2xl font-extrabold leading-snug text-stone-900 dark:text-stone-50 tracking-tight">
+      <h1 className="text-2xl font-extrabold leading-snug text-ink-strong dark:text-stone-50 tracking-tight">
         {titulo}
       </h1>
 
-      <p className="text-sm text-stone-500 dark:text-stone-400">
+      <p className="text-sm text-muted-foreground dark:text-stone-400">
         com {prestador.nome}{profissao}
       </p>
 
@@ -114,15 +115,15 @@ function BlocoResumo({
         contrato.valor_total != null &&
         contrato.valor_pago != null && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-xl bg-stone-50 dark:bg-stone-800 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-xs text-stone-400 dark:text-stone-500">Total</span>
-              <span className="text-base font-extrabold text-stone-900 dark:text-stone-50">
+            <div className="rounded-xl bg-surface-soft dark:bg-stone-800 px-3 py-2.5 flex flex-col gap-0.5">
+              <span className="text-xs text-muted-foreground dark:text-stone-500">Total</span>
+              <span className="text-base font-extrabold text-ink-strong dark:text-stone-50">
                 {formatValor(contrato.valor_total)}
               </span>
             </div>
-            <div className="rounded-xl bg-stone-50 dark:bg-stone-800 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-xs text-stone-400 dark:text-stone-500">Pago</span>
-              <span className="text-base font-extrabold text-green-600 dark:text-green-400">
+            <div className="rounded-xl bg-surface-soft dark:bg-stone-800 px-3 py-2.5 flex flex-col gap-0.5">
+              <span className="text-xs text-muted-foreground dark:text-stone-500">Pago</span>
+              <span className="text-base font-extrabold text-success-dark dark:text-green-400">
                 {formatValor(contrato.valor_pago)}
               </span>
             </div>
@@ -137,13 +138,13 @@ function BlocoResumo({
       )}
 
       {contrato.assinado_em && contrato.status !== "aguardando_assinatura" && (
-        <p className="text-xs text-stone-400 dark:text-stone-500">
+        <p className="text-xs text-muted-foreground dark:text-stone-500">
           Assinado em {formatDataCompleta(contrato.assinado_em)}
         </p>
       )}
 
       {contrato.status === "concluido" && contrato.concluido_em && (
-        <p className="text-xs text-stone-400 dark:text-stone-500">
+        <p className="text-xs text-muted-foreground dark:text-stone-500">
           Concluído em {formatDataCompleta(contrato.concluido_em)}
         </p>
       )}
@@ -153,7 +154,7 @@ function BlocoResumo({
           type="button"
           onClick={onBaixarPdf}
           disabled={pdfLoading}
-          className="text-sm font-bold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 text-left flex items-center gap-1.5 py-1"
+          className="text-sm font-bold text-brand-dark hover:text-brand-dark dark:text-orange-400 dark:hover:text-orange-300 text-left flex items-center gap-1.5 py-1"
           data-testid="btn-ver-pdf"
         >
           {pdfLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -172,12 +173,12 @@ function BlocoFaseAtual({ dados }: { dados: DadosAcompanhamento }) {
     return (
       <section
         data-testid="bloco-cancelado"
-        className="rounded-2xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 p-5 flex flex-col gap-2"
+        className="rounded-2xl border border-line bg-white dark:border-stone-700 dark:bg-stone-900 p-5 flex flex-col gap-2"
       >
-        <h2 className="text-lg font-extrabold text-stone-900 dark:text-stone-50">
+        <h2 className="text-lg font-extrabold text-ink-strong dark:text-stone-50">
           Este contrato foi cancelado
         </h2>
-        <p className="text-sm leading-relaxed text-stone-500 dark:text-stone-400">
+        <p className="text-sm leading-relaxed text-muted-foreground dark:text-stone-400">
           Se a proposta foi refeita, o prestador manda um link novo.
         </p>
       </section>
@@ -188,12 +189,12 @@ function BlocoFaseAtual({ dados }: { dados: DadosAcompanhamento }) {
     return (
       <section
         data-testid="bloco-concluido"
-        className="rounded-2xl border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/30 p-5 flex flex-col gap-2"
+        className="rounded-2xl border border-success/30 bg-success-bg dark:border-green-800 dark:bg-green-900/30 p-5 flex flex-col gap-2"
       >
-        <h2 className="text-lg font-extrabold text-green-900 dark:text-green-100">
+        <h2 className="text-lg font-extrabold text-success-dark dark:text-green-100">
           Tudo entregue e aprovado
         </h2>
-        <p className="text-sm leading-relaxed text-green-700 dark:text-green-300">
+        <p className="text-sm leading-relaxed text-success-dark dark:text-green-300">
           Todos os grupos pagos. O histórico completo fica no contrato, depois de entrar.
         </p>
       </section>
@@ -204,12 +205,12 @@ function BlocoFaseAtual({ dados }: { dados: DadosAcompanhamento }) {
     return (
       <section
         data-testid="bloco-fase-atual"
-        className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
+        className="rounded-2xl border border-warning/30 bg-warning-bg dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-orange-700 dark:text-orange-400">
+        <span className="text-xs font-bold uppercase tracking-widest text-brand-dark dark:text-orange-400">
           Fase atual
         </span>
-        <h2 className="text-lg font-extrabold text-stone-900 dark:text-stone-50">
+        <h2 className="text-lg font-extrabold text-ink-strong dark:text-stone-50">
           Aguardando assinatura
         </h2>
       </section>
@@ -220,15 +221,15 @@ function BlocoFaseAtual({ dados }: { dados: DadosAcompanhamento }) {
     return (
       <section
         data-testid="bloco-fase-atual"
-        className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
+        className="rounded-2xl border border-warning/30 bg-warning-bg dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-orange-700 dark:text-orange-400">
+        <span className="text-xs font-bold uppercase tracking-widest text-brand-dark dark:text-orange-400">
           Fase atual
         </span>
-        <h2 className="text-lg font-extrabold text-stone-900 dark:text-stone-50">
+        <h2 className="text-lg font-extrabold text-ink-strong dark:text-stone-50">
           Pagamento do{fase_atual.grupo_nome ? ` ${fase_atual.grupo_nome}` : " primeiro grupo"}
         </h2>
-        <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-300">
+        <p className="text-sm leading-relaxed text-warning-text dark:text-amber-300">
           O trabalho começa depois do pagamento do primeiro grupo.
         </p>
       </section>
@@ -265,16 +266,16 @@ function BlocoFaseAtual({ dados }: { dados: DadosAcompanhamento }) {
     return (
       <section
         data-testid="bloco-fase-atual"
-        className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
+        className="rounded-2xl border border-warning/30 bg-warning-bg dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-1.5"
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-orange-700 dark:text-orange-400">
+        <span className="text-xs font-bold uppercase tracking-widest text-brand-dark dark:text-orange-400">
           Fase atual
         </span>
-        <h2 className="text-lg font-extrabold text-stone-900 dark:text-stone-50">
+        <h2 className="text-lg font-extrabold text-ink-strong dark:text-stone-50">
           {resumo}
         </h2>
         {detalhe && (
-          <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-300">
+          <p className="text-sm leading-relaxed text-warning-text dark:text-amber-300">
             {detalhe}
           </p>
         )}
@@ -299,17 +300,17 @@ function BlocoSuaVez({
   return (
     <section
       data-testid="bloco-sua-vez"
-      className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-3"
+      className="rounded-2xl border border-warning/30 bg-warning-bg dark:border-amber-700 dark:bg-amber-900/30 p-5 flex flex-col gap-3"
     >
-      <span className="text-xs font-bold uppercase tracking-widest text-orange-700 dark:text-orange-400">
+      <span className="text-xs font-bold uppercase tracking-widest text-brand-dark dark:text-orange-400">
         Sua vez
       </span>
-      <h2 className="text-lg font-extrabold text-stone-900 dark:text-stone-50">
+      <h2 className="text-lg font-extrabold text-ink-strong dark:text-stone-50">
         {texto}
       </h2>
       <Button
         onClick={onAbrirContrato}
-        className="h-12 bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-500 font-bold text-sm"
+        className="h-12 bg-brand hover:bg-brand-dark dark:bg-orange-600 dark:hover:bg-orange-500 font-bold text-sm"
         data-testid="btn-abrir-meu-contrato"
       >
         Abrir meu contrato
@@ -339,7 +340,7 @@ function BlocoPublico({
     return (
       <section
         data-testid="bloco-login-inline"
-        className="rounded-2xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 p-5"
+        className="rounded-2xl border border-line bg-white dark:border-stone-700 dark:bg-stone-900 p-5"
       >
         <StepConta user={user} onSuccess={onLoginSuccess} />
       </section>
@@ -352,20 +353,20 @@ function BlocoPublico({
         <a
           href={appLink}
           data-testid="btn-abrir-app"
-          className="flex h-12 items-center justify-center rounded-xl bg-orange-600 font-bold text-sm text-white hover:bg-orange-700 transition-colors"
+          className="flex h-12 items-center justify-center rounded-xl bg-brand font-bold text-sm text-white hover:bg-brand-dark transition-colors"
         >
           Abrir no app ArqDoor
         </a>
       )}
       <Button
         variant="outline"
-        className="h-12 font-bold text-sm border-stone-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-50"
+        className="h-12 font-bold text-sm border-line dark:border-stone-700 dark:bg-stone-900 dark:text-stone-50"
         onClick={() => setMostrandoLogin(true)}
         data-testid="btn-entrar-inline"
       >
         Entrar para ver valores e agir
       </Button>
-      <p className="text-center text-xs leading-relaxed text-stone-400 dark:text-stone-500">
+      <p className="text-center text-xs leading-relaxed text-muted-foreground dark:text-stone-500">
         Valores, contrato em PDF, pagamentos e aprovações aparecem depois de entrar.
       </p>
     </section>
@@ -396,7 +397,7 @@ function BlocoAcoesDetalhado({
       {dados.links?.conversa && (
         <Button
           onClick={onAbrirContrato}
-          className="h-12 bg-orange-600 hover:bg-orange-700 font-bold text-sm"
+          className="h-12 bg-brand hover:bg-brand-dark font-bold text-sm"
           data-testid="btn-abrir-contrato"
         >
           {labelBotao}
@@ -406,7 +407,7 @@ function BlocoAcoesDetalhado({
         <a
           href={appLink}
           data-testid="btn-abrir-app"
-          className="flex h-12 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-700 font-bold text-sm text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+          className="flex h-12 items-center justify-center rounded-xl border border-line dark:border-stone-700 font-bold text-sm text-ink-strong dark:text-stone-50 hover:bg-surface-soft dark:hover:bg-stone-800 transition-colors"
         >
           Abrir no app ArqDoor
         </a>
@@ -502,7 +503,7 @@ export function ContratoAcompanhamento({ dados, token, user, isLoggedIn, onLogin
         {/* Coluna direita: lista de etapas por grupo */}
         {mostrarEtapas && (
           <div className="flex-1 min-w-0 flex flex-col gap-3">
-            <h2 className="text-base font-extrabold text-stone-900 dark:text-stone-50">
+            <h2 className="text-base font-extrabold text-ink-strong dark:text-stone-50">
               Etapas
             </h2>
             {grupos.map((grupo, i) => (

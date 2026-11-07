@@ -10,6 +10,22 @@
     --primary: 20 86% 49%;
     --primary-foreground: 0 0% 100%;
     --ring: 20 86% 49%;
+
+    /* Base com a paleta do app. --background fica branco de propósito: campos, modais e botões
+       usam ele, e o creme vai no body. Spec 2026-11-webapp-cores-do-app. */
+    --foreground: 18 17% 15%;
+    --card-foreground: 18 17% 15%;
+    --popover-foreground: 18 17% 15%;
+    --secondary: 33 35% 94%;
+    --secondary-foreground: 18 17% 15%;
+    --muted: 33 35% 94%;
+    --muted-foreground: 20 7% 41%;
+    --accent: 17 100% 96%;
+    --accent-foreground: 21 90% 40%;
+    --destructive: 0 66% 47%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 35% 91%;
+    --input: 30 35% 91%;
   }
 
   * {
@@ -17,7 +33,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-surface text-foreground;
   }
 }
 

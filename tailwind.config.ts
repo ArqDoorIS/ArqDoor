@@ -39,6 +39,12 @@ export default {
           soft: "#fff9f5",
         },
         line: "#f0e8e0",
+        // Status do app. text é só do site: o warning.dark dá 2,41:1 como texto.
+        success: { DEFAULT: "#4caf50", dark: "#2e7d32", bg: "#e8f5e9" },
+        info: { DEFAULT: "#2196f3", dark: "#1565c0", bg: "#e3f2fd" },
+        danger: { DEFAULT: "#f44336", dark: "#c62828", bg: "#ffebee" },
+        warning: { DEFAULT: "#ff9800", dark: "#f57f17", bg: "#fff3e0", text: "#a15500" },
+        category: { DEFAULT: "#9c27b0", dark: "#6a1b9a", bg: "#f3e5f5" },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

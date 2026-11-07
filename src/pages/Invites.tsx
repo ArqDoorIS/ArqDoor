@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { statusTone } from "@/lib/statusTone";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -90,10 +91,10 @@ const toIsoDate = (value?: string | null) => {
 };
 
 const statusLabelMap: Record<Invite["status"], { label: string; tone: string }> = {
-  draft: { label: "Rascunho", tone: "bg-yellow-100 text-yellow-800" },
-  active: { label: "Ativo", tone: "bg-emerald-100 text-emerald-800" },
-  accepted: { label: "Aceito", tone: "bg-blue-100 text-blue-800" },
-  cancelled: { label: "Cancelado", tone: "bg-gray-200 text-gray-700" },
+  draft: { label: "Rascunho", tone: statusTone.aviso.selo },
+  active: { label: "Ativo", tone: statusTone.sucesso.selo },
+  accepted: { label: "Aceito", tone: statusTone.andamento.selo },
+  cancelled: { label: "Cancelado", tone: statusTone.neutro.selo },
 };
 
 export default function Invites() {
@@ -429,7 +430,7 @@ export default function Invites() {
     return (
       <div className="container mx-auto px-4 py-24">
         <div className="max-w-xl mx-auto text-center space-y-4">
-          <h1 className="text-2xl font-semibold text-gray-900">Convites exclusivos para prestadores</h1>
+          <h1 className="text-2xl font-semibold text-ink-strong">Convites exclusivos para prestadores</h1>
           <p className="text-muted-foreground">
             Complete seu cadastro como prestador para gerar links de convite e enviar propostas avulsas.
           </p>
@@ -442,12 +443,12 @@ export default function Invites() {
     <div className="container mx-auto px-4 py-24">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-900">Convites avulsos</h1>
+          <h1 className="text-3xl font-semibold text-ink-strong">Convites avulsos</h1>
           <p className="text-muted-foreground">
             Crie links rápidos para clientes externos aceitarem contratos e assinarem em poucos passos.
           </p>
         </div>
-        <Button onClick={openCreateDialog} className="bg-orange-600 hover:bg-orange-700">
+        <Button onClick={openCreateDialog} className="bg-brand hover:bg-brand-dark">
           <Plus className="h-4 w-4 mr-2" /> Novo convite
         </Button>
       </div>
@@ -472,14 +473,14 @@ export default function Invites() {
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-lg font-semibold text-gray-900">
+                      <h2 className="text-lg font-semibold text-ink-strong">
                         Convite #{invite.id}
                       </h2>
                       <span className={`text-xs px-2 py-1 rounded-full ${statusInfo.tone}`}>
                         {statusInfo.label}
                       </span>
                       {invite.bloqueado_em && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-medium">
+                        <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-danger-bg text-danger-dark font-medium">
                           <ShieldOff className="h-3 w-3" />
                           Bloqueado
                         </span>
@@ -490,11 +491,11 @@ export default function Invites() {
                         ? `Criado em ${formatDate(invite.created_at || (invite as any).createdAt)}`
                         : "Convite pronto para compartilhar"}
                     </p>
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-ink">
                       Total: <span className="font-medium">{formatPrice(total)}</span> ·{" "}
                       {safeSteps.length} etapa(s)
                     </div>
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-ink">
                       Cobrança: <span className="font-medium">Em garantia por grupos</span> ·{" "}
                       Recebimento:{" "}
                       <span className="font-medium">
@@ -508,10 +509,10 @@ export default function Invites() {
                         : ""}
                     </div>
                     {invite.destinatario_cpf_final && (
-                      <div className="flex items-center gap-1.5 text-sm text-gray-700">
-                        <Lock className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-sm text-ink">
+                        <Lock className="h-3.5 w-3.5 text-brand shrink-0" />
                         {invite.bloqueado_em ? (
-                          <span className="text-red-700">
+                          <span className="text-danger-dark">
                             Bloqueado depois de 5 tentativas com outro CPF. Crie um link novo.
                           </span>
                         ) : (
@@ -525,12 +526,12 @@ export default function Invites() {
                     <div className="flex items-center gap-1.5 text-sm">
                       {invite.previa_detalhada ? (
                         <>
-                          <Eye className="h-3.5 w-3.5 text-orange-500 shrink-0" />
-                          <span className="text-gray-700">Prévia com nome, título e valor</span>
+                          <Eye className="h-3.5 w-3.5 text-brand shrink-0" />
+                          <span className="text-ink">Prévia com nome, título e valor</span>
                         </>
                       ) : (
                         <>
-                          <EyeOff className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <EyeOff className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                           <span className="text-muted-foreground">Prévia sem detalhes no WhatsApp</span>
                         </>
                       )}
@@ -562,7 +563,7 @@ export default function Invites() {
                 </div>
 
                 {!invite.contract_pdf_path && (
-                  <div className="mt-3 text-xs text-orange-600">
+                  <div className="mt-3 text-xs text-brand-dark">
                     Contrato ainda não anexado. Envie o PDF para ativar o convite.
                   </div>
                 )}

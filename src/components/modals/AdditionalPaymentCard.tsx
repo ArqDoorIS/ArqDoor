@@ -129,22 +129,22 @@ export function AdditionalPaymentCard({
                 {statusConfig.label}
               </Badge>
             </div>
-            <p className="text-sm text-gray-600 line-clamp-2">{payment.description}</p>
+            <p className="text-sm text-muted-foreground line-clamp-2">{payment.description}</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-bold text-orange-600">
+            <p className="text-lg font-bold text-brand-dark">
               {formatPrice(payment.amount)}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {formatDate(payment.created_at)}
             </p>
           </div>
         </div>
 
         {payment.refusal_reason && normalizedStatus === "REFUSED" && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-2">
-            <p className="text-xs font-medium text-red-800">Motivo da recusa:</p>
-            <p className="text-xs text-red-700">{payment.refusal_reason}</p>
+          <div className="rounded-md bg-danger-bg border border-danger/30 p-2">
+            <p className="text-xs font-medium text-danger-dark">Motivo da recusa:</p>
+            <p className="text-xs text-danger-dark">{payment.refusal_reason}</p>
           </div>
         )}
 
@@ -162,7 +162,7 @@ export function AdditionalPaymentCard({
             </Button>
             <Button
               size="sm"
-              className="flex-1 bg-orange-600 hover:bg-orange-700"
+              className="flex-1 bg-brand hover:bg-brand-dark"
               onClick={() => setShowAcceptModal(true)}
               disabled={isProcessing}
             >
@@ -176,7 +176,7 @@ export function AdditionalPaymentCard({
           <div className="flex gap-2 pt-2 border-t">
             <Button
               size="sm"
-              className="flex-1 bg-orange-600 hover:bg-orange-700"
+              className="flex-1 bg-brand hover:bg-brand-dark"
               onClick={() => onResume?.(payment)}
               disabled={isProcessing}
             >
@@ -208,7 +208,7 @@ export function AdditionalPaymentCard({
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor={refuseReasonId}>
-                Motivo da recusa <span className="text-red-500">*</span>
+                Motivo da recusa <span className="text-danger-dark">*</span>
               </Label>
               <Textarea
                 id={refuseReasonId}
@@ -257,10 +257,10 @@ export function AdditionalPaymentCard({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="rounded-lg border p-3 bg-gray-50">
+            <div className="rounded-lg border p-3 bg-surface-soft">
               <p className="text-sm font-medium mb-1">{payment.title}</p>
-              <p className="text-xs text-gray-600 mb-2">{payment.description}</p>
-              <p className="text-lg font-bold text-orange-600">
+              <p className="text-xs text-muted-foreground mb-2">{payment.description}</p>
+              <p className="text-lg font-bold text-brand-dark">
                 {formatPrice(payment.amount)}
               </p>
             </div>
@@ -277,7 +277,7 @@ export function AdditionalPaymentCard({
                 ].map((method) => (
                   <label
                     key={method.value}
-                    className="flex items-center gap-2 p-3 rounded-md border cursor-pointer hover:bg-gray-50"
+                    className="flex items-center gap-2 p-3 rounded-md border cursor-pointer hover:bg-surface-soft"
                   >
                     <input
                       type="radio"
@@ -309,8 +309,8 @@ export function AdditionalPaymentCard({
             ) : null}
 
             {selectedMethod === "CREDIT_CARD" && !cartaoDisponivel() ? (
-              <div className="space-y-2 rounded-md bg-red-50 px-3 py-2">
-                <p className="text-xs leading-relaxed text-red-700">
+              <div className="space-y-2 rounded-md bg-danger-bg px-3 py-2">
+                <p className="text-xs leading-relaxed text-danger-dark">
                   O pagamento com cartão está indisponível nesta versão do site. Use PIX
                   para concluir agora.
                 </p>
@@ -319,7 +319,7 @@ export function AdditionalPaymentCard({
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedMethod("PIX")}
-                  className="border-red-200 text-red-700 hover:bg-red-100"
+                  className="border-danger/30 text-danger-dark hover:bg-danger-bg"
                 >
                   Pagar com PIX
                 </Button>
@@ -337,7 +337,7 @@ export function AdditionalPaymentCard({
                 <Button
                   onClick={() => void handleAccept()}
                   disabled={isProcessing}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  className="bg-brand hover:bg-brand-dark"
                 >
                   {isProcessing ? (
                     <>

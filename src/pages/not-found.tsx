@@ -7,15 +7,15 @@ import { AlertCircle } from "lucide-react";
 // alguém tinha esquecido de registrar a rota (spec 2026-11-site-ganhos-rapidos).
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen w-full flex items-center justify-center">
       <Card className="w-full max-w-md mx-4">
         <CardContent className="pt-6">
           <div className="flex mb-4 gap-2 items-center">
-            <AlertCircle className="h-8 w-8 text-amber-500" />
-            <h1 className="text-2xl font-bold text-gray-900">Página não encontrada</h1>
+            <AlertCircle className="h-8 w-8 text-warning-text" />
+            <h1 className="text-2xl font-bold text-ink-strong">Página não encontrada</h1>
           </div>
 
-          <p className="mt-4 text-sm text-gray-600">
+          <p className="mt-4 text-sm text-muted-foreground">
             O endereço pode ter mudado ou estar incompleto.
           </p>
 

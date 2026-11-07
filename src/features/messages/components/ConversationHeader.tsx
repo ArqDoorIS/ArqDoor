@@ -31,27 +31,27 @@ function StatusLabel({
 }) {
   if (digitando) {
     return (
-      <span className="text-xs font-medium" style={{ color: '#c2410c' }}>
+      <span className="text-xs font-medium text-brand-dark">
         digitando...
       </span>
     );
   }
   if (presenca.online) {
     return (
-      <span className="text-xs font-medium" style={{ color: '#15803d' }}>
+      <span className="text-xs font-medium text-success-dark">
         Online
       </span>
     );
   }
   if (presenca.disponivel) {
     return (
-      <span className="text-xs font-medium" style={{ color: '#3f6f50' }}>
+      <span className="text-xs font-medium text-success-dark">
         Disponível
       </span>
     );
   }
   return (
-    <span className="text-xs font-medium" style={{ color: '#6b7280' }}>
+    <span className="text-xs font-medium text-muted-foreground">
       Indisponível
     </span>
   );
@@ -69,7 +69,7 @@ export function ConversationHeader({
   const digitando = useDigitando(conversation.id);
 
   return (
-    <div className="p-4 bg-white border-b border-gray-200 flex items-center justify-between">
+    <div className="p-4 bg-white border-b border-line flex items-center justify-between">
       <div className="flex items-center gap-3">
         {onBack && (
           <Button
@@ -78,14 +78,14 @@ export function ConversationHeader({
             className="md:hidden mr-1"
             onClick={onBack}
           >
-            <ChevronLeft className="h-6 w-6 text-gray-600" />
+            <ChevronLeft className="h-6 w-6 text-muted-foreground" />
           </Button>
         )}
         {/* Avatar com bolinha de presenca */}
         <div className="relative shrink-0">
           <Avatar className="h-10 w-10">
             <AvatarImage src={conversation.otherUser.avatar || conversation.otherUser.perfil || undefined} />
-            <AvatarFallback className="bg-orange-100 text-orange-700">
+            <AvatarFallback className="bg-brand-soft text-brand-dark">
               {getInitials(conversation.otherUser.name)}
             </AvatarFallback>
           </Avatar>
@@ -99,7 +99,7 @@ export function ConversationHeader({
           )}
         </div>
         <div>
-          <h2 className="font-semibold text-gray-900">
+          <h2 className="font-semibold text-ink-strong">
             {conversation.otherUser.name}
           </h2>
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -128,7 +128,7 @@ export function ConversationHeader({
         {canCreateProposal && (
           <Button
             onClick={onOpenProposal}
-            className="bg-orange-600 hover:bg-orange-700"
+            className="bg-brand hover:bg-brand-dark"
           >
             <Plus className="h-4 w-4 mr-2" /> Nova Proposta
           </Button>

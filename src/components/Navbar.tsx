@@ -41,7 +41,7 @@ const NavLink = ({ href, location, icon: Icon, children }: NavLinkProps) => {
         className={`flex items-center gap-1 text-sm transition-colors ${
           isActive
             ? "text-brand font-semibold"
-            : "text-gray-700 hover:text-brand"
+            : "text-ink hover:text-brand"
         }`}
       >
         <Icon className="w-4 h-4" /> {children}
@@ -68,7 +68,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 h-16 border-b border-zinc-200 bg-white/90 backdrop-blur shadow-sm transition-all`}>
+    <nav className={`fixed top-0 w-full z-50 h-16 border-b border-line bg-white/90 backdrop-blur shadow-sm transition-all`}>
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -108,10 +108,10 @@ const Navbar = () => {
             <Link href="/messages">
               <div className="relative">
                 <Button variant="ghost" size="icon" aria-label="Messages">
-                  <MessageCircle className="h-5 w-5 text-gray-700" />
+                  <MessageCircle className="h-5 w-5 text-ink" />
                   {unreadCount > 0 && (
                     <span 
-                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-red-500 text-white font-bold border-2 border-white ${
+                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-danger-dark text-white font-bold border-2 border-white ${
                         unreadCount > 10 ? "h-3 w-3 p-0" : "h-5 w-5 text-[10px]"
                       }`}
                     >
@@ -163,7 +163,7 @@ const Navbar = () => {
                     <span
                       className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                       style={{
-                        backgroundColor: disponivel ? '#22c55e' : '#d1d5db',
+                        backgroundColor: disponivel ? '#4caf50' : '#bbb0aa',
                       }}
                       aria-hidden="true"
                     >
@@ -203,42 +203,42 @@ const Navbar = () => {
             <SheetContent>
               <div className="mt-6 space-y-4">
                 <Link href="/home">
-                  <div className="text-gray-700 hover:text-brand">Início</div>
+                  <div className="text-ink hover:text-brand">Início</div>
                 </Link>
                 {user?.type === "contratante" && (
                   <Link href="/services">
-                    <div className="text-gray-700 hover:text-brand">Serviços</div>
+                    <div className="text-ink hover:text-brand">Serviços</div>
                   </Link>
                 )}
                 {user?.type === "contratante" && (
                   <Link href="/connections">
-                    <div className="text-gray-700 hover:text-brand">Conexões</div>
+                    <div className="text-ink hover:text-brand">Conexões</div>
                   </Link>
                 )}
                 {user?.type === "prestador" && (
                   <Link href="/demands">
-                    <div className="text-gray-700 hover:text-brand">Demandas</div>
+                    <div className="text-ink hover:text-brand">Demandas</div>
                   </Link>
                 )}
                 {isLoggedIn && user?.type === "prestador" && (
                   <Link href="/convites">
-                    <div className="text-gray-700 hover:text-brand">Convites</div>
+                    <div className="text-ink hover:text-brand">Convites</div>
                   </Link>
                 )}
                 {isLoggedIn && (
                   <Link href="/kanban">
-                    <div className="flex items-center gap-1 text-gray-700 hover:text-brand">
+                    <div className="flex items-center gap-1 text-ink hover:text-brand">
                       <LayoutDashboard className="h-4 w-4" /> Kanban
                     </div>
                   </Link>
                 )}
                 {isLoggedIn && (
                   <Link href="/messages">
-                    <div className="relative flex items-center gap-1 text-gray-700 hover:text-brand">
+                    <div className="relative flex items-center gap-1 text-ink hover:text-brand">
                       <MessageCircle className="h-5 w-5" /> 
                       Mensagens
                       {unreadCount > 0 && (
-                        <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                        <span className="ml-2 bg-danger-bg text-danger-dark text-xs font-bold px-2 py-0.5 rounded-full">
                           {unreadCount > 10 ? "10+" : unreadCount}
                         </span>
                       )}
@@ -247,7 +247,7 @@ const Navbar = () => {
                 )}
                 {isLoggedIn && user ? (
                   <Link href="/profile">
-                    <div className="text-gray-700 hover:text-brand">Perfil</div>
+                    <div className="text-ink hover:text-brand">Perfil</div>
                   </Link>
                 ) : (
                   <Button onClick={() => navigate("/auth")}>Login</Button>

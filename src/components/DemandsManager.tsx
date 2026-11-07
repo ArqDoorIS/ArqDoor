@@ -1,5 +1,6 @@
 // src/components/DemandsManager.tsx
 import React, { useState, useEffect } from "react";
+import { statusTone } from '@/lib/statusTone';
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -156,15 +157,15 @@ export default function DemandsManager() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'pendente':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+        return statusTone.aviso.selo;
       case 'em_andamento':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return statusTone.andamento.selo;
       case 'concluida':
-        return 'bg-green-50 text-green-700 border-green-200';
+        return statusTone.sucesso.selo;
       case 'cancelada':
-        return 'bg-red-50 text-red-700 border-red-200';
+        return statusTone.erro.selo;
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return statusTone.neutro.selo;
     }
   };
 
@@ -177,14 +178,14 @@ export default function DemandsManager() {
     <Card className="shadow-lg border-0">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <FileText className="w-6 h-6 text-amber-600" />
+          <CardTitle className="text-2xl font-bold text-ink flex items-center gap-2">
+            <FileText className="w-6 h-6 text-brand-dark" />
             Minhas Demandas
           </CardTitle>
           {!isCreating && (
             <Button
               onClick={startCreating}
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-brand hover:bg-brand-dark text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nova Demanda
@@ -195,37 +196,37 @@ export default function DemandsManager() {
       <CardContent>
         {/* Formulário de criação de demanda */}
         {isCreating && (
-          <Card className="mb-6 border-2 border-amber-200 bg-amber-50/50">
+          <Card className="mb-6 border-2 border-brand-disabled bg-brand-tint/50">
             <CardHeader>
-              <CardTitle className="text-lg text-amber-800">Criar Nova Demanda</CardTitle>
+              <CardTitle className="text-lg text-brand-dark">Criar Nova Demanda</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">
+                <label className="text-sm font-semibold text-muted-foreground mb-2 block">
                   Título da Demanda *
                 </label>
                 <Input
                   value={newDemand.title}
                   onChange={(e) => setNewDemand(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Ex: Conserto de torneira com vazamento"
-                  className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  className="border-brand-disabled focus:border-brand focus:ring-brand"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">
+                <label className="text-sm font-semibold text-muted-foreground mb-2 block">
                   Descrição *
                 </label>
                 <Textarea
                   value={newDemand.description}
                   onChange={(e) => setNewDemand(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Descreva detalhadamente o serviço que você precisa..."
-                  className="min-h-[100px] resize-none border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  className="min-h-[100px] resize-none border-brand-disabled focus:border-brand focus:ring-brand"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-slate-600 mb-2 block">
+                <label className="text-sm font-semibold text-muted-foreground mb-2 block">
                   Orçamento (R$) *
                 </label>
                 <Input
@@ -235,7 +236,7 @@ export default function DemandsManager() {
                   value={newDemand.price}
                   onChange={(e) => setNewDemand(prev => ({ ...prev, price: e.target.value }))}
                   placeholder="120.00"
-                  className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  className="border-brand-disabled focus:border-brand focus:ring-brand"
                 />
               </div>
 
@@ -243,7 +244,7 @@ export default function DemandsManager() {
                 <Button
                   variant="outline"
                   onClick={cancelCreating}
-                  className="flex-1 border-slate-300 hover:bg-slate-50"
+                  className="flex-1 border-line hover:bg-surface-soft"
                   disabled={creatingDemand}
                 >
                   <X className="w-4 h-4 mr-2" />
@@ -251,7 +252,7 @@ export default function DemandsManager() {
                 </Button>
                 <Button
                   onClick={createDemand}
-                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                  className="flex-1 bg-brand hover:bg-brand-dark text-white"
                   disabled={creatingDemand}
                 >
                   {creatingDemand ? (
@@ -268,23 +269,23 @@ export default function DemandsManager() {
 
         {loadingDemands ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="animate-spin text-amber-600 w-8 h-8 mr-3" />
-            <span className="text-slate-600">Carregando demandas...</span>
+            <Loader2 className="animate-spin text-brand-dark w-8 h-8 mr-3" />
+            <span className="text-muted-foreground">Carregando demandas...</span>
           </div>
         ) : errorDemands ? (
-          <div className="flex items-center justify-center py-12 text-red-600">
+          <div className="flex items-center justify-center py-12 text-danger-dark">
             <AlertCircle className="w-6 h-6 mr-2" />
             <span>Erro ao carregar demandas: {errorDemands}</span>
           </div>
         ) : demands.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">Nenhuma demanda cadastrada</h3>
-            <p className="text-slate-500 mb-4">Cadastre suas primeiras demandas para encontrar prestadores de serviço.</p>
+            <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-muted-foreground mb-2">Nenhuma demanda cadastrada</h3>
+            <p className="text-muted-foreground mb-4">Cadastre suas primeiras demandas para encontrar prestadores de serviço.</p>
             {!isCreating && (
               <Button
                 onClick={startCreating}
-                className="bg-amber-600 hover:bg-amber-700 text-white"
+                className="bg-brand hover:bg-brand-dark text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Criar Primeira Demanda
@@ -297,7 +298,7 @@ export default function DemandsManager() {
               const isEditingDemand = demand.id_demand === editingId;
 
               return (
-                <Card key={demand.id_demand} className="group hover:shadow-lg transition-all duration-200 border-slate-200">
+                <Card key={demand.id_demand} className="group hover:shadow-lg transition-all duration-200 border-line">
                   <CardContent className="p-6">
                     {isEditingDemand ? (
                       <div className="space-y-4">
@@ -307,7 +308,7 @@ export default function DemandsManager() {
                             setDraftDemand((d) => ({ ...d, title: e.target.value }))
                           }
                           placeholder="Título da demanda"
-                          className="font-semibold border-amber-200 focus:border-amber-400"
+                          className="font-semibold border-brand-disabled focus:border-brand"
                         />
                         <Textarea
                           value={draftDemand.description}
@@ -315,7 +316,7 @@ export default function DemandsManager() {
                             setDraftDemand((d) => ({ ...d, description: e.target.value }))
                           }
                           placeholder="Descrição da demanda"
-                          className="min-h-[80px] resize-none border-amber-200 focus:border-amber-400"
+                          className="min-h-[80px] resize-none border-brand-disabled focus:border-brand"
                         />
                         <Input
                           type="number"
@@ -326,7 +327,7 @@ export default function DemandsManager() {
                             setDraftDemand((d) => ({ ...d, price: e.target.value }))
                           }
                           placeholder="Orçamento"
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-brand-disabled focus:border-brand"
                         />
                         <div className="flex gap-2 pt-2">
                           <Button
@@ -341,7 +342,7 @@ export default function DemandsManager() {
                           <Button
                             size="sm"
                             onClick={saveDemand}
-                            className="flex-1 bg-amber-600 hover:bg-amber-700"
+                            className="flex-1 bg-brand hover:bg-brand-dark"
                           >
                             <Check className="w-4 h-4 mr-1" />
                             Salvar
@@ -351,25 +352,25 @@ export default function DemandsManager() {
                     ) : (
                       <div className="space-y-4">
                         <div className="flex items-start justify-between">
-                          <h3 className="text-lg font-bold text-slate-800 line-clamp-2 flex-1">
+                          <h3 className="text-lg font-bold text-ink line-clamp-2 flex-1">
                             {demand.title}
                           </h3>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-amber-600 hover:text-amber-700 hover:bg-amber-50 ml-2"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-brand-dark hover:text-brand-dark hover:bg-brand-tint ml-2"
                             onClick={() => startEditDemand(demand)}
                           >
                             <Edit2 className="w-4 h-4" />
                           </Button>
                         </div>
 
-                        <p className="text-slate-600 line-clamp-3 leading-relaxed">
+                        <p className="text-muted-foreground line-clamp-3 leading-relaxed">
                           {demand.description}
                         </p>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                          <div className="flex items-center gap-1 text-green-600 font-bold text-lg">
+                        <div className="flex items-center justify-between pt-2 border-t border-line">
+                          <div className="flex items-center gap-1 text-success-dark font-bold text-lg">
                             R$ {demand.price}
                           </div>
                           <Badge className={getStatusColor(demand.status || "")}>
@@ -380,7 +381,7 @@ export default function DemandsManager() {
                           </Badge>
                         </div>
 
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-muted-foreground">
                           Criada em: {new Date(demand.createdAt || demand.created_at).toLocaleDateString('pt-BR')}
                         </div>
                       </div>

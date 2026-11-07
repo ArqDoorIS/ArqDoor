@@ -30,18 +30,18 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
     <div className="space-y-6" data-testid="step-pronto">
       {/* Cabecalho de sucesso */}
       <div className="flex flex-col items-center text-center gap-3 py-6">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100">
-          <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-success-bg">
+          <CheckCircle2 className="h-8 w-8 text-success-dark" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Pronto!</h1>
-        <p className="text-sm text-slate-600 max-w-sm">
+        <h1 className="text-2xl font-bold text-ink-strong">Pronto!</h1>
+        <p className="text-sm text-muted-foreground max-w-sm">
           Você aceitou e assinou o contrato. Agora a conversa está aberta e o projeto pode começar.
         </p>
       </div>
 
       {/* Linha do tempo */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+      <div className="rounded-xl border border-line bg-white p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">
           Linha do tempo
         </h2>
         <div className="space-y-3">
@@ -83,7 +83,7 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
               `/messages/${result.provider_user_id}?ticket=${result.ticket_id}`
             )
           }
-          className="flex-1 bg-orange-600 hover:bg-orange-700 h-12 gap-2 text-base font-semibold rounded-xl"
+          className="flex-1 bg-brand hover:bg-brand-dark h-12 gap-2 text-base font-semibold rounded-xl"
         >
           <MessageCircle className="h-5 w-5" />
           Abrir conversa
@@ -103,16 +103,16 @@ export function StepPronto({ result, paymentDone, token, pdfUrl }: Props) {
       {/* Cartao "Baixar no app" - somente em Android */}
       {android && (
         <div
-          className="rounded-xl border border-slate-200 bg-white p-4 space-y-3"
+          className="rounded-xl border border-line bg-white p-4 space-y-3"
           data-testid="android-app-card"
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5 text-orange-600" />
+            <div className="h-10 w-10 rounded-xl bg-brand-soft flex items-center justify-center shrink-0">
+              <Download className="h-5 w-5 text-brand-dark" />
             </div>
             <div>
-              <p className="font-semibold text-sm text-slate-900">Baixar e continuar no app</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-semibold text-sm text-ink-strong">Baixar e continuar no app</p>
+              <p className="text-xs text-muted-foreground">
                 Acompanhe as etapas, mensagens e pagamentos pelo aplicativo ArqDoor.
               </p>
             </div>
@@ -148,19 +148,19 @@ function TimelineItem({
       <div
         className={`mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0 ${
           done
-            ? "bg-emerald-100 text-emerald-600"
-            : "bg-slate-100 text-slate-400"
+            ? "bg-success-bg text-success-dark"
+            : "bg-surface-warm text-muted-foreground"
         }`}
       >
         {done ? (
           <CheckCircle2 className="h-4 w-4" />
         ) : (
-          <span className="h-2 w-2 rounded-full bg-slate-300 block" />
+          <span className="h-2 w-2 rounded-full bg-line block" />
         )}
       </div>
       <div>
-        <p className="text-sm font-medium text-slate-800">{label}</p>
-        {detail && <p className="text-xs text-slate-500 mt-0.5">{detail}</p>}
+        <p className="text-sm font-medium text-ink">{label}</p>
+        {detail && <p className="text-xs text-muted-foreground mt-0.5">{detail}</p>}
       </div>
     </div>
   );

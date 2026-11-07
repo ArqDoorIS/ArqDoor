@@ -8,7 +8,7 @@ export default function AppHome() {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center text-slate-500">
+      <div className="min-h-[60vh] flex items-center justify-center text-muted-foreground">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );

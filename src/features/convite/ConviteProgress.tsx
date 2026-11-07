@@ -34,10 +34,10 @@ export function ConviteProgress({ currentStep }: Props) {
                     className={cn(
                       "flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ring-2 transition-colors",
                       active
-                        ? "ring-orange-500 bg-orange-500 text-white"
+                        ? "ring-brand bg-brand text-white"
                         : done
-                          ? "ring-orange-400 bg-orange-100 text-orange-600"
-                          : "ring-slate-200 bg-white text-slate-400"
+                          ? "ring-brand bg-brand-soft text-brand-dark"
+                          : "ring-line bg-white text-muted-foreground"
                     )}
                     aria-current={active ? "step" : undefined}
                   >
@@ -47,10 +47,10 @@ export function ConviteProgress({ currentStep }: Props) {
                     className={cn(
                       "text-[10px] font-medium tracking-wide hidden sm:block",
                       active
-                        ? "text-orange-600"
+                        ? "text-brand-dark"
                         : done
-                          ? "text-orange-400"
-                          : "text-slate-400"
+                          ? "text-brand-light"
+                          : "text-muted-foreground"
                     )}
                   >
                     {step.label}
@@ -62,7 +62,7 @@ export function ConviteProgress({ currentStep }: Props) {
                   <div
                     className={cn(
                       "flex-1 h-0.5 mx-1 rounded-full",
-                      done ? "bg-orange-300" : "bg-slate-200"
+                      done ? "bg-brand-disabled" : "bg-surface-cream"
                     )}
                   />
                 )}

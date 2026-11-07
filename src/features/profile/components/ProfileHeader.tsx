@@ -146,7 +146,7 @@ export function ProfileHeader({ user, onLogout }: ProfileHeaderProps) {
 
   return (
     <div className="w-full overflow-hidden rounded-lg border bg-white shadow-sm group">
-      <div className="relative h-32 bg-gray-100">
+      <div className="relative h-32 bg-surface-warm">
         {user.banner ? (
             <img 
                 src={buildImageUrl(user.banner)} 
@@ -154,7 +154,7 @@ export function ProfileHeader({ user, onLogout }: ProfileHeaderProps) {
                 className="w-full h-full object-cover"
             />
         ) : (
-            <div className="w-full h-full bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-400" />
+            <div className="w-full h-full bg-brand" />
         )}
         
         {/* Banner Controls */}
@@ -220,7 +220,7 @@ export function ProfileHeader({ user, onLogout }: ProfileHeaderProps) {
                         <Button 
                             size="icon" 
                             variant="ghost" 
-                            className="text-red-400 hover:text-red-300 hover:bg-white/20 rounded-full"
+                            className="text-danger hover:text-danger hover:bg-white/20 rounded-full"
                             onClick={() => handleRemove("perfil")}
                             disabled={removingPerfil}
                             title="Remover foto"
@@ -236,7 +236,7 @@ export function ProfileHeader({ user, onLogout }: ProfileHeaderProps) {
       <div className="pt-20 pb-8 px-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">{user.name}</h1>
-          <p className="text-slate-600">
+          <p className="text-muted-foreground">
             {user.type === "prestador" ? "Prestador de Serviços" : "Cliente"}
           </p>
         </div>

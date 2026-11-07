@@ -72,10 +72,10 @@ export default function DemandsPage() {
   if (loading) {
     return (
       <div className="pt-6">
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-amber-600 mb-4"></div>
-            <p className="text-slate-500 font-medium">Carregando demandas...</p>
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-line border-t-brand mb-4"></div>
+            <p className="text-muted-foreground font-medium">Carregando demandas...</p>
           </div>
         </div>
       </div>
@@ -85,13 +85,13 @@ export default function DemandsPage() {
   if (error) {
     return (
       <div className="pt-6">
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-          <div className="text-center p-8 bg-white rounded-lg shadow-sm border border-slate-200 max-w-md">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-red-500 text-xl font-bold">!</span>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center p-8 bg-white rounded-lg shadow-sm border border-line max-w-md">
+            <div className="w-12 h-12 bg-danger-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-danger-dark text-xl font-bold">!</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Erro ao carregar</h3>
-            <p className="text-slate-500 mb-4">{error}</p>
+            <h3 className="text-lg font-bold text-ink mb-2">Erro ao carregar</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">Tentar novamente</Button>
           </div>
         </div>
@@ -135,18 +135,18 @@ export default function DemandsPage() {
 
   return (
     <div className="pt-6">
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Demandas Recentes</h1>
-              <p className="text-slate-500 mt-2">Veja o que os clientes estão precisando agora</p>
+              <h1 className="text-3xl font-bold text-ink-strong tracking-tight">Demandas Recentes</h1>
+              <p className="text-muted-foreground mt-2">Veja o que os clientes estão precisando agora</p>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar demandas..."
                   value={searchTerm}
@@ -178,7 +178,7 @@ export default function DemandsPage() {
           {/* Sort & Filters Toolbar (Simplified) */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-muted-foreground">
                 {filtered.length} resultados
               </span>
               {searchTerm && (
@@ -225,20 +225,20 @@ export default function DemandsPage() {
             {pageItems.map((demand, index) => (
               <Card
                 key={demand.id_demand}
-                className={`group bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 overflow-hidden flex ${viewMode === 'list' ? 'flex-row' : 'flex-col'}`}
+                className={`group bg-white border border-line shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 overflow-hidden flex ${viewMode === 'list' ? 'flex-row' : 'flex-col'}`}
               >
                 {/* Card Content */}
                 <div className={`p-5 flex flex-col ${viewMode === 'list' ? 'flex-1' : 'h-full'}`}>
                   {/* Header: Author Info */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8 border border-slate-100">
+                      <Avatar className="h-8 w-8 border border-line">
                         <AvatarImage src={buildImageUrl((demand as any).userPerfil)} />
-                        <AvatarFallback className="text-xs bg-amber-100 text-amber-700">{getInitials(demand.userName)}</AvatarFallback>
+                        <AvatarFallback className="text-xs bg-brand-soft text-brand-dark">{getInitials(demand.userName)}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-slate-700 leading-none">{demand.userName}</span>
-                        <span className="text-[10px] text-slate-400 leading-tight mt-1">{formatDate(demand.createdAt)}</span>
+                        <span className="text-xs font-medium text-ink leading-none">{demand.userName}</span>
+                        <span className="text-[10px] text-muted-foreground leading-tight mt-1">{formatDate(demand.createdAt)}</span>
                       </div>
                     </div>
                   </div>
@@ -246,30 +246,30 @@ export default function DemandsPage() {
                   {/* Body */}
                   <div className="mb-4 flex-1">
                     <div className="flex justify-between items-start gap-2 mb-2">
-                      <h3 className="font-semibold text-slate-900 leading-tight line-clamp-2 group-hover:text-amber-600 transition-colors">
+                      <h3 className="font-semibold text-ink-strong leading-tight line-clamp-2 group-hover:text-brand-dark transition-colors">
                               {demand.title}
                             </h3>
                     </div>
-                    <p className="text-sm text-slate-500 line-clamp-3 mb-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                       {demand.description}
                     </p>
-                    <p className="text-lg font-bold text-green-600">
+                    <p className="text-lg font-bold text-success-dark">
                       {formatPrice(demand.price)}
                     </p>
                   </div>
 
                   {/* Footer Actions */}
-                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-line">
                     <Link
                       href={`/user/${demand.id_user}?demand=${demand.id_demand}`}
                       className="flex-1"
                     >
-                      <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white h-9 text-xs font-medium rounded-md">
+                      <Button className="w-full bg-brand hover:bg-brand-dark text-white h-9 text-xs font-medium rounded-md">
                         Ver cliente / solicitar conexão
                       </Button>
                     </Link>
                     <Link href={`/user/${demand.id_user}?demand=${demand.id_demand}`}>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md">
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-brand-dark hover:bg-brand-tint rounded-md">
                         <User className="h-4 w-4" />
                       </Button>
                     </Link>
@@ -282,11 +282,11 @@ export default function DemandsPage() {
           {/* Empty State */}
           {pageItems.length === 0 && (
             <div className="text-center py-24">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-6">
-                <Search className="h-8 w-8 text-slate-400" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-warm mb-6">
+                <Search className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-2">Nenhuma demanda encontrada</h3>
-              <p className="text-slate-500 max-w-sm mx-auto mb-6">
+              <h3 className="text-lg font-medium text-ink-strong mb-2">Nenhuma demanda encontrada</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
                 Não encontramos resultados para sua busca. Tente termos diferentes ou remova os filtros.
               </p>
               <Button
@@ -314,7 +314,7 @@ export default function DemandsPage() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <div className="text-sm font-medium text-slate-600">
+              <div className="text-sm font-medium text-muted-foreground">
                 Página {page} de {totalPages}
               </div>
               <Button

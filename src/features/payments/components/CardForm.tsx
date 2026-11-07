@@ -71,7 +71,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
   }
 
   const borda = (campo: string) =>
-    erro?.campo === campo ? "border-red-500 focus-visible:ring-red-500" : "";
+    erro?.campo === campo ? "border-danger focus-visible:ring-danger" : "";
 
   // Erro de campo o cliente resolve digitando de novo. Recusa da operadora, queda de rede
   // e site sem chave de tokenização, não: nesses casos a única saída real é outra forma
@@ -81,12 +81,12 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
   return (
     <form onSubmit={enviar} className="space-y-3">
       <div className="flex items-center gap-2 text-sm font-medium">
-        <CreditCard className="h-4 w-4 text-orange-600" />
+        <CreditCard className="h-4 w-4 text-brand-dark" />
         Dados do cartão
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="cartao-numero" className="text-xs text-gray-600">
+        <Label htmlFor="cartao-numero" className="text-xs text-muted-foreground">
           Número do cartão
         </Label>
         <Input
@@ -102,7 +102,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="cartao-nome" className="text-xs text-gray-600">
+        <Label htmlFor="cartao-nome" className="text-xs text-muted-foreground">
           Nome impresso no cartão
         </Label>
         <Input
@@ -118,7 +118,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label htmlFor="cartao-validade" className="text-xs text-gray-600">
+          <Label htmlFor="cartao-validade" className="text-xs text-muted-foreground">
             Validade
           </Label>
           <Input
@@ -133,7 +133,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="cartao-cvv" className="text-xs text-gray-600">
+          <Label htmlFor="cartao-cvv" className="text-xs text-muted-foreground">
             CVV
           </Label>
           <div className="relative">
@@ -151,7 +151,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
             <button
               type="button"
               onClick={() => setCvvVisivel((v) => !v)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
               aria-label={cvvVisivel ? "Ocultar CVV" : "Mostrar CVV"}
             >
               {cvvVisivel ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -161,15 +161,15 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
       </div>
 
       {erro && (
-        <div className="space-y-2 rounded-md bg-red-50 px-3 py-2">
-          <p className="text-xs leading-relaxed text-red-700">{erro.msg}</p>
+        <div className="space-y-2 rounded-md bg-danger-bg px-3 py-2">
+          <p className="text-xs leading-relaxed text-danger-dark">{erro.msg}</p>
           {semConserto && onUsarPix ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onUsarPix}
-              className="w-full border-red-200 text-red-700 hover:bg-red-100"
+              className="w-full border-danger/30 text-danger-dark hover:bg-danger-bg"
             >
               Pagar com PIX
             </Button>
@@ -180,7 +180,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
       <Button
         type="submit"
         disabled={ocupado}
-        className="w-full bg-orange-600 hover:bg-orange-700"
+        className="w-full bg-brand hover:bg-brand-dark"
       >
         {ocupado ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -190,7 +190,7 @@ export function CardForm({ total, enviando, onToken, onUsarPix }: CardFormProps)
         {ocupado ? "Processando..." : `Pagar ${total != null ? formatPrice(total) : ""}`.trim()}
       </Button>
 
-      <p className="text-center text-[11px] text-gray-500">
+      <p className="text-center text-[11px] text-muted-foreground">
         Os dados do cartão vão direto para a operadora. A ArqDoor não os armazena.
       </p>
     </form>

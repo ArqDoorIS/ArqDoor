@@ -133,13 +133,13 @@ export default function ServicesFeed() {
   if (loading) {
     return (
       <div className="pt-6">
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+        <div className="min-h-screen ">
           <div className="flex items-center justify-center h-screen">
             <div className="text-center space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-white/20 shadow-xl">
-              <Loader2 className="animate-spin h-16 w-16 text-orange-600 mx-auto" />
+              <Loader2 className="animate-spin h-16 w-16 text-brand-dark mx-auto" />
               <div className="space-y-2">
-                <p className="text-xl font-semibold text-slate-700">Carregando serviços</p>
-                <p className="text-slate-500">Aguarde enquanto buscamos os melhores profissionais</p>
+                <p className="text-xl font-semibold text-ink">Carregando serviços</p>
+                <p className="text-muted-foreground">Aguarde enquanto buscamos os melhores profissionais</p>
               </div>
             </div>
           </div>
@@ -151,21 +151,21 @@ export default function ServicesFeed() {
   if (error) {
     return (
       <div className="pt-6">
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+        <div className="min-h-screen ">
           <div className="flex items-center justify-center h-screen">
-            <div className="text-center space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-red-200 shadow-xl">
-              <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto">
-                <AlertCircle className="h-12 w-12 text-red-600" />
+            <div className="text-center space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-danger/30 shadow-xl">
+              <div className="w-20 h-20 bg-danger-bg rounded-full flex items-center justify-center mx-auto">
+                <AlertCircle className="h-12 w-12 text-danger-dark" />
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-semibold text-red-700">Ops! Algo deu errado</p>
-                <p className="text-red-600">
+                <p className="text-xl font-semibold text-danger-dark">Ops! Algo deu errado</p>
+                <p className="text-danger-dark">
                   {servicesError?.message || "Erro ao carregar serviços"}
                 </p>
               </div>
               <Button
                 onClick={() => window.location.reload()}
-                className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-medium px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="bg-brand hover:bg-brand-dark text-white font-medium px-6 py-2 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
                 Tentar novamente
               </Button>
@@ -232,18 +232,18 @@ export default function ServicesFeed() {
 
   return (
     <div className="pt-6">
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Serviços Disponíveis</h1>
-              <p className="text-slate-500 mt-2">Encontre profissionais qualificados para o seu projeto</p>
+              <h1 className="text-3xl font-bold text-ink-strong tracking-tight">Serviços Disponíveis</h1>
+              <p className="text-muted-foreground mt-2">Encontre profissionais qualificados para o seu projeto</p>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar serviços..."
                   value={searchTerm}
@@ -275,7 +275,7 @@ export default function ServicesFeed() {
           {/* Sort & Filters Toolbar (Simplified) */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-muted-foreground">
                 {filtered.length} resultados
               </span>
               {searchTerm && (
@@ -322,24 +322,24 @@ export default function ServicesFeed() {
             {pageItems.map((svc, index) => (
               <Card
                 key={svc.id_serviceFreelancer}
-                className={`group bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 overflow-hidden flex ${viewMode === 'list' ? 'flex-row' : 'flex-col'}`}
+                className={`group bg-white border border-line shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 overflow-hidden flex ${viewMode === 'list' ? 'flex-row' : 'flex-col'}`}
               >
                 {/* Card Content */}
                 <div className={`p-5 flex flex-col ${viewMode === 'list' ? 'flex-1' : 'h-full'}`}>
                   {/* Header: Author Info */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8 border border-slate-100">
+                      <Avatar className="h-8 w-8 border border-line">
                         <AvatarImage src={buildImageUrl((svc as any).userPerfil)} />
                         <AvatarFallback className="text-xs">{svc.userName.substring(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-slate-700 leading-none">{svc.userName}</span>
-                        <span className="text-[10px] text-slate-400 leading-tight mt-1">{formatDate(svc.createdAt)}</span>
+                        <span className="text-xs font-medium text-ink leading-none">{svc.userName}</span>
+                        <span className="text-[10px] text-muted-foreground leading-tight mt-1">{formatDate(svc.createdAt)}</span>
                       </div>
                     </div>
                     {isNewService(svc.createdAt) && (
-                      <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200 text-[10px] px-2 py-0.5 h-5">
+                      <Badge className="bg-success-bg text-success-dark hover:bg-success-bg border-success/30 text-[10px] px-2 py-0.5 h-5">
                         NOVO
                       </Badge>
                     )}
@@ -348,31 +348,31 @@ export default function ServicesFeed() {
                   {/* Body */}
                   <div className="mb-4 flex-1">
                     <div className="flex justify-between items-start gap-2 mb-2">
-                      <h3 className="font-semibold text-slate-900 leading-tight line-clamp-2 group-hover:text-amber-600 transition-colors">
+                      <h3 className="font-semibold text-ink-strong leading-tight line-clamp-2 group-hover:text-brand-dark transition-colors">
                               {svc.title}
                       </h3>
                     </div>
-                    <p className="text-sm text-slate-500 line-clamp-3 mb-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                       {svc.description}
                     </p>
-                    <p className="text-lg font-bold text-slate-900">
+                    <p className="text-lg font-bold text-ink-strong">
                       {formatPrice(svc.price)}
                     </p>
                   </div>
 
                   {/* Footer Actions */}
-                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-line">
                     <Link
                       href={`/messages/${svc.ServiceProvider.user_id}?text=${encodeURIComponent(`Olá ${svc.userName}, vi seu serviço "${svc.title}" no ArqDoor e gostaria de saber mais detalhes.`)}`}
                       className="flex-1"
                       onClick={() => setConversationStartIntent(svc.ServiceProvider.user_id)}
                     >
-                      <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white h-9 text-xs font-medium rounded-md">
+                      <Button className="w-full bg-brand hover:bg-brand-dark text-white h-9 text-xs font-medium rounded-md">
                         Ver Detalhes / Conversar
                       </Button>
                     </Link>
                     <Link href={`/providers/${svc.ServiceProvider.provider_id}`}>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md">
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-brand-dark hover:bg-brand-tint rounded-md">
                         <User className="h-4 w-4" />
                             </Button>
                     </Link>
@@ -385,11 +385,11 @@ export default function ServicesFeed() {
           {/* Empty State */}
           {pageItems.length === 0 && (
             <div className="text-center py-24">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-6">
-                <Search className="h-8 w-8 text-slate-400" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-warm mb-6">
+                <Search className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-2">Nenhum serviço encontrado</h3>
-              <p className="text-slate-500 max-w-sm mx-auto mb-6">
+              <h3 className="text-lg font-medium text-ink-strong mb-2">Nenhum serviço encontrado</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
                 Não encontramos resultados para sua busca. Tente termos diferentes ou remova os filtros.
               </p>
               <Button
@@ -417,7 +417,7 @@ export default function ServicesFeed() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <div className="text-sm font-medium text-slate-600">
+              <div className="text-sm font-medium text-muted-foreground">
                 Página {page} de {totalPages}
               </div>
               <Button

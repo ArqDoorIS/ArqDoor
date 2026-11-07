@@ -97,15 +97,15 @@ const SummaryCard = ({
   value: string | number;
   helper: string;
 }) => (
-  <Card className="border-slate-200 shadow-sm">
+  <Card className="border-line shadow-sm">
     <CardContent className="p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-sm text-slate-500">{label}</p>
-          <p className="text-2xl font-semibold text-slate-900">{value}</p>
-          <p className="text-xs text-slate-500">{helper}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className="text-2xl font-semibold text-ink-strong">{value}</p>
+          <p className="text-xs text-muted-foreground">{helper}</p>
         </div>
-        <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
+        <div className="rounded-2xl bg-brand-tint p-2.5 text-brand-dark">
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -127,7 +127,7 @@ const SectionHeader = ({
   <div className="flex items-start justify-between gap-3">
     <div className="space-y-1">
       <CardTitle>{title}</CardTitle>
-      <p className="text-sm text-slate-500">{description}</p>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </div>
     {showMore ? (
       <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={onShowMore}>
@@ -199,10 +199,10 @@ export default function ProviderHomeDashboard() {
 
   return (
     <div className="pt-6">
-      <div className="bg-white">
+      <div>
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-0 pt-8">
           <div className="flex items-center justify-between gap-3 px-1 py-1">
-            <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+            <h1 className="text-xl font-semibold text-ink-strong sm:text-2xl">
               Dashboard do Profissional
             </h1>
             <div className="flex items-center gap-3">
@@ -215,14 +215,14 @@ export default function ProviderHomeDashboard() {
                 </PopoverTrigger>
                 <PopoverContent align="end" className="w-80 space-y-4">
                   <div className="space-y-1">
-                    <p className="font-medium text-slate-900">Período das métricas</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="font-medium text-ink-strong">Período das métricas</p>
+                    <p className="text-xs text-muted-foreground">
                       Os contatos usam a data da conversa, contratos usam criação/finalização e pagamentos usam a data de quitação.
                     </p>
                   </div>
                   <div className="space-y-3">
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">De</label>
+                      <label className="text-xs font-medium text-muted-foreground">De</label>
                       <Input
                         type="date"
                         value={draftFilters.dateFrom}
@@ -235,7 +235,7 @@ export default function ProviderHomeDashboard() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">Até</label>
+                      <label className="text-xs font-medium text-muted-foreground">Até</label>
                       <Input
                         type="date"
                         value={draftFilters.dateTo}
@@ -266,13 +266,13 @@ export default function ProviderHomeDashboard() {
           </div>
 
           {dashboardQuery.isLoading ? (
-            <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-slate-200 bg-white text-slate-500 shadow-sm">
+            <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-line bg-white text-muted-foreground shadow-sm">
               <Loader2 className="mr-3 h-5 w-5 animate-spin" />
               Carregando resumo do prestador...
             </div>
           ) : dashboardQuery.isError || !dashboard ? (
-            <Card className="border-red-200 bg-red-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-red-700">
+            <Card className="border-danger/30 bg-danger-bg shadow-sm">
+              <CardContent className="p-6 text-sm text-danger-dark">
                 Não foi possível carregar o dashboard agora. Tente novamente em instantes.
               </CardContent>
             </Card>
@@ -281,12 +281,12 @@ export default function ProviderHomeDashboard() {
               {/* Aviso laranja sobre verificação + atalho pro WhatsApp.
                   Some quando admin já marcou a conta como verificada. */}
               {!isVerified && (
-                <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 md:p-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="rounded-2xl border border-brand-disabled bg-brand-tint p-4 md:p-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="space-y-1">
-                    <p className="text-sm md:text-base font-semibold text-orange-900">
+                    <p className="text-sm md:text-base font-semibold text-brand-dark">
                       Consiga novos clientes usando a ArqDoor
                     </p>
-                    <p className="text-xs md:text-sm text-orange-800 leading-relaxed">
+                    <p className="text-xs md:text-sm text-brand-dark leading-relaxed">
                       Se ainda não verificou a sua conta, envie uma mensagem para o
                       nosso WhatsApp e solicite a verificação para que o seu perfil
                       esteja visível para novos clientes. Enquanto a sua conta é
@@ -296,7 +296,7 @@ export default function ProviderHomeDashboard() {
                   </div>
                   <Button
                     asChild
-                    className="bg-orange-600 hover:bg-orange-700 text-white whitespace-nowrap"
+                    className="bg-brand hover:bg-brand-dark text-white whitespace-nowrap"
                   >
                     <a
                       href={ARQDOOR_WHATSAPP_URL}
@@ -339,7 +339,7 @@ export default function ProviderHomeDashboard() {
 
               <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
                 <div className="self-start xl:w-[62%]">
-                <Card className="h-fit border-slate-200 shadow-sm">
+                <Card className="h-fit border-line shadow-sm">
                   <CardHeader className="p-5">
                     <SectionHeader
                       title="Clientes com interação recente"
@@ -353,7 +353,7 @@ export default function ProviderHomeDashboard() {
                       visibleClients.map((client) => (
                         <div
                           key={client.id}
-                          className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3"
+                          className="flex items-center justify-between gap-4 rounded-2xl border border-line px-4 py-3"
                         >
                           <div className="flex items-center gap-3">
                             {client.perfil ? (
@@ -363,13 +363,13 @@ export default function ProviderHomeDashboard() {
                                 className="h-11 w-11 rounded-full object-cover"
                               />
                             ) : (
-                              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 text-sm font-semibold text-orange-700">
+                              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">
                                 {getInitials(client.name)}
                               </div>
                             )}
                             <div>
-                              <p className="font-medium text-slate-900">{client.name}</p>
-                              <p className="text-xs text-slate-500">
+                              <p className="font-medium text-ink-strong">{client.name}</p>
+                              <p className="text-xs text-muted-foreground">
                                 Última interação em {formatDate(client.last_interaction_at)}
                               </p>
                             </div>
@@ -380,7 +380,7 @@ export default function ProviderHomeDashboard() {
                         </div>
                       ))
                     ) : (
-                      <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
+                      <div className="rounded-2xl border border-dashed border-line px-4 py-6 text-sm text-muted-foreground">
                         Ainda não há clientes com conversa nesse período.
                       </div>
                     )}
@@ -389,7 +389,7 @@ export default function ProviderHomeDashboard() {
                 </div>
 
                 <div className="space-y-5 xl:w-[38%]">
-                  <Card className="h-fit border-slate-200 shadow-sm">
+                  <Card className="h-fit border-line shadow-sm">
                     <CardHeader className="p-5">
                       <SectionHeader
                         title="Serviços recentes"
@@ -403,33 +403,33 @@ export default function ProviderHomeDashboard() {
                         visibleContracts.map((contract) => (
                           <div
                             key={contract.id}
-                            className="rounded-2xl border border-slate-200 px-4 py-3"
+                            className="rounded-2xl border border-line px-4 py-3"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div>
-                                <p className="font-medium text-slate-900">Contrato #{contract.id}</p>
-                                <p className="text-xs text-slate-500">
+                                <p className="font-medium text-ink-strong">Contrato #{contract.id}</p>
+                                <p className="text-xs text-muted-foreground">
                                   Criado em {formatDate(contract.created_at)}
                                 </p>
                               </div>
-                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                              <span className="rounded-full bg-surface-warm px-3 py-1 text-xs font-medium text-ink">
                                 {contract.status}
                               </span>
                             </div>
-                            <p className="mt-3 text-sm font-semibold text-green-700">
+                            <p className="mt-3 text-sm font-semibold text-success-dark">
                               {formatPrice(contract.total_price || 0)}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
+                        <div className="rounded-2xl border border-dashed border-line px-4 py-6 text-sm text-muted-foreground">
                           Nenhum contrato recente nesse recorte.
                         </div>
                       )}
                     </CardContent>
                   </Card>
 
-                  <Card className="h-fit border-slate-200 shadow-sm">
+                  <Card className="h-fit border-line shadow-sm">
                     <CardHeader className="p-5">
                       <SectionHeader
                         title="Pagamentos concluídos"
@@ -443,23 +443,23 @@ export default function ProviderHomeDashboard() {
                         visiblePayments.map((payment) => (
                           <div
                             key={payment.id}
-                            className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 px-4 py-3"
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-line px-4 py-3"
                           >
                             <div>
-                              <p className="font-medium text-slate-900">
+                              <p className="font-medium text-ink-strong">
                                 Pagamento #{payment.id}
                               </p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-muted-foreground">
                                 {payment.method} • pago em {formatDate(payment.paid_at)}
                               </p>
                             </div>
-                            <p className="font-semibold text-green-700">
+                            <p className="font-semibold text-success-dark">
                               {formatPrice(payment.amount || 0)}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
+                        <div className="rounded-2xl border border-dashed border-line px-4 py-6 text-sm text-muted-foreground">
                           Nenhum pagamento concluído nesse período.
                         </div>
                       )}
@@ -483,7 +483,7 @@ export default function ProviderHomeDashboard() {
               {dashboard?.recent_clients.map((client) => (
                 <div
                   key={client.id}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-line px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
                     {client.perfil ? (
@@ -493,13 +493,13 @@ export default function ProviderHomeDashboard() {
                         className="h-11 w-11 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 text-sm font-semibold text-orange-700">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">
                         {getInitials(client.name)}
                       </div>
                     )}
                     <div>
-                      <p className="font-medium text-slate-900">{client.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-medium text-ink-strong">{client.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         Última interação em {formatDate(client.last_interaction_at)}
                       </p>
                     </div>
@@ -517,20 +517,20 @@ export default function ProviderHomeDashboard() {
               {dashboard?.recent_contracts.map((contract) => (
                 <div
                   key={contract.id}
-                  className="rounded-2xl border border-slate-200 px-4 py-3"
+                  className="rounded-2xl border border-line px-4 py-3"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-medium text-slate-900">Contrato #{contract.id}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-medium text-ink-strong">Contrato #{contract.id}</p>
+                      <p className="text-xs text-muted-foreground">
                         Criado em {formatDate(contract.created_at)}
                       </p>
                     </div>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                    <span className="rounded-full bg-surface-warm px-3 py-1 text-xs font-medium text-ink">
                       {contract.status}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-green-700">
+                  <p className="mt-3 text-sm font-semibold text-success-dark">
                     {formatPrice(contract.total_price || 0)}
                   </p>
                 </div>
@@ -543,17 +543,17 @@ export default function ProviderHomeDashboard() {
               {dashboard?.recent_payments.map((payment) => (
                 <div
                   key={payment.id}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 px-4 py-3"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-line px-4 py-3"
                 >
                   <div>
-                    <p className="font-medium text-slate-900">
+                    <p className="font-medium text-ink-strong">
                       Pagamento #{payment.id}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {payment.method} • pago em {formatDate(payment.paid_at)}
                     </p>
                   </div>
-                  <p className="font-semibold text-green-700">
+                  <p className="font-semibold text-success-dark">
                     {formatPrice(payment.amount || 0)}
                   </p>
                 </div>

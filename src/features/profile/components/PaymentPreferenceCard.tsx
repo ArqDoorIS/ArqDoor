@@ -32,12 +32,12 @@ export function PaymentPreferenceCard({
       <CardContent className="space-y-4">
         {loading ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <>
             <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-orange-50"
+              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-brand-tint"
                 onClick={() => onChange("per_step")}
               >
                 <RadioGroup value={displayValue} onValueChange={onChange}>
@@ -47,10 +47,10 @@ export function PaymentPreferenceCard({
                       <Label htmlFor="per_step" className="cursor-pointer font-medium">
                         Pagamento por fase
                       </Label>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         O cliente paga por cada fase finalizada no momento da sua finalização.
                       </p>
-                      <p className="text-xs text-orange-600 mt-2 font-medium">
+                      <p className="text-xs text-brand-dark mt-2 font-medium">
                         ✓ Cobrança fase a fase conforme aprovação
                       </p>
                     </div>
@@ -58,7 +58,7 @@ export function PaymentPreferenceCard({
                 </RadioGroup>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-orange-50"
+              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-brand-tint"
                 onClick={() => onChange("at_end")}
               >
                 <RadioGroup value={displayValue} onValueChange={onChange}>
@@ -68,10 +68,10 @@ export function PaymentPreferenceCard({
                       <Label htmlFor="at_end" className="cursor-pointer font-medium">
                         Depósito em garantia
                       </Label>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Cliente paga o valor integral do contrato, ficando sob garantia da ArqDoor até o cumprimento das etapas. Os valores correspondentes a cada fase finalizada serão transferidos para o Arquiteto.
                       </p>
-                      <p className="text-xs text-blue-600 mt-2 font-medium">
+                      <p className="text-xs text-info-dark mt-2 font-medium">
                         ✓ Valor integral garantido desde a assinatura
                       </p>
                     </div>
@@ -79,7 +79,7 @@ export function PaymentPreferenceCard({
                 </RadioGroup>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-orange-50"
+              <div className="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-brand-tint"
                 onClick={() => onChange("custom")}
               >
                 <RadioGroup value={displayValue} onValueChange={onChange}>
@@ -89,10 +89,10 @@ export function PaymentPreferenceCard({
                       <Label htmlFor="custom" className="cursor-pointer font-medium">
                         Pagamento em garantia
                       </Label>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         O cliente paga os grupos definidos no contrato e o valor fica protegido no fluxo da plataforma.
                       </p>
-                      <p className="text-xs text-emerald-700 mt-2 font-medium">
+                      <p className="text-xs text-success-dark mt-2 font-medium">
                         ✓ Liberação de datas por pagamento confirmado
                       </p>
                     </div>
@@ -101,7 +101,7 @@ export function PaymentPreferenceCard({
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
+            <div className="bg-info-bg border border-info/30 rounded p-3 text-sm text-info-dark">
               <p className="font-medium mb-1">ℹ️ Como funciona:</p>
               {displayValue === "per_step" ? (
                 <ul className="list-disc list-inside space-y-1">
@@ -128,7 +128,7 @@ export function PaymentPreferenceCard({
             {onSave && (
               <Button
                 onClick={onSave}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                className="w-full bg-brand hover:bg-brand-dark text-white"
                 disabled={saving}
               >
                 {saving ? (
