@@ -22,8 +22,10 @@ import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useDisponibilidade } from "@/hooks/use-disponibilidade";
 import { getInitials } from "@/lib/utils";
 
-// Usa a mesma logo da landing pra ter consistência visual entre landing e app
-const logoSrc = "/images/landing/logo.png";
+// Header laranja nas telas logadas: logo branca, texto branco e nada em laranja por cima.
+// Spec 2026-11-webapp-cores-do-app, decisão 5.
+const logoSrc = "/images/landing/logo_branca.png";
+const BOTAO_NO_HEADER = "text-white hover:bg-white/15 hover:text-white focus-visible:ring-white focus-visible:ring-offset-brand";
 
 type NavLinkProps = {
   href: string;
@@ -38,10 +40,10 @@ const NavLink = ({ href, location, icon: Icon, children }: NavLinkProps) => {
     <Link href={href}>
       <div
         aria-current={isActive ? "page" : undefined}
-        className={`flex items-center gap-1 text-sm transition-colors ${
+        className={`flex items-center gap-1 text-sm text-white transition-colors ${
           isActive
-            ? "text-brand font-semibold"
-            : "text-ink hover:text-brand"
+            ? "font-semibold underline decoration-2 underline-offset-8"
+            : "font-medium hover:text-brand-soft"
         }`}
       >
         <Icon className="w-4 h-4" /> {children}
@@ -68,7 +70,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 h-16 border-b border-line bg-white/90 backdrop-blur shadow-sm transition-all`}>
+    <nav className="fixed top-0 w-full z-50 h-16 bg-brand">
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -107,11 +109,11 @@ const Navbar = () => {
           {isLoggedIn && (
             <Link href="/messages">
               <div className="relative">
-                <Button variant="ghost" size="icon" aria-label="Messages">
-                  <MessageCircle className="h-5 w-5 text-ink" />
+                <Button variant="ghost" size="icon" aria-label="Messages" className={BOTAO_NO_HEADER}>
+                  <MessageCircle className="h-5 w-5 text-white" />
                   {unreadCount > 0 && (
                     <span 
-                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-danger-dark text-white font-bold border-2 border-white ${
+                      className={`absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-white text-brand-dark font-bold border-2 border-brand ${
                         unreadCount > 10 ? "h-3 w-3 p-0" : "h-5 w-5 text-[10px]"
                       }`}
                     >
@@ -125,7 +127,7 @@ const Navbar = () => {
           {isLoggedIn && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="ghost" className={`relative h-8 w-8 rounded-full ${BOTAO_NO_HEADER}`}>
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.perfil || undefined} className="object-cover" />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
@@ -186,9 +188,21 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="default" onClick={() => navigate("/auth")}>Login</Button>
+              <Button
+                variant="default"
+                className="bg-white text-brand-dark hover:bg-brand-soft focus-visible:ring-white focus-visible:ring-offset-brand"
+                onClick={() => navigate("/auth")}
+              >
+                Login
+              </Button>
               {/* `/auth/register` não existia e caía no login. */}
-              <Button variant="link" onClick={() => navigate("/auth?cadastro=1")}>Cadastrar</Button>
+              <Button
+                variant="link"
+                className="text-white focus-visible:ring-white focus-visible:ring-offset-brand"
+                onClick={() => navigate("/auth?cadastro=1")}
+              >
+                Cadastrar
+              </Button>
             </>
           )}
         </div>
@@ -196,7 +210,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Abrir menu" className={BOTAO_NO_HEADER}>
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
