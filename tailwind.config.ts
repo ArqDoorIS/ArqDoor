@@ -86,10 +86,6 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
-      boxShadow: {
-        brand: "0 6px 20px rgba(231,88,18,0.3)",
-        "brand-lg": "0 8px 24px rgba(231,88,18,0.3)",
-      },
       keyframes: {
         "accordion-down": {
           from: {

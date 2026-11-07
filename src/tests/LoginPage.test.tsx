@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import React from 'react';
 import AuthPage from '../pages/auth-page';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,13 +17,14 @@ vi.mock('wouter', () => ({
 // Auth Hook
 const loginMock = vi.fn().mockResolvedValue(true);
 const registerMock = vi.fn().mockResolvedValue(true);
+const loginGoogleMock = vi.fn().mockResolvedValue({ status: 'registered' });
 
 vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({
     isLoggedIn: false,
     login: loginMock,
     register: registerMock,
-    loginWithGoogle: vi.fn(),
+    loginWithGoogle: loginGoogleMock,
   }),
 }));
 
@@ -35,8 +36,12 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 // Google OAuth
+let opcoesDoGoogle: any;
 vi.mock('@react-oauth/google', () => ({
-  useGoogleLogin: () => vi.fn(),
+  useGoogleLogin: (opcoes: any) => {
+    opcoesDoGoogle = opcoes;
+    return vi.fn();
+  },
 }));
 
 // Query Client
@@ -63,55 +68,122 @@ describe('AuthPage Login Flow', () => {
     });
   });
 
-  it('opens login modal and submits form', async () => {
+  it('o login já aparece na tela, sem modal, e envia o formulário', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <AuthPage />
       </QueryClientProvider>
     );
 
-    // 1. Click "Entrar" button on the page
-    // There are multiple "Entrar" buttons? No, just one main one.
-    // Text: "Entrar"
-    const entrarButton = screen.getByText('Entrar', { selector: 'button' });
-    fireEvent.click(entrarButton);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    // 2. Expect Dialog to be open
-    // Look for unique text in Login Modal: "Entre com seu e‑mail e senha."
-    expect(screen.getByText('Entre com seu e‑mail e senha.')).toBeInTheDocument();
-
-    // 3. Fill Form
-    // Inputs: Email, Password
-    // Using placeholders or labels
-    const emailInput = screen.getByPlaceholderText('voce@exemplo.com');
-    const passwordInput = screen.getByPlaceholderText('••••••••');
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-
-    // 4. Submit
-    // Button "Entrar" inside the form (type="submit")
-    // Note: The main page button is also "Entrar". The modal button is also "Entrar".
-    // We can target specific button or just get all and click last?
-    // Or use within().
-    // The Modal Entrar button has "Entrar" text.
-    // Let's rely on standard queries to find the Submit button *visible* in dialog.
-    // Since only one dialog is open, screen.getByRole('button', { name: 'Entrar' }) might be ambiguous if the page button is still in DOM (it is).
-    // The Modal covers it.
-    // Let's verify finding by text inside a form.
-    
-    const submitButton = screen.getAllByText('Entrar', { selector: 'button' }).find(btn => btn.getAttribute('type') === 'submit');
-    
-    if (!submitButton) throw new Error('Submit button not found');
-    fireEvent.click(submitButton);
-
-    // 5. Verify Login called
-    await waitFor(() => {
-        expect(loginMock).toHaveBeenCalledWith({
-            email: 'test@example.com',
-            password: 'password123'
-        });
+    fireEvent.change(screen.getByPlaceholderText('voce@exemplo.com'), {
+      target: { value: 'test@example.com' },
     });
+    fireEvent.change(screen.getByPlaceholderText('••••••••'), {
+      target: { value: 'password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    await waitFor(() => {
+      expect(loginMock).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
+  });
+
+  it('"Criar conta" abre o cadastro em modal e "Faça login" volta para o login', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthPage />
+      </QueryClientProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Criar conta' }));
+    const modal = await screen.findByRole('dialog', { name: 'Criar conta' });
+
+    fireEvent.click(within(modal).getByRole('button', { name: 'Faça login' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
+  });
+
+  it('o cadastro concluído fecha o modal e deixa o e-mail no login', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthPage />
+      </QueryClientProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Criar conta' }));
+    const modal = await screen.findByRole('dialog', { name: 'Criar conta' });
+
+    fireEvent.change(within(modal).getByPlaceholderText('Seu nome'), {
+      target: { value: 'Pessoa Teste' },
+    });
+    fireEvent.change(within(modal).getByPlaceholderText('voce@exemplo.com'), {
+      target: { value: 'pessoa.teste@example.com' },
+    });
+    fireEvent.change(within(modal).getByRole('combobox'), {
+      target: { value: 'Feminino' },
+    });
+    const nascimento = modal.querySelector('input[type="date"]');
+    if (!nascimento) throw new Error('Birth input not found');
+    fireEvent.change(nascimento, { target: { value: '1990-01-01' } });
+    fireEvent.change(within(modal).getByPlaceholderText('Mínimo 8 caracteres'), {
+      target: { value: 'Senha123!' },
+    });
+    fireEvent.change(within(modal).getByPlaceholderText('Repita a senha'), {
+      target: { value: 'Senha123!' },
+    });
+    const termos = document.getElementById('termos_aceitos');
+    if (!termos) throw new Error('Terms checkbox not found');
+    fireEvent.click(termos);
+    fireEvent.click(within(modal).getByRole('button', { name: 'Cadastrar' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByPlaceholderText('voce@exemplo.com')).toHaveValue('pessoa.teste@example.com');
+  });
+
+  it('fechar a janela do Google solta o botão', async () => {
+    vi.stubEnv('VITE_GOOGLE_CLIENT_ID', 'cliente-de-teste');
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthPage />
+      </QueryClientProvider>
+    );
+
+    const google = screen.getByRole('button', { name: 'Fazer login com Google' });
+    fireEvent.click(google);
+    expect(google).toBeDisabled();
+
+    act(() => opcoesDoGoogle.onNonOAuthError({ type: 'popup_closed' }));
+
+    expect(google).toBeEnabled();
+    vi.unstubAllEnvs();
+  });
+
+  it('o aviso de janela fechada não transforma um cadastro pelo Google em login', async () => {
+    vi.stubEnv('VITE_GOOGLE_CLIENT_ID', 'cliente-de-teste');
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthPage />
+      </QueryClientProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Criar conta' }));
+    const modal = await screen.findByRole('dialog', { name: 'Criar conta' });
+    fireEvent.click(within(modal).getByRole('button', { name: 'Registrar com o Google' }));
+
+    // O Google avisou "popup_closed" com a janela ainda aberta, antes do token chegar.
+    act(() => opcoesDoGoogle.onNonOAuthError({ type: 'popup_closed' }));
+    await act(() => opcoesDoGoogle.onSuccess({ access_token: 'token-de-teste' }));
+
+    expect(loginGoogleMock).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'register', type: 'contratante' })
+    );
+    vi.unstubAllEnvs();
   });
 
   it('submits manual register as prestador when checkbox is checked', async () => {
@@ -127,7 +199,7 @@ describe('AuthPage Login Flow', () => {
       target: { value: 'Prestador Teste' },
     });
 
-    const emailInput = screen.getAllByPlaceholderText('voce@exemplo.com')[0];
+    const emailInput = within(screen.getByRole('dialog')).getByPlaceholderText('voce@exemplo.com');
     fireEvent.change(emailInput, {
       target: { value: 'prestador.teste@example.com' },
     });

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { AuthModals } from "@/components/modals/AuthModals";
+import { AuthForms } from "@/components/AuthForms";
 import { useLocation, useSearch } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import { getResumeRoute } from "@/lib/utils";
 import { Check } from "lucide-react";
 
 export default function AuthPage() {
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState<boolean>(false);
   const { isLoggedIn, isInitialized } = useAuth();
   const [, navigate] = useLocation();
@@ -25,16 +24,6 @@ export default function AuthPage() {
     if (!isInitialized || !isLoggedIn) return;
     navigate(getResumeRoute("/home"));
   }, [isInitialized, isLoggedIn, navigate]);
-
-  const handleSwitchToRegister = () => {
-    setIsLoginOpen(false);
-    setIsRegisterOpen(true);
-  };
-
-  const handleSwitchToLogin = () => {
-    setIsRegisterOpen(false);
-    setIsLoginOpen(true);
-  };
 
   const handleAuthSuccess = () => undefined;
   const vantagens = [
@@ -55,28 +44,17 @@ export default function AuthPage() {
                 className="mx-auto mb-8 h-10 w-auto"
               />
               <h1 className="mb-2 text-4xl font-bold text-ink-strong">Bem-vindo ao ArqDoor!</h1>
-              <p className="mb-8 text-ink">
+              <p className="text-ink">
                 Faça login ou crie uma conta para começar na plataforma.
               </p>
             </div>
 
-            <div className="space-y-4">
-              <Button
-                onClick={() => setIsLoginOpen(true)}
-                className="w-full rounded-xl shadow-brand"
-                size="lg"
-              >
-                Entrar
-              </Button>
-              <Button
-                onClick={() => setIsRegisterOpen(true)}
-                variant="outline"
-                className="w-full rounded-xl border-brand/40 bg-white text-brand hover:bg-brand-soft hover:text-brand-dark"
-                size="lg"
-              >
-                Criar conta
-              </Button>
-            </div>
+            <AuthForms
+              isRegisterOpen={isRegisterOpen}
+              onOpenRegister={() => setIsRegisterOpen(true)}
+              onRegisterClose={() => setIsRegisterOpen(false)}
+              onSuccess={handleAuthSuccess}
+            />
             <div className="mt-4 text-center">
               <Button variant="link" onClick={() => navigate("/")}>Voltar ao menu principal</Button>
             </div>
@@ -101,16 +79,6 @@ export default function AuthPage() {
             </ul>
           </div>
         </div>
-
-        <AuthModals
-          isLoginOpen={isLoginOpen}
-          isRegisterOpen={isRegisterOpen}
-          onLoginClose={() => setIsLoginOpen(false)}
-          onRegisterClose={() => setIsRegisterOpen(false)}
-          onSuccess={handleAuthSuccess}
-          onSwitchToRegister={handleSwitchToRegister}
-          onSwitchToLogin={handleSwitchToLogin}
-        />
       </div>
     </LoginLayout>
   );

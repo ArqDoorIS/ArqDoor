@@ -8,15 +8,23 @@ test.describe("J-01 paginas publicas", () => {
     await expect(page.locator("body")).not.toBeEmpty();
   });
 
-  test("a tela de acesso abre o formulario de login", async ({ page }) => {
+  test("a tela de acesso ja mostra o formulario de login", async ({ page }) => {
     await page.goto("/auth");
     await expect(page.getByRole("heading", { name: "Bem-vindo ao ArqDoor!" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await expect(page.getByPlaceholder("voce@exemplo.com")).toBeVisible();
+    await expect(page.getByPlaceholder("••••••••")).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
 
-    const dialogo = page.getByRole("dialog");
-    await expect(dialogo.getByPlaceholder("voce@exemplo.com")).toBeVisible();
-    await expect(dialogo.getByPlaceholder("••••••••")).toBeVisible();
+  test("criar conta abre o cadastro em modal", async ({ page }) => {
+    await page.goto("/auth");
+
+    // No celular, o aviso de cookies do primeiro acesso cobre o link ate ser fechado.
+    await page.getByRole("button", { name: "Recusar" }).click();
+    await page.getByRole("button", { name: "Criar conta" }).click();
+
+    await expect(page.getByRole("dialog", { name: "Criar conta" })).toBeVisible();
   });
 
   test("rota desconhecida sem sessao leva para o login", async ({ page }) => {

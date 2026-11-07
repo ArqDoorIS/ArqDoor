@@ -1,6 +1,6 @@
 
-// src/components/AuthModals.tsx
-import React, { useMemo, useState, useRef, useEffect } from "react";
+// src/components/AuthForms.tsx
+import React, { useMemo, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2, Mail, Lock, UserRound, CalendarDays, Eye, EyeOff, BadgeCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,7 +45,7 @@ function DialogShell({
   children,
 }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border bg-background shadow-xl">
+    <div className="relative overflow-hidden rounded-3xl border bg-background">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-44" />
 
       <div className="relative p-7 sm:p-8">
@@ -142,24 +142,18 @@ function GoogleIcon() {
 }
 
 // --- Component ---------------------------------------------------------------
-export const AuthModals: React.FC<{
-  isLoginOpen: boolean;
+// O login fica direto na tela; só o cadastro e o "Esqueci minha senha" abrem em modal.
+// Spec 2026-11-login-na-primeira-tela.
+export const AuthForms: React.FC<{
   isRegisterOpen: boolean;
-  onLoginClose: () => void;
+  onOpenRegister: () => void;
   onRegisterClose: () => void;
   onSuccess?: () => void;
-  onSwitchToRegister: () => void;
-  onSwitchToLogin: () => void;
-  preFilledEmail?: string;
 }> = ({
-  isLoginOpen,
   isRegisterOpen,
-  onLoginClose,
+  onOpenRegister,
   onRegisterClose,
   onSuccess,
-  onSwitchToRegister,
-  onSwitchToLogin,
-  preFilledEmail = "",
 }) => {
     const { toast } = useToast();
     const { login, register, loginWithGoogle } = useAuth();
@@ -167,7 +161,6 @@ export const AuthModals: React.FC<{
     const [registerLoading, setRegisterLoading] = useState(false);
     const [googleLoginLoading, setGoogleLoginLoading] = useState(false);
     const [googleRegisterLoading, setGoogleRegisterLoading] = useState(false);
-    const [emailToPreFill, setEmailToPreFill] = useState<string>("");
     const [forgotOpen, setForgotOpen] = useState(false);
     const [forgotEmail, setForgotEmail] = useState("");
     const [forgotLoading, setForgotLoading] = useState(false);
@@ -192,20 +185,12 @@ export const AuthModals: React.FC<{
       },
     });
 
-  // Pre-fill email in login form when provided
-  useEffect(() => {
-    if (preFilledEmail && isLoginOpen) {
-      loginForm.setValue("email", preFilledEmail);
-    }
-  }, [preFilledEmail, isLoginOpen, loginForm]);
-
-  // Pre-fill email from internal state (after registration)
-  useEffect(() => {
-    if (emailToPreFill && isLoginOpen) {
-      loginForm.setValue("email", emailToPreFill);
-      setEmailToPreFill(""); // Clear after setting
-    }
-  }, [emailToPreFill, isLoginOpen, loginForm]);
+    const avisarJanelaDoGoogleFalhou = () =>
+      toast({
+        title: "Erro no login com Google",
+        description: "Não foi possível abrir o login. Verifique se pop-ups estão liberados.",
+        variant: "destructive",
+      });
 
     const googleAuth = useGoogleLogin({
       flow: "implicit",
@@ -245,18 +230,13 @@ export const AuthModals: React.FC<{
 
           if (isRegisterMode) {
             // Registration via Google - don't auto-login
-            if (result?.status === "registered") {
+            if (result?.status === "registered" || result?.status === "already_connected") {
               onRegisterClose();
-              onSwitchToLogin();
-            } else if (result?.status === "already_connected") {
-              onSwitchToLogin();
             }
           } else {
           // Login via Google
             if (result?.status === "logged_in" || result?.status === "logged_in_needs_onboarding") {
               onSuccess?.();
-            } else if (result?.status === "already_connected") {
-              onSwitchToLogin();
             }
           }
         } catch (err) {
@@ -275,11 +255,7 @@ export const AuthModals: React.FC<{
         }
       },
       onError: () => {
-        toast({
-          title: "Erro no login com Google",
-          description: "Não foi possível abrir o login. Verifique se pop-ups estão liberados.",
-          variant: "destructive",
-        });
+        avisarJanelaDoGoogleFalhou();
         const mode = googleModeRef.current;
         if (mode === "register") {
           setGoogleRegisterLoading(false);
@@ -287,6 +263,15 @@ export const AuthModals: React.FC<{
           setGoogleLoginLoading(false);
         }
         googleModeRef.current = null;
+      },
+      // Fechar a janela do Google não passa pelo onError. Sem isto, o botão ficava girando e
+      // desabilitado até recarregar a página. Só solta os botões: o googleModeRef fica, porque
+      // o aviso pode chegar com a janela ainda aberta e o onSuccess precisa saber se é cadastro.
+      // Spec 2026-11-login-na-primeira-tela.
+      onNonOAuthError: ({ type }) => {
+        if (type !== "popup_closed") avisarJanelaDoGoogleFalhou();
+        setGoogleLoginLoading(false);
+        setGoogleRegisterLoading(false);
       },
     });
 
@@ -414,9 +399,8 @@ export const AuthModals: React.FC<{
           description: "Faça login para continuar",
         });
 
-        setEmailToPreFill(registerData.email);
+        loginForm.setValue("email", registerData.email);
         onRegisterClose();
-        onSwitchToLogin();
       } catch (err) {
         toast({
           title: "Erro no cadastro",
@@ -462,9 +446,83 @@ export const AuthModals: React.FC<{
 
     return (
       <>
+        {/* LOGIN */}
+        <Form {...loginForm}>
+          <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
+            <FormField
+              control={loginForm.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E‑mail</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <FieldIcon icon={Mail} />
+                      <Input type="email" {...field} className="pl-9" placeholder="voce@exemplo.com" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={loginForm.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Senha</FormLabel>
+                  <FormControl>
+                    <PasswordInput value={field.value} onChange={field.onChange} placeholder="••••••••" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="text-left">
+              <button
+                type="button"
+                className="text-sm text-muted-foreground hover:underline"
+                onClick={() => setForgotOpen(true)}
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+            <Button type="submit" disabled={loginLoading} className="w-full">
+              {loginLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Entrar
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={googleLoginLoading || !googleEnabled}
+              className="w-full"
+              onClick={() => handleGoogleClick("login")}
+            >
+              {googleLoginLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <span className="mr-2 inline-flex">
+                  <GoogleIcon />
+                </span>
+              )}
+              Fazer login com Google
+            </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              Ainda não tem conta?{" "}
+              <button
+                type="button"
+                className="font-medium text-brand hover:underline"
+                onClick={onOpenRegister}
+              >
+                Criar conta
+              </button>
+            </div>
+          </form>
+        </Form>
+
         {/* FORGOT PASSWORD */}
         <Dialog open={forgotOpen} onOpenChange={(v) => { setForgotOpen(v); if (!v) { setForgotSent(false); setForgotEmail(""); } }}>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-sm shadow-none">
             <DialogHeader>
               <DialogTitle>Esqueci minha senha</DialogTitle>
               <DialogDescription>
@@ -492,85 +550,6 @@ export const AuthModals: React.FC<{
                 Fechar
               </Button>
             )}
-          </DialogContent>
-        </Dialog>
-
-        {/* LOGIN */}
-        <Dialog open={isLoginOpen} onOpenChange={onLoginClose}>
-          <DialogContent className={CONTEUDO_DO_MODAL + " max-w-md"}>
-            <DialogShell title="Login" description="Entre com seu e‑mail e senha.">
-              <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>E‑mail</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <FieldIcon icon={Mail} />
-                            <Input type="email" {...field} className="pl-9" placeholder="voce@exemplo.com" />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha</FormLabel>
-                        <FormControl>
-                          <PasswordInput value={field.value} onChange={field.onChange} placeholder="••••••••" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="text-left">
-                    <button
-                      type="button"
-                      className="text-sm text-muted-foreground hover:underline"
-                      onClick={() => setForgotOpen(true)}
-                    >
-                      Esqueci minha senha
-                    </button>
-                  </div>
-                  <Button type="submit" disabled={loginLoading} className="w-full">
-                    {loginLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Entrar
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={googleLoginLoading || !googleEnabled}
-                    className="w-full"
-                    onClick={() => handleGoogleClick("login")}
-                  >
-                    {googleLoginLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <span className="mr-2 inline-flex">
-                        <GoogleIcon />
-                      </span>
-                    )}
-                    Fazer login com Google
-                  </Button>
-                  <div className="text-center text-sm">
-                    <button
-                      type="button"
-                      className="font-medium text-brand hover:underline"
-                      onClick={onSwitchToRegister}
-                    >
-                      Criar uma conta
-                    </button>
-                  </div>
-                </form>
-              </Form>
-            </DialogShell>
           </DialogContent>
         </Dialog>
 
@@ -792,7 +771,7 @@ export const AuthModals: React.FC<{
                     Já tem cadastro?{" "}
                     <button
                       type="button"
-                      onClick={onSwitchToLogin}
+                      onClick={onRegisterClose}
                       className="font-medium text-brand hover:underline"
                     >
                       Faça login
@@ -807,4 +786,4 @@ export const AuthModals: React.FC<{
     );
   };
 
-export default AuthModals;
+export default AuthForms;
