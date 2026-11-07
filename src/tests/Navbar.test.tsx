@@ -38,7 +38,7 @@ describe('Navbar Component', () => {
         </QueryClientProvider>
     );
     
-    // A logo virou imagem (`/images/landing/logo_branca.png`), entao ela nao e mais TEXTO na
+    // A logo virou imagem (`/images/landing/logo.png`), entao ela nao e mais TEXTO na
     // pagina. O teste continuava procurando texto e falhava desde essa troca. Procurar
     // pelo alt tambem guarda a acessibilidade: logo sem alt volta a quebrar aqui.
     expect(screen.getByAltText(/ArqDoor/i)).toBeInTheDocument();
