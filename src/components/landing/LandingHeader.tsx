@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,66 +16,35 @@ const navItems = [
 ];
 
 export default function LandingHeader({ primaryCta }: LandingHeaderProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    function handleScroll() {
-      setIsScrolled(window.scrollY > 24);
-    }
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "border-b border-[#e6e6e6] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
-          : "bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
-      }`}
-    >
-      <div className="mx-auto w-full max-w-[1600px] px-6 md:px-12">
-        <div
-          className={`mx-auto flex max-w-[1280px] items-center justify-between gap-3 transition-all duration-300 ${
-            isScrolled ? "h-[70px]" : "h-[80px]"
-          }`}
-        >
+    <header className="sticky top-0 z-50 border-b border-line bg-white">
+      {/* Mesmo recuo do título da página. A altura é o botão de 40 px mais o mínimo em volta. */}
+      <div className="mx-auto w-full max-w-[1280px] px-4">
+        <div className="flex h-14 items-center justify-between gap-2 md:h-16">
           <Link href="/" className="inline-flex shrink-0 items-center">
-            <img
-              src="/images/landing/logo.png"
-              alt="ArqDoor"
-              className={`w-auto transition-all duration-300 ${
-                isScrolled ? "h-5 md:h-8" : "h-5 md:h-9"
-              }`}
-            />
+            <img src="/images/landing/logo.png" alt="ArqDoor" className="h-6 w-auto md:h-7" />
           </Link>
 
-          <nav className="hidden items-center gap-10 lg:flex">
+          <nav className="hidden items-center gap-8 lg:flex">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
                 target={item.external ? "_blank" : undefined}
                 rel={item.external ? "noopener noreferrer" : undefined}
-                className={`${landingType.navLink} text-[#4A5565] transition-colors duration-300 hover:text-brand`}
+                className={`${landingType.navLink} text-ink transition-colors duration-300 hover:text-brand`}
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1">
             <Button
               asChild
-              className={`rounded-xl bg-brand text-white shadow-[0_3px_8px_rgba(0,0,0,0.18)] transition-all duration-300 hover:bg-brand-dark ${
-                isScrolled
-                  ? `h-[38px] px-4 sm:px-6 md:px-7 ${landingType.navButton}`
-                  : `h-[40px] px-4 sm:px-7 md:px-8 ${landingType.navButton}`
-              }`}
+              className={`h-10 min-w-0 overflow-hidden rounded-lg bg-brand px-3 text-white transition-colors duration-300 hover:bg-brand-dark sm:px-4 md:px-5 ${landingType.button}`}
             >
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
@@ -85,16 +54,16 @@ export default function LandingHeader({ primaryCta }: LandingHeaderProps) {
               aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#4A5565] transition-colors duration-300 hover:bg-surface-warm hover:text-brand lg:hidden"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-ink transition-colors duration-300 hover:bg-surface-warm hover:text-brand lg:hidden"
             >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* Menu mobile/tablet — restaura os links de navegação abaixo do lg */}
+        {/* Menu do celular e do tablet: os links de navegação abaixo do lg. */}
         {menuOpen && (
-          <nav className="mx-auto max-w-[1280px] border-t border-line py-3 lg:hidden">
+          <nav className="border-t border-line py-3 lg:hidden">
             {navItems.map((item) => (
               <a
                 key={item.label}
@@ -102,7 +71,7 @@ export default function LandingHeader({ primaryCta }: LandingHeaderProps) {
                 target={item.external ? "_blank" : undefined}
                 rel={item.external ? "noopener noreferrer" : undefined}
                 onClick={() => setMenuOpen(false)}
-                className={`${landingType.navLink} block rounded-lg px-3 py-3 text-[#4A5565] transition-colors duration-300 hover:bg-surface-warm hover:text-brand`}
+                className={`${landingType.navLink} block rounded-lg px-3 py-3 text-ink transition-colors duration-300 hover:bg-surface-warm hover:text-brand`}
               >
                 {item.label}
               </a>

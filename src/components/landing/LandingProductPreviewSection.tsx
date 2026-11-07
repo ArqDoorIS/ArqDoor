@@ -129,7 +129,7 @@ export default function LandingProductPreviewSection() {
                 de Contratos_
               </span>
 
-              <span className="absolute left-0 top-0 w-full break-words font-semibold leading-tight text-left">
+              <span className="absolute left-0 top-0 w-full break-words text-left">
                 {typedPrefixIsComplete ? (
                   <>
                     {typedPrefix}
@@ -150,7 +150,7 @@ export default function LandingProductPreviewSection() {
             </h2>
 
             <motion.p
-              className={`mt-14 text-left text-[#636466] ${landingType.sectionBody}`}
+              className={`mt-6 text-left text-ink ${landingType.body}`}
               variants={paragraphVariant}
               initial="hidden"
               whileInView="visible"
@@ -162,7 +162,7 @@ export default function LandingProductPreviewSection() {
             </motion.p>
 
             <motion.p
-              className={`mt-4 text-left text-[#636466] ${landingType.sectionBody}`}
+              className={`mt-4 text-left text-ink ${landingType.body}`}
               variants={paragraphVariant}
               initial="hidden"
               whileInView="visible"
@@ -189,7 +189,7 @@ export default function LandingProductPreviewSection() {
                 className="group mx-auto flex w-full max-w-[320px] flex-col items-center rounded-[18px] bg-brand px-2 py-5 text-center text-[#1F2937] shadow-[0_10px_28px_rgba(231,88,18,0.16)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#fffffe] hover:text-brand hover:shadow-[0_16px_34px_rgba(231,88,18,0.35)]"
               >
                 <h3
-                  className={`${landingType.miniCardTitle} text-[#fffffe] transition-colors duration-300 group-hover:text-brand`}
+                  className={`${landingType.cardTitle} text-[#fffffe] transition-colors duration-300 group-hover:text-brand`}
                 >
                   {card.title}
                 </h3>
@@ -198,7 +198,7 @@ export default function LandingProductPreviewSection() {
                   {card.icon}
                 </div>
 
-                <p className="mt-4 font-normal text-[#fffffe] transition-colors duration-300 group-hover:text-brand">
+                <p className={`mt-4 text-[#fffffe] transition-colors duration-300 group-hover:text-brand ${landingType.cardBody}`}>
                   {card.description}
                 </p>
               </motion.article>

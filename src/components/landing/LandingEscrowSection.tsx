@@ -78,19 +78,17 @@ export default function LandingEscrowSection() {
         >
           <motion.h2
             variants={fadeUp}
-            className="text-3xl font-normal tracking-tight sm:text-4xl lg:text-5xl"
+            className={landingType.sectionTitle}
           >
-            <span className="block leading-[1.1] lg:whitespace-nowrap">
+            <span className="block lg:whitespace-nowrap">
               Cliente atrasando pagamento?
             </span>
-            <span className="mt-3 block leading-[1.1]">
-              Utilize a <span className="font-bold">ArqDoor Escrow</span>!
-            </span>
+            <span className="block">Utilize a ArqDoor Escrow!</span>
           </motion.h2>
 
           <motion.p
             variants={fadeUp}
-            className={`mt-6 text-brand-tint ${landingType.sectionBody}`}
+            className={`mt-6 text-white ${landingType.body}`}
           >
             Você nunca mais precisará cobrar o pagamento dos seus clientes. Com a
             ArqDoor Escrow, o pagamento é efetuado pelo seu cliente antes de
@@ -107,10 +105,10 @@ export default function LandingEscrowSection() {
                 variants={stepItem}
                 className="grid grid-cols-[56px_1fr] items-center gap-3"
               >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand-disabled bg-brand-lighter text-xl font-bold leading-none text-white shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
+                <span className={`inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand-disabled bg-brand-lighter text-white shadow-[0_8px_20px_rgba(0,0,0,0.12)] ${landingType.strong}`}>
                   {index + 1}
                 </span>
-                <span className={`text-brand-tint ${landingType.cardBody}`}>
+                <span className={`text-white ${landingType.cardBody}`}>
                   {step}
                 </span>
               </motion.li>
@@ -119,7 +117,7 @@ export default function LandingEscrowSection() {
 
           <motion.p
             variants={fadeUp}
-            className="mt-6 inline-flex gap-3 rounded-2xl border-2 border-brand-disabled/80 bg-white/15 px-4 py-3 text-base font-semibold leading-snug backdrop-blur-sm sm:text-lg"
+            className={`mt-6 inline-flex gap-3 rounded-2xl border-2 border-brand-disabled/80 bg-white/15 px-4 py-3 backdrop-blur-sm ${landingType.strong}`}
           >
             <svg
               viewBox="0 0 36 36"

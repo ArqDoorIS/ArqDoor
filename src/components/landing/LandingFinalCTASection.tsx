@@ -28,7 +28,7 @@ export default function LandingFinalCTASection({ primaryCta }: LandingFinalCTASe
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <p className="mx-auto max-w-[650px] text-sm font-normal leading-relaxed text-brand-soft sm:text-base md:text-xl">
+          <p className={`mx-auto max-w-[65ch] text-white ${landingType.body}`}>
             A excelência não está apenas na entrega final, mas também na forma em que o projeto é conduzido!
           </p>
 
@@ -45,7 +45,7 @@ export default function LandingFinalCTASection({ primaryCta }: LandingFinalCTASe
           >
             <Button
               asChild
-              className={`h-[54px] rounded-full bg-[#f1f1f1] px-8 text-brand hover:bg-white md:h-[62px] md:px-14 transition-all duration-300 hover:scale-105 ${landingType.buttonText}`}
+              className={`h-[54px] rounded-full bg-white px-5 text-brand-dark hover:bg-brand-soft sm:px-8 md:h-[62px] md:px-14 transition-all duration-300 hover:scale-105 ${landingType.button}`}
             >
               <Link href={primaryCta.href}>
                 Gere uma Proposta hoje mesmo
