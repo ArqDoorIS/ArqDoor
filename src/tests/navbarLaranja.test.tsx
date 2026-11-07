@@ -78,6 +78,14 @@ describe('header laranja', () => {
     expect(mensagens.querySelector('svg')?.getAttribute('class')).toContain('text-white');
   });
 
+  it('as iniciais do avatar não herdam o branco do header', () => {
+    sessao = { user: logado, isLoggedIn: true, logout: vi.fn() };
+    montar();
+    const iniciais = screen.getByText('RT');
+    expect(iniciais.className).toContain('bg-white');
+    expect(iniciais.className).toContain('text-brand-dark');
+  });
+
   it('visitante: "Login" e "Cadastrar" continuam visíveis sobre o laranja', () => {
     montar();
     const login = screen.getByRole('button', { name: 'Login' });

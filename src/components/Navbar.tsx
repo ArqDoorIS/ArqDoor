@@ -130,7 +130,7 @@ const Navbar = () => {
                 <Button variant="ghost" className={`relative h-8 w-8 rounded-full ${BOTAO_NO_HEADER}`}>
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.perfil || undefined} className="object-cover" />
-                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                    <AvatarFallback className="bg-white text-brand-dark font-semibold">{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
