@@ -37,7 +37,7 @@ const fadeUp = {
 
 export default function LandingHeroSection({ primaryCta }: LandingHeroSectionProps) {
   return (
-    <section className="relative overflow-hidden bg-surface pt-12 md:pt-[74px]">
+    <section className="relative overflow-hidden bg-surface pt-10 md:pt-14">
       <div className="mx-auto grid w-full max-w-[1280px] gap-10 px-4 lg:grid-cols-2 lg:items-start lg:gap-x-16">
         <motion.div
           className="max-w-[580px] text-center lg:text-left"
@@ -59,7 +59,7 @@ export default function LandingHeroSection({ primaryCta }: LandingHeroSectionPro
           </motion.h1>
 
           <motion.p
-            className={`mx-auto mt-6 max-w-[700px] lg:mx-0 lg:max-w-[550px] ${landingType.heroBody}`}
+            className={`mx-auto mt-6 max-w-[65ch] text-left text-ink lg:mx-0 ${landingType.body}`}
             variants={fadeUp}
             initial={false}
             animate="visible"
@@ -78,14 +78,14 @@ export default function LandingHeroSection({ primaryCta }: LandingHeroSectionPro
           >
             <Button
               asChild
-              className={`inline-flex items-center justify-center rounded-[16px] bg-brand px-4 py-6 font-medium text-white transition-colors hover:bg-brand-dark md:px-11 ${landingType.buttonText}`}
+              className={`inline-flex items-center justify-center rounded-[16px] bg-brand px-4 py-6 text-white transition-colors hover:bg-brand-dark md:px-11 ${landingType.button}`}
             >
               <Link href={primaryCta.href}>{primaryCta.label}</Link>
             </Button>
 
             <a
               href="#escrow"
-              className="mt-2 inline-flex items-center gap-2 rounded-[16px] border border-brand bg-brand-tint px-4 py-3 text-base font-semibold leading-snug text-brand transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+              className={`mt-2 inline-flex items-center gap-2 rounded-[16px] border border-brand bg-brand-tint px-4 py-3 text-brand-dark transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${landingType.strong}`}
             >
               <svg
                 viewBox="0 0 36 36"

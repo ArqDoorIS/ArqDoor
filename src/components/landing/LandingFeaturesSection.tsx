@@ -69,7 +69,7 @@ export default function LandingFeaturesSection() {
     <section className="bg-surface py-16">
       <div className="mx-auto w-full max-w-[1360px] px-4">
         <motion.h2
-          className={`text-center font-semibold ${landingType.sectionTitle}`}
+          className={`text-center ${landingType.sectionTitle}`}
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -79,7 +79,7 @@ export default function LandingFeaturesSection() {
         </motion.h2>
 
         <motion.p
-          className={landingType.sectionSubtitle}
+          className={landingType.subtitle}
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -105,7 +105,7 @@ export default function LandingFeaturesSection() {
               className={`group flex h-full flex-col rounded-[20px] px-9 pb-8 pt-8 shadow-[0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-300 hover:shadow-[0_18px_38px_rgba(0,0,0,0.18)] ${feature.tone}`}
             >
               <motion.h3
-                className="text-center text-lg font-bold leading-snug sm:text-2xl"
+                className={`text-center ${landingType.cardTitle}`}
                 initial={false}
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.25 }}
@@ -123,7 +123,7 @@ export default function LandingFeaturesSection() {
               </motion.div>
 
               <motion.p
-                className="mt-8 text-left text-lg font-normal leading-tight opacity-90 sm:text-lg"
+                className={`mt-8 text-left ${landingType.cardBody}`}
                 initial={false}
                 whileHover={{ opacity: 1, y: -2 }}
                 transition={{ duration: 0.25 }}

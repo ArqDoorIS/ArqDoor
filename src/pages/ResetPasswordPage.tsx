@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-zinc-100 p-8">
+      <div className="w-full max-w-sm bg-white rounded-2xl border border-zinc-100 p-8">
         {done ? (
           <div className="text-center space-y-4">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />

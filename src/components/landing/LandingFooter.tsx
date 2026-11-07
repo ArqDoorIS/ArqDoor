@@ -21,12 +21,12 @@ export default function LandingFooter() {
           <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-3 sm:text-left">
             
             <div className="flex flex-col items-center text-center">
-              <p className="text-[16px] font-bold opacity-90">
+              <p className={landingType.strong}>
                 Legal
               </p>
               <ul className="mt-1 space-y-1">
                 <li>
-                  <a href="/docs/usetermsprivacitypolices.html" className="inline-flex min-h-[44px] items-center text-[14px] opacity-80 transition hover:opacity-100">
+                  <a href="/docs/usetermsprivacitypolices.html" className={`inline-flex min-h-[44px] items-center underline-offset-2 hover:underline ${landingType.small}`}>
                     Termos de Uso e Política de Privacidade
                   </a>
                 </li>
@@ -34,12 +34,12 @@ export default function LandingFooter() {
             </div>
 
             <div className="flex flex-col items-center text-center">
-              <p className="text-[16px] font-bold opacity-90">
+              <p className={landingType.strong}>
                 Contato
               </p>
               <ul className="mt-2 space-y-2">
                 <li>
-                  <a href="#" className="inline-flex min-h-[44px] items-center text-[14px] opacity-80 transition hover:opacity-100">
+                  <a href="#" className={`inline-flex min-h-[44px] items-center underline-offset-2 hover:underline ${landingType.small}`}>
                     Fale Conosco
                   </a>
                 </li>
@@ -47,7 +47,7 @@ export default function LandingFooter() {
             </div>
 
             <div className="flex flex-col items-center">
-              <p className="text-[16px] font-bold opacity-90">
+              <p className={landingType.strong}>
                 Redes Sociais
               </p>
 
@@ -63,7 +63,7 @@ export default function LandingFooter() {
             </div>
           </div>
 
-          <div className="text-center text-[12px] leading-relaxed opacity-80 sm:text-right">
+          <div className={`text-center sm:text-right ${landingType.small}`}>
             <p>
               ArqDoor, uma plataforma Zameed Inova Simples (I.S.) | CNPJ:
               57.795.075/0001-23

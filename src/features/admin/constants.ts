@@ -8,6 +8,7 @@ import {
   MessageSquareText,
   Percent,
   Gift,
+  Bot,
   ScrollText,
   ShieldCheck,
   Sparkles,
@@ -27,6 +28,8 @@ export const TABS: AdminTabConfig[] = [
   // conferir um contrato com conferir o RG de alguem.
   { key: "verificacao", label: "Verificação", icon: ShieldCheck, papeis: ["owner", "reviewer"] },
   { key: "taxas", label: "Taxas", icon: Percent, papeis: ["owner"] },
+  // Chave da API da IA do assistente de orcamentos do app. So owner: e um segredo.
+  { key: "ia", label: "IA", icon: Bot, papeis: ["owner"] },
   { key: "indicacoes", label: "Indicações", icon: Gift, papeis: ["owner"] },
   // Demandas que clientes postaram e ofertas que prestadores anunciaram. Daqui o owner
   // oculta (reversivel) ou apaga (definitivo) uma publicacao.
@@ -64,6 +67,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   documentos: 1,
   verificacao: 1,
   taxas: 1,
+  ia: 1,
   indicacoes: 1,
   publicacoes: 1,
   conversas: 1,
@@ -81,6 +85,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   documentos: 9,
   verificacao: 12,
   taxas: 10,
+  ia: 10,
   indicacoes: 10,
   publicacoes: 20,
   conversas: 10,

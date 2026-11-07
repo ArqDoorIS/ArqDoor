@@ -10,6 +10,10 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        // A mesma do app. Spec 2026-11-landing-header-e-tipografia.
+        inter: ['"Inter Variable"', "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         // Paleta do app (arqdoor-mobile/tailwind.config.js), mesmos nomes e valores.
         // Spec 2026-11-site-paleta-do-app. Mudou lá, muda aqui.
@@ -85,10 +89,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-      },
-      boxShadow: {
-        brand: "0 6px 20px rgba(231,88,18,0.3)",
-        "brand-lg": "0 8px 24px rgba(231,88,18,0.3)",
       },
       keyframes: {
         "accordion-down": {
