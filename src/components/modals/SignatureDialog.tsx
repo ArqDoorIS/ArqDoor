@@ -97,9 +97,9 @@ export function SignatureDialog({
 
         {blocked ? (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3">
-              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
-              <div className="text-sm text-amber-900">
+            <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-bg px-3 py-3">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-warning-text mt-0.5" />
+              <div className="text-sm text-warning-text">
                 <p className="font-semibold">Você ainda não tem senha de assinatura.</p>
                 <p className="mt-1">
                   Cadastre uma senha de assinatura antes de usar essa opção. Ela é só para
@@ -112,7 +112,7 @@ export function SignatureDialog({
                 Voltar
               </Button>
               <Button
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
+                className="flex-1"
                 onClick={() => {
                   onOpenChange(false)
                   navigate("/profile?tab=security")
@@ -137,10 +137,10 @@ export function SignatureDialog({
               </div>
             )}
 
-            <p className="text-sm text-slate-600">Escolha como você quer confirmar.</p>
+            <p className="text-sm text-muted-foreground">Escolha como você quer confirmar.</p>
 
             <Button
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full"
               disabled={(requireAck && !ackChecked) || signingDocument}
               onClick={() => onConfirmWithGoogle?.()}
             >
@@ -154,7 +154,7 @@ export function SignatureDialog({
 
             <Button
               variant="outline"
-              className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+              className="w-full border-brand-disabled text-brand-dark hover:bg-brand-soft"
               disabled={requireAck && !ackChecked}
               onClick={() => setEtapa(signaturePasswordConfigured ? 'senha' : 'cadastrar')}
             >
@@ -184,7 +184,7 @@ export function SignatureDialog({
               <Button
                 onClick={onAgree}
                 disabled={requireAck ? !ackChecked : false}
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full"
               >
                 {agreeLabel}
               </Button>
@@ -197,7 +197,7 @@ export function SignatureDialog({
                   onChange={e => setSignaturePassword(e.target.value)}
                 />
                 <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  className="w-full"
                   onClick={onConfirm}
                   disabled={signingDocument || !signaturePassword.trim()}
                 >

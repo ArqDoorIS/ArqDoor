@@ -42,10 +42,9 @@ export function ProviderHeaderCard({
     <Card className="overflow-hidden">
       {/* Banner */}
       <div
-        className="h-32 sm:h-48 w-full bg-slate-100 bg-cover bg-center"
+        className="h-32 sm:h-48 w-full bg-surface-warm bg-cover bg-center"
         style={{
           backgroundImage: bannerUrl ? `url(${bannerUrl})` : undefined,
-          backgroundColor: !bannerUrl ? '#FEF8C3' : undefined // Fallback color
         }}
       />
 
@@ -57,24 +56,24 @@ export function ProviderHeaderCard({
 
         <div className="flex-1 text-center sm:text-left pt-2 sm:pt-0">
           <h1 className="text-2xl font-bold mt-2">{user.name}</h1>
-          <p className="text-slate-600 font-medium">{provider.profession}</p>
+          <p className="text-muted-foreground font-medium">{provider.profession}</p>
           <div className="flex gap-2 mt-2 justify-center sm:justify-start flex-wrap">
             {/* Badge de rating só aparece se houver avaliações. Antes mostrava "Nova"
                 quando count=0; agora some pra dar espaço pro selo de verificação. */}
             {ratings.count > 0 && (
-              <Badge className="gap-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+              <Badge className="gap-1 bg-warning-bg text-warning-text hover:bg-warning-bg">
                 <Star className="w-3 h-3" />
                 {ratings.average.toFixed(1)} ({ratings.count})
               </Badge>
             )}
             {/* Selo de "Verificado": só aparece quando admin marca via WhatsApp */}
             {(user as any)?.is_verified === true && (
-              <Badge className="gap-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+              <Badge className="gap-1 bg-success-bg text-success-dark hover:bg-success-bg">
                 <BadgeCheck className="w-3 h-3" />
                 Verificado
               </Badge>
             )}
-            <Badge className="gap-1 bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <Badge className="gap-1 bg-info-bg text-info-dark hover:bg-info-bg">
               <Eye className="w-3 h-3" />
               {provider.views_profile || 0} visualizações
             </Badge>

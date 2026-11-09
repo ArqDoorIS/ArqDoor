@@ -21,29 +21,29 @@ const toneClasses: Record<
   }
 > = {
   orange: {
-    container: "border-orange-200 bg-orange-50",
-    label: "text-orange-700",
-    title: "text-orange-900",
+    container: "border-brand-disabled bg-brand-tint",
+    label: "text-brand-dark",
+    title: "text-brand-dark",
   },
   blue: {
-    container: "border-blue-200 bg-blue-50",
-    label: "text-blue-700",
-    title: "text-blue-900",
+    container: "border-info/30 bg-info-bg",
+    label: "text-info-dark",
+    title: "text-info-dark",
   },
   emerald: {
-    container: "border-emerald-200 bg-emerald-50",
-    label: "text-emerald-700",
-    title: "text-emerald-900",
+    container: "border-success/30 bg-success-bg",
+    label: "text-success-dark",
+    title: "text-success-dark",
   },
   slate: {
-    container: "border-slate-200 bg-slate-50",
-    label: "text-slate-700",
-    title: "text-slate-900",
+    container: "border-line bg-surface-soft",
+    label: "text-ink",
+    title: "text-ink-strong",
   },
   red: {
-    container: "border-red-200 bg-red-50",
-    label: "text-red-700",
-    title: "text-red-900",
+    container: "border-danger/30 bg-danger-bg",
+    label: "text-danger-dark",
+    title: "text-danger-dark",
   },
 };
 

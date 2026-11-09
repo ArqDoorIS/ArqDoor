@@ -50,9 +50,9 @@ export default function ResetPasswordPage() {
 
   if (!token || !userId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-3">
-          <p className="text-zinc-500">Link inválido ou expirado.</p>
+          <p className="text-muted-foreground">Link inválido ou expirado.</p>
           <Button variant="outline" onClick={() => navigate("/auth")}>Voltar ao login</Button>
         </div>
       </div>
@@ -60,13 +60,13 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl border border-zinc-100 p-8">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl border border-line p-8">
         {done ? (
           <div className="text-center space-y-4">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
-            <h2 className="text-xl font-semibold text-zinc-900">Senha redefinida!</h2>
-            <p className="text-sm text-zinc-500">Você já pode fazer login com a nova senha.</p>
+            <CheckCircle2 className="w-12 h-12 text-success-dark mx-auto" />
+            <h2 className="text-xl font-semibold text-ink-strong">Senha redefinida!</h2>
+            <p className="text-sm text-muted-foreground">Você já pode fazer login com a nova senha.</p>
             <Button className="w-full" onClick={() => navigate("/auth")}>
               Ir para o login
             </Button>
@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
           <>
             <div className="flex items-center gap-2 mb-6">
               <KeyRound className="w-5 h-5 text-brand" />
-              <h2 className="text-xl font-semibold text-zinc-900">Nova senha</h2>
+              <h2 className="text-xl font-semibold text-ink-strong">Nova senha</h2>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">

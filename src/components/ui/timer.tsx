@@ -40,8 +40,8 @@ export function Timer({
 
     return (
       <div className={cn(
-        "flex items-center gap-2 text-sm text-gray-600",
-        variant === 'badge' && "bg-gray-100 px-2 py-1 rounded-md",
+        "flex items-center gap-2 text-sm text-muted-foreground",
+        variant === 'badge' && "bg-surface-warm px-2 py-1 rounded-md",
         className
       )}>
         {showIcon && <Clock className="h-4 w-4" />}
@@ -54,9 +54,9 @@ export function Timer({
   return (
     <div className={cn(
       "flex items-center gap-2",
-      variant === 'default' && "text-sm text-blue-600",
-      variant === 'compact' && "text-xs text-gray-500",
-      variant === 'badge' && "bg-blue-50 px-3 py-1.5 rounded-md text-blue-700",
+      variant === 'default' && "text-sm text-info-dark",
+      variant === 'compact' && "text-xs text-muted-foreground",
+      variant === 'badge' && "bg-info-bg px-3 py-1.5 rounded-md text-info-dark",
       className
     )}>
       {showIcon && <Clock className={cn(
@@ -66,7 +66,7 @@ export function Timer({
       )} />}
       <div className="flex flex-col">
         {variant !== 'compact' && (
-          <span className="text-xs text-gray-500">{label}</span>
+          <span className="text-xs text-muted-foreground">{label}</span>
         )}
         <span className={cn(
           "font-mono font-semibold",

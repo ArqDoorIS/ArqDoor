@@ -141,20 +141,20 @@ export function PdfViewerDialog({
         </DialogHeader>
 
         {/* Área rolável do PDF */}
-        <div ref={scrollRef} className="flex-1 overflow-auto bg-gray-50">
+        <div ref={scrollRef} className="flex-1 overflow-auto bg-surface-soft">
           {loading ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p className="text-gray-600">Carregando PDF...</p>
+                <p className="text-muted-foreground">Carregando PDF...</p>
               </div>
             </div>
           ) : error ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center max-w-lg">
-                <AlertTriangle className="h-8 w-8 text-red-500 mx-auto mb-4" />
-                <p className="text-red-600 font-medium">Erro ao carregar PDF</p>
-                <p className="text-gray-600 mt-2 break-words">{error}</p>
+                <AlertTriangle className="h-8 w-8 text-danger-dark mx-auto mb-4" />
+                <p className="text-danger-dark font-medium">Erro ao carregar PDF</p>
+                <p className="text-muted-foreground mt-2 break-words">{error}</p>
               </div>
             </div>
           ) : viewerSrc ? (
@@ -170,7 +170,7 @@ export function PdfViewerDialog({
             </div>
           ) : (
             <div className="h-full flex items-center justify-center">
-              <div className="text-center text-gray-600">Nenhum PDF disponível</div>
+              <div className="text-center text-muted-foreground">Nenhum PDF disponível</div>
             </div>
           )}
         </div>

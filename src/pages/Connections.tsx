@@ -112,26 +112,26 @@ export default function ConnectionsPage() {
 
   return (
     <div className="pt-6">
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-line bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-medium uppercase tracking-[0.24em] text-orange-600">
+                <p className="text-sm font-medium uppercase tracking-[0.24em] text-brand-dark">
                   Conexões
                 </p>
-                <h1 className="text-3xl font-semibold text-slate-900">
+                <h1 className="text-3xl font-semibold text-ink-strong">
                   {user?.type === "contratante"
                     ? "Gerencie quem quer se conectar com você"
                     : "Acompanhe os clientes que você solicitou"}
                 </h1>
-                <p className="max-w-2xl text-sm text-slate-600">
+                <p className="max-w-2xl text-sm text-muted-foreground">
                   {user?.type === "contratante"
                     ? "Aprove pedidos de conexão para liberar conversa com prestadores quando fizer sentido para você."
                     : "As solicitações ficam pendentes até o cliente aceitar. Depois disso, a conversa passa a ser liberada."}
                 </p>
               </div>
-              <div className="flex items-center gap-3 text-sm text-slate-500">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Link2 className="h-4 w-4" />
                 <span>{incoming.length} pendente(s)</span>
               </div>
@@ -139,19 +139,19 @@ export default function ConnectionsPage() {
           </div>
 
           {connectionsQuery.isLoading ? (
-            <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-slate-200 bg-white text-slate-500 shadow-sm">
+            <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-line bg-white text-muted-foreground shadow-sm">
               <Loader2 className="mr-3 h-5 w-5 animate-spin" />
               Carregando conexões...
             </div>
           ) : connectionsQuery.isError ? (
-            <Card className="border-red-200 bg-red-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-red-700">
+            <Card className="border-danger/30 bg-danger-bg shadow-sm">
+              <CardContent className="p-6 text-sm text-danger-dark">
                 Não foi possível carregar as conexões agora.
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
-              <Card className="border-slate-200 shadow-sm">
+              <Card className="border-line shadow-sm">
                 <CardHeader>
                   <CardTitle>
                     {user?.type === "contratante"
@@ -173,7 +173,7 @@ export default function ConnectionsPage() {
                       return (
                         <div
                           key={connection.id}
-                          className="rounded-2xl border border-slate-200 px-4 py-4"
+                          className="rounded-2xl border border-line px-4 py-4"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-center gap-3">
@@ -184,15 +184,15 @@ export default function ConnectionsPage() {
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium text-slate-900">
+                                <p className="font-medium text-ink-strong">
                                   {counterpart?.name || "Prestador"}
                                 </p>
-                                <p className="text-sm text-slate-500">
+                                <p className="text-sm text-muted-foreground">
                                   Pedido em {formatDateTime(connection.created_at)}
                                 </p>
                               </div>
                             </div>
-                            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                            <span className="rounded-full bg-warning-bg px-3 py-1 text-xs font-medium text-warning-text">
                               {connection.status === "pending" ? "Pendente" : "Em análise"}
                             </span>
                           </div>
@@ -237,7 +237,7 @@ export default function ConnectionsPage() {
                       );
                     })
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-sm text-slate-500">
+                    <div className="rounded-2xl border border-dashed border-line px-4 py-8 text-sm text-muted-foreground">
                       {user?.type === "contratante"
                         ? "Você ainda não recebeu pedidos de conexão."
                         : "Você ainda não enviou solicitações pendentes."}
@@ -246,7 +246,7 @@ export default function ConnectionsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-slate-200 shadow-sm">
+              <Card className="border-line shadow-sm">
                 <CardHeader>
                   <CardTitle>Conexões aprovadas</CardTitle>
                 </CardHeader>
@@ -263,7 +263,7 @@ export default function ConnectionsPage() {
                       return (
                         <div
                           key={connection.id}
-                          className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3"
+                          className="flex items-center justify-between gap-4 rounded-2xl border border-line px-4 py-3"
                         >
                           <div className="flex items-center gap-3">
                             <Avatar className="h-11 w-11">
@@ -273,10 +273,10 @@ export default function ConnectionsPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium text-slate-900">
+                              <p className="font-medium text-ink-strong">
                                 {counterpart?.name || "Conexão"}
                               </p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-muted-foreground">
                                 Atualizado em {formatDateTime(connection.updated_at)}
                               </p>
                             </div>
@@ -288,7 +288,7 @@ export default function ConnectionsPage() {
                       );
                     })
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-sm text-slate-500">
+                    <div className="rounded-2xl border border-dashed border-line px-4 py-8 text-sm text-muted-foreground">
                       Nenhuma conexão aprovada até o momento.
                     </div>
                   )}

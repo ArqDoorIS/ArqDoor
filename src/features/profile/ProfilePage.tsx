@@ -853,7 +853,7 @@ export default function ProfilePage() {
 
   return (
     <div className="pt-6">
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 p-6">
+      <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto space-y-8">
           <ProfileHeader user={user as any} onLogout={logout} />
 
@@ -874,7 +874,7 @@ export default function ProfilePage() {
                     <Mail className="w-4 h-4" /> Email: {user.email || "Não informado"}
                   </div>
                   {user.type === "prestador" && providerProfile && (
-                    <div className="mt-3 text-sm text-slate-600">
+                    <div className="mt-3 text-sm text-muted-foreground">
                       Visualizações do perfil: <span className="font-semibold">{providerProfile.views_profile || 0}</span>
                     </div>
                   )}
@@ -934,7 +934,7 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     {portfolio.length === 0 ? (
-                      <div className="text-slate-500 text-center">
+                      <div className="text-muted-foreground text-center">
                         Nenhum item de portfólio
                       </div>
                     ) : (
@@ -948,7 +948,7 @@ export default function ProfilePage() {
                               setPortfolioModalOpen(true);
                             }}
                           >
-                            <div className="flex items-center justify-center h-16 text-slate-500">
+                            <div className="flex items-center justify-center h-16 text-muted-foreground">
                               <ImageIcon className="w-6 h-6" />
                             </div>
                             <p className="text-sm mt-2 text-center truncate">{item.title}</p>
@@ -968,7 +968,7 @@ export default function ProfilePage() {
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-8 w-8 text-red-600 hover:text-red-700"
+                                className="h-8 w-8 text-danger-dark hover:text-danger-dark"
                                 onClick={async (e) => {
                                   e.stopPropagation();
                                   await handleDeletePortfolio(item.id);
@@ -984,7 +984,7 @@ export default function ProfilePage() {
                     )}
                     <Button
                       onClick={() => setIsUploadingImage(true)}
-                      className="w-full mt-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white"
+                      className="w-full mt-4 bg-brand text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" /> Novo Destaque
                     </Button>
@@ -1006,13 +1006,13 @@ export default function ProfilePage() {
                         <p className="text-2xl font-bold">
                           {ratingsPreview.average ? ratingsPreview.average.toFixed(1) : "--"}
                         </p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           {ratingsPreview.count} avaliação{ratingsPreview.count !== 1 ? "es" : ""}
                         </p>
                       </div>
                       <Button
                         size="sm"
-                        className="bg-orange-600 text-white"
+                        className="bg-brand text-white"
                         disabled={!providerProfileId}
                         onClick={() => handleOpenRatingsModal(true)}
                       >
@@ -1021,16 +1021,16 @@ export default function ProfilePage() {
                     </div>
                     <div className="mt-3 space-y-2">
                       {ratingsPreview.latest.length === 0 ? (
-                        <p className="text-sm text-slate-500">Nenhuma avaliação ainda.</p>
+                        <p className="text-sm text-muted-foreground">Nenhuma avaliação ainda.</p>
                       ) : (
                         ratingsPreview.latest.map((r, idx) => (
                           <div key={idx} className="rounded-md border p-2">
                             <p className="text-sm font-semibold">
                               Nota {r.grade ?? r.rating ?? "--"}
                             </p>
-                            {r.comment && <p className="text-sm text-slate-600">{r.comment}</p>}
+                            {r.comment && <p className="text-sm text-muted-foreground">{r.comment}</p>}
                             {r.createdAt && (
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-muted-foreground">
                                 {new Date(r.createdAt).toLocaleDateString("pt-BR")}
                               </p>
                             )}
@@ -1081,7 +1081,7 @@ export default function ProfilePage() {
                       do login" — e o formulario, ao salvar, TROCAVA a senha de login.
                       Agora sao coisas separadas de verdade, e o texto precisa deixar
                       isso claro antes de a pessoa digitar. */}
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Uma senha separada, usada só para assinar contratos e confirmar etapas.
                     Ela <strong>não altera a sua senha de login</strong>. Enquanto você não
                     cadastrar uma, seus contratos são assinados com a senha de login. Se
@@ -1089,7 +1089,7 @@ export default function ProfilePage() {
                     cadastre uma aqui ou assine usando a própria conta Google.
                   </p>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Nova senha</label>
+                    <label className="text-sm font-medium text-ink">Nova senha</label>
                     <Input
                       type="password"
                       value={signaturePassword}
@@ -1099,7 +1099,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Confirmar senha</label>
+                    <label className="text-sm font-medium text-ink">Confirmar senha</label>
                     <Input
                       type="password"
                       value={signaturePasswordConfirm}
@@ -1121,9 +1121,9 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   {loadingLocation ? (
-                    <p className="text-sm text-slate-500">Carregando endereço...</p>
+                    <p className="text-sm text-muted-foreground">Carregando endereço...</p>
                   ) : locationInfo ? (
-                    <div className="space-y-1 text-sm text-slate-700">
+                    <div className="space-y-1 text-sm text-ink">
                       <p><span className="font-medium">CEP:</span> {formatCEP(locationInfo.cep || "")}</p>
                       <p><span className="font-medium">Rua:</span> {locationInfo.street || "—"}</p>
                       <p><span className="font-medium">Número:</span> {locationInfo.number || "—"}</p>
@@ -1132,7 +1132,7 @@ export default function ProfilePage() {
                       <p><span className="font-medium">Tipo:</span> {locationInfo.typeLocation || "—"}</p>
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">Nenhum endereço cadastrado.</p>
+                    <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>
                   )}
                 </CardContent>
               </Card>
@@ -1148,7 +1148,7 @@ export default function ProfilePage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="portfolio-title">Título</label>
+              <label className="text-sm font-medium text-ink" htmlFor="portfolio-title">Título</label>
               <Input
                 id="portfolio-title"
                 value={newPortfolioTitle}
@@ -1157,7 +1157,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="portfolio-description">Descrição</label>
+              <label className="text-sm font-medium text-ink" htmlFor="portfolio-description">Descrição</label>
               <Textarea
                 id="portfolio-description"
                 value={newPortfolioDescription}
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="portfolio-file">Imagem</label>
+              <label className="text-sm font-medium text-ink" htmlFor="portfolio-file">Imagem</label>
               <Input
                 id="portfolio-file"
                 type="file"

@@ -287,7 +287,7 @@ export default function ProviderProfilePage() {
     return (
       <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
-          <Loader2 className="animate-spin w-8 h-8 text-orange-600" />
+          <Loader2 className="animate-spin w-8 h-8 text-brand-dark" />
         </div>
       </div>
     );
@@ -297,7 +297,7 @@ export default function ProviderProfilePage() {
     return (
       <div className="pt-6">
         <div className="flex justify-center items-center min-h-screen">
-          <p className="text-slate-600">Prestador não encontrado.</p>
+          <p className="text-muted-foreground">Prestador não encontrado.</p>
         </div>
       </div>
     );

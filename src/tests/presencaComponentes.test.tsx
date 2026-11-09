@@ -78,7 +78,7 @@ describe("PresencaDot", () => {
     );
     const dot = container.querySelector("[aria-hidden='true']");
     expect(dot).toBeTruthy();
-    expect((dot as HTMLElement).style.backgroundColor).toBe("rgb(34, 197, 94)"); // #22c55e
+    expect((dot as HTMLElement).style.backgroundColor).toBe("rgb(76, 175, 80)"); // #4caf50
   });
 
   it("renderiza bolinha verde apagada para disponivel (nao online)", () => {

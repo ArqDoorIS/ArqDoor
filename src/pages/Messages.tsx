@@ -2244,8 +2244,8 @@ export default function Messages() {
 
   return (
     <div className="pt-8">
-      <div className="flex p-0 md:p-4 bg-gray-100 h-[calc(100dvh-58px)]">
-        <div className={`flex flex-col h-full w-full md:w-80 bg-white border-r border-gray-200 ${processedCurrentConversation ? 'hidden md:flex' : 'flex'}`}>
+      <div className="flex p-0 md:p-4 h-[calc(100dvh-58px)]">
+        <div className={`flex flex-col h-full w-full md:w-80 bg-white border-r border-line ${processedCurrentConversation ? 'hidden md:flex' : 'flex'}`}>
           <ConversationsSidebar
             conversations={processedConversations}
             currentConversation={processedCurrentConversation}
@@ -2273,7 +2273,7 @@ export default function Messages() {
               />
               {/* Abas de navegacao - visivel apenas abaixo de md */}
               <div
-                className="flex md:hidden border-b border-gray-200 bg-white"
+                className="flex md:hidden border-b border-line bg-white"
                 role="tablist"
                 aria-label="Seções da conversa"
               >
@@ -2281,7 +2281,7 @@ export default function Messages() {
                   role="tab"
                   aria-selected={mobileTab === 'chat'}
                   data-testid="tab-conversa"
-                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'chat' ? ' border-b-2 border-orange-500 text-orange-600' : ' text-gray-500 hover:text-gray-700'}`}
+                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'chat' ? ' border-b-2 border-brand text-brand-dark' : ' text-muted-foreground hover:text-ink'}`}
                   onClick={() => setMobileTab('chat')}
                 >
                   Conversa
@@ -2290,7 +2290,7 @@ export default function Messages() {
                   role="tab"
                   aria-selected={mobileTab === 'propostas'}
                   data-testid="tab-propostas"
-                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'propostas' ? ' border-b-2 border-orange-500 text-orange-600' : ' text-gray-500 hover:text-gray-700'}`}
+                  className={`flex-1 py-3 text-sm font-medium transition-colors focus:outline-none${mobileTab === 'propostas' ? ' border-b-2 border-brand text-brand-dark' : ' text-muted-foreground hover:text-ink'}`}
                   onClick={() => setMobileTab('propostas')}
                 >
                   Propostas ({tickets.length})
@@ -2321,7 +2321,7 @@ export default function Messages() {
                                 isProcessingAdditionalPayment ||
                                 additionalPaymentListTicketOptions.length === 0
                               }
-                              className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                              className="border-brand-disabled text-brand-dark hover:bg-brand-tint hover:text-brand-dark"
                             >
                               <Plus className="h-4 w-4" />
                               <span className="sr-only">Ações adicionais</span>
@@ -2346,7 +2346,7 @@ export default function Messages() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               disabled
-                              className="text-gray-400"
+                              className="text-muted-foreground"
                             >
                               <ImagePlus className="h-4 w-4" />
                               Adicionar imagem

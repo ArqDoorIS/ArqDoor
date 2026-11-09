@@ -68,7 +68,7 @@ export function ProviderRatingsSection({
         <div className="flex flex-wrap items-center gap-4 justify-between">
           <div>
             <p className="text-3xl font-bold">{ratings.count > 0 ? ratings.average.toFixed(1) : "—"}</p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {ratings.count} avaliação{ratings.count !== 1 ? "es" : ""}
             </p>
           </div>
@@ -97,7 +97,7 @@ export function ProviderRatingsSection({
                       onMouseEnter={() => setHoveredStar(value)}
                       onMouseLeave={() => setHoveredStar(null)}
                       onClick={() => setRatingGrade(value)}
-                      className={`p-1 rounded transition-colors ${highlighted ? "text-amber-500" : "text-slate-400"}`}
+                      className={`p-1 rounded transition-colors ${highlighted ? "text-warning-text" : "text-muted-foreground"}`}
                       aria-label={`${value} estrela${value > 1 ? "s" : ""}`}
                     >
                       <Star
@@ -110,7 +110,7 @@ export function ProviderRatingsSection({
                 })}
               </div>
               {ratings.viewerRating && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Você já avaliou este prestador. Atualize a nota ou exclua sua avaliação existente.
                 </p>
               )}
@@ -128,7 +128,7 @@ export function ProviderRatingsSection({
               <Button
                 onClick={onSave}
                 disabled={savingRating || !ratingGrade}
-                className="w-full sm:flex-1 bg-orange-600 text-white"
+                className="w-full sm:flex-1 bg-brand text-white"
               >
                 {savingRating ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -158,7 +158,7 @@ export function ProviderRatingsSection({
         {isOwner && showRatingsList && (
           <div className="mt-6 space-y-4">
             {ratings.list.length === 0 ? (
-              <p className="text-slate-500 text-sm">Ainda não há avaliações.</p>
+              <p className="text-muted-foreground text-sm">Ainda não há avaliações.</p>
             ) : (
               ratings.list.map((rating: RatingItem) => (
                 <div key={rating.id} className="p-3 border rounded-lg">
@@ -172,18 +172,18 @@ export function ProviderRatingsSection({
                       </Avatar>
                       <div>
                         <p className="text-sm font-medium">{rating.user?.name || "Usuário"}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(rating.createdAt).toLocaleDateString("pt-BR")}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-amber-600 font-semibold">
+                    <div className="flex items-center gap-1 text-warning-text font-semibold">
                       <Star className="w-4 h-4" />
                       {rating.grade}
                     </div>
                   </div>
                   {rating.comment && (
-                    <p className="text-sm text-slate-700 mt-2">{rating.comment}</p>
+                    <p className="text-sm text-ink mt-2">{rating.comment}</p>
                   )}
                 </div>
               ))

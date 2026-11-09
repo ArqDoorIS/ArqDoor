@@ -102,7 +102,7 @@ import {
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">Forma de pagamento</span>
                 {totalAmount > 0 && (
-                  <span className="text-gray-600">
+                  <span className="text-muted-foreground">
                     Valor: {formatPrice(totalAmount)}
                   </span>
                 )}
@@ -118,15 +118,15 @@ import {
                     <label
                       key={option.value}
                       htmlFor={`grouped-payment-${option.value}`}
-                      className="flex cursor-pointer items-start gap-3 rounded-md border p-3 hover:border-orange-500"
+                      className="flex cursor-pointer items-start gap-3 rounded-md border p-3 hover:border-brand"
                     >
                       <RadioGroupItem value={option.value} id={`grouped-payment-${option.value}`} />
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 font-medium">
-                          <Icon className="h-4 w-4 text-orange-600" />
+                          <Icon className="h-4 w-4 text-brand-dark" />
                           {option.title}
                         </div>
-                        <p className="text-xs text-gray-600">{option.description}</p>
+                        <p className="text-xs text-muted-foreground">{option.description}</p>
                       </div>
                     </label>
                   );
@@ -137,8 +137,8 @@ import {
               ) : null}
 
               {isCreditCard && !podeTokenizar ? (
-                <div className="space-y-2 rounded-md bg-red-50 px-3 py-2">
-                  <p className="text-xs leading-relaxed text-red-700">
+                <div className="space-y-2 rounded-md bg-danger-bg px-3 py-2">
+                  <p className="text-xs leading-relaxed text-danger-dark">
                     O pagamento com cartão está indisponível nesta versão do site. Use PIX
                     para concluir agora.
                   </p>
@@ -147,7 +147,7 @@ import {
                     variant="outline"
                     size="sm"
                     onClick={() => onMethodChange("PIX")}
-                    className="border-red-200 text-red-700 hover:bg-red-100"
+                    className="border-danger/30 text-danger-dark hover:bg-danger-bg"
                   >
                     Pagar com PIX
                   </Button>
@@ -173,7 +173,7 @@ import {
                     type="button"
                     onClick={() => onGeneratePayment(installmentCount ?? undefined)}
                     disabled={loading}
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="bg-brand hover:bg-brand-dark"
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -196,7 +196,7 @@ import {
             {(() => {
               if (!data) {
                 return (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Clique em &quot;Gerar cobrança&quot; para ver os dados de pagamento.
                   </p>
                 );
@@ -218,13 +218,13 @@ import {
                     {src && (
                       <div className="flex flex-col items-center gap-2">
                         <img src={src} alt="QR Code PIX" className="w-44 h-44 object-contain" />
-                        <span className="text-xs text-gray-500">Escaneie para pagar</span>
+                        <span className="text-xs text-muted-foreground">Escaneie para pagar</span>
                       </div>
                     )}
   
                     <div>
                       <p className="text-sm font-medium mb-1">Código copia e cola</p>
-                      <div className="bg-gray-100 rounded-md p-2 text-xs break-all">
+                      <div className="bg-surface-warm rounded-md p-2 text-xs break-all">
                         {pixData?.copy_and_paste || "Não disponível"}
                       </div>
                       <div className="flex gap-2 mt-2">
@@ -248,7 +248,7 @@ import {
                     </div>
   
                     {pixData?.expires_at && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         Expira em {new Date(pixData.expires_at).toLocaleString("pt-BR")}
                       </p>
                     )}
@@ -259,10 +259,10 @@ import {
               if (method === "BOLETO") {
                 return (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Use a linha digitável ou abra o boleto para finalizar o pagamento.
                     </p>
-                    <div className="bg-gray-100 rounded-md p-2 text-xs break-all">
+                    <div className="bg-surface-warm rounded-md p-2 text-xs break-all">
                       {boletoData?.digitable_line || "Não disponível"}
                     </div>
                     <div className="flex gap-2">
@@ -275,7 +275,7 @@ import {
                         <Copy className="h-3.5 w-3.5 mr-1" /> Copiar código
                       </Button>
                       {(boletoData?.pdf_url || data?.invoice_url) && (
-                        <Button asChild size="sm" className="bg-orange-600 hover:bg-orange-700">
+                        <Button asChild size="sm" className="bg-brand hover:bg-brand-dark">
                           <a
                             href={boletoData?.pdf_url || data?.invoice_url}
                             target="_blank"
@@ -287,7 +287,7 @@ import {
                       )}
                     </div>
                     {boletoData?.due_date && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         Vencimento em {new Date(boletoData.due_date).toLocaleDateString("pt-BR")}
                       </p>
                     )}
@@ -298,11 +298,11 @@ import {
               return (
                 <div className="space-y-3">
                   {data?.credit_card_installment && (
-                    <div className="flex items-center justify-between rounded-md bg-orange-50 px-3 py-2 text-sm">
-                      <span className="font-medium text-orange-700">
+                    <div className="flex items-center justify-between rounded-md bg-brand-tint px-3 py-2 text-sm">
+                      <span className="font-medium text-brand-dark">
                         {data.credit_card_installment.installment_count}x de {formatPrice(data.credit_card_installment.installment_value)}
                       </span>
-                      <span className="flex flex-col items-end text-xs text-gray-600">
+                      <span className="flex flex-col items-end text-xs text-muted-foreground">
                         {data.credit_card_installment.last_installment_value != null ? (
                           <span>Última {formatPrice(data.credit_card_installment.last_installment_value)}</span>
                         ) : null}
@@ -310,14 +310,14 @@ import {
                       </span>
                     </div>
                   )}
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Cobrança no cartão registrada. O resultado aparece assim que a operadora
                     responder.
                   </p>
                   {/* Link do checkout hospedado só para cobranças ANTIGAS, nascidas por
                       aquele caminho. Cobrança nova é feita aqui, com token. */}
                   {checkoutUrl && (
-                    <Button asChild className="bg-orange-600 hover:bg-orange-700">
+                    <Button asChild className="bg-brand hover:bg-brand-dark">
                       <a href={checkoutUrl} target="_blank" rel="noreferrer">
                         <CreditCard className="h-4 w-4 mr-2" />
                         Abrir cobrança

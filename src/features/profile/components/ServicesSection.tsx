@@ -55,7 +55,7 @@ export function ServicesSection({
         <Button
           size="sm"
           onClick={() => setIsCreating(!isCreating)}
-          className="bg-gradient-to-r from-orange-500 to-amber-600 text-white"
+          className="bg-brand text-white"
         >
           <Plus className="w-4 h-4 mr-2" />
           {isCreating ? "Cancelar" : userType === "prestador" ? "Novo Serviço" : "Nova Demanda"}
@@ -67,7 +67,7 @@ export function ServicesSection({
         ) : (
           <>
             {isCreating && (
-              <div className="space-y-3 mb-6 p-4 border rounded-lg bg-slate-50">
+              <div className="space-y-3 mb-6 p-4 border rounded-lg bg-surface-soft">
                 <Input
                   placeholder="Título"
                   value={newItem.title}
@@ -85,8 +85,8 @@ export function ServicesSection({
                   <div className="flex justify-end">
                     <span className={`text-xs ${
                       newItem.description.length < 30
-                        ? "text-red-500"
-                        : "text-slate-500"
+                        ? "text-danger-dark"
+                        : "text-muted-foreground"
                     }`}>
                       {newItem.description.length} caracteres
                     </span>
@@ -105,7 +105,7 @@ export function ServicesSection({
               </div>
             )}
             {serviceItems.length === 0 ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 {userType === "prestador"
                   ? "Você ainda não cadastrou serviços."
                   : "Você ainda não cadastrou demandas."}
@@ -149,8 +149,8 @@ export function ServicesSection({
                     ) : (
                       <>
                         <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-sm text-slate-600">{item.description}</p>
-                        {item.price !== undefined && item.price !== null && <p className="text-orange-600 font-bold">R$ {Number(item.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>}
+                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        {item.price !== undefined && item.price !== null && <p className="text-brand-dark font-bold">R$ {Number(item.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>}
                         <div className="flex  gap-2 mt-2">
                           <Button
                             size="sm"

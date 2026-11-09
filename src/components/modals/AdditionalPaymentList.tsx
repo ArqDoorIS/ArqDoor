@@ -51,7 +51,7 @@ export function AdditionalPaymentList({
 
   if (loading) {
     return (
-      <div className="text-center py-4 text-sm text-gray-600">
+      <div className="text-center py-4 text-sm text-muted-foreground">
         Carregando pagamentos adicionais...
       </div>
     );
@@ -61,25 +61,25 @@ export function AdditionalPaymentList({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <Receipt className="h-5 w-5 text-orange-600" />
+        <Receipt className="h-5 w-5 text-brand-dark" />
         <h3 className="font-semibold text-lg">Pagamentos Adicionais</h3>
         {payments.length > 0 && (
-          <span className="text-sm text-gray-500">({payments.length})</span>
+          <span className="text-sm text-muted-foreground">({payments.length})</span>
         )}
       </div>
 
       {/* Lista de Pagamentos */}
       {payments.length === 0 ? (
-        <div className="text-center py-8 text-sm text-gray-500 border border-dashed rounded-lg">
+        <div className="text-center py-8 text-sm text-muted-foreground border border-dashed rounded-lg">
           {isProvider ? (
             <>
-              <Receipt className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+              <Receipt className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p>Nenhuma cobrança adicional criada ainda.</p>
               {isTicketActive && <p className="text-xs mt-1">Crie uma cobrança no chat.</p>}
             </>
           ) : (
             <>
-              <Receipt className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+              <Receipt className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p>Nenhuma cobrança adicional pendente.</p>
             </>
           )}
@@ -90,7 +90,7 @@ export function AdditionalPaymentList({
           {pendingPayments.length > 0 && (
             <div className="space-y-2">
               {pendingPayments.length > 1 && (
-                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Pendentes ({pendingPayments.length})
                 </p>
               )}
@@ -113,7 +113,7 @@ export function AdditionalPaymentList({
           {acceptedPayments.length > 0 && (
             <div className="space-y-2">
               {pendingPayments.length > 0 && (
-                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mt-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-4">
                   Aceitas ({acceptedPayments.length})
                 </p>
               )}
@@ -136,7 +136,7 @@ export function AdditionalPaymentList({
           {paidPayments.length > 0 && (
             <div className="space-y-2">
               {(pendingPayments.length > 0 || acceptedPayments.length > 0) && (
-                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mt-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-4">
                   Pagas ({paidPayments.length})
                 </p>
               )}
@@ -161,7 +161,7 @@ export function AdditionalPaymentList({
               {(pendingPayments.length > 0 ||
                 acceptedPayments.length > 0 ||
                 paidPayments.length > 0) && (
-                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mt-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-4">
                   Recusadas ({refusedPayments.length})
                 </p>
               )}
@@ -183,7 +183,7 @@ export function AdditionalPaymentList({
           {/* Outros status */}
           {otherPayments.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mt-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-4">
                 Outros ({otherPayments.length})
               </p>
               {otherPayments.map((payment) => (

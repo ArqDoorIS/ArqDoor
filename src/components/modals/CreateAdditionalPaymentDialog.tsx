@@ -144,7 +144,7 @@ export function CreateAdditionalPaymentDialog({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="title">
-                Título da cobrança <span className="text-red-500">*</span>
+                Título da cobrança <span className="text-danger-dark">*</span>
               </Label>
               <Input
                 id="title"
@@ -152,16 +152,16 @@ export function CreateAdditionalPaymentDialog({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 disabled={isCreating}
-                className={errors.title ? "border-red-500" : ""}
+                className={errors.title ? "border-danger" : ""}
               />
               {errors.title && (
-                <p className="text-sm text-red-500">{errors.title}</p>
+                <p className="text-sm text-danger-dark">{errors.title}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">
-                Descrição <span className="text-red-500">*</span>
+                Descrição <span className="text-danger-dark">*</span>
               </Label>
               <Textarea
                 id="description"
@@ -170,19 +170,19 @@ export function CreateAdditionalPaymentDialog({
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={isCreating}
                 rows={4}
-                className={errors.description ? "border-red-500" : ""}
+                className={errors.description ? "border-danger" : ""}
               />
               {errors.description && (
-                <p className="text-sm text-red-500">{errors.description}</p>
+                <p className="text-sm text-danger-dark">{errors.description}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Valor (R$) <span className="text-red-500">*</span>
+                Valor (R$) <span className="text-danger-dark">*</span>
               </Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   R$
                 </span>
                 <Input
@@ -192,7 +192,7 @@ export function CreateAdditionalPaymentDialog({
                   value={amount}
                   onChange={handleAmountChange}
                   disabled={isCreating}
-                  className={`pl-8 ${errors.amount ? "border-red-500" : ""}`}
+                  className={`pl-8 ${errors.amount ? "border-danger" : ""}`}
                 />
               </div>
               {amountValue > 0 && (() => {
@@ -203,7 +203,7 @@ export function CreateAdditionalPaymentDialog({
                 const isCapped = fee >= PLATFORM_FEE_CAP;
                 return (
                   <div className="rounded-xl border bg-muted/40 px-3 py-2 space-y-1">
-                    <p className="text-xs text-orange-700">
+                    <p className="text-xs text-brand-dark">
                       {formatPrice(amountValue)} + {formatPrice(fee)} (5%
                       {isCapped ? ", teto" : ""}) ={" "}
                       <span className="font-semibold">
@@ -214,14 +214,14 @@ export function CreateAdditionalPaymentDialog({
                 );
               })()}
               {errors.amount && (
-                <p className="text-sm text-red-500">{errors.amount}</p>
+                <p className="text-sm text-danger-dark">{errors.amount}</p>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Valor mínimo: R$ 5,00
               </p>
 
               {amountValue > 0 && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 leading-relaxed">
+                <div className="rounded-xl border border-warning/30 bg-warning-bg px-3 py-2 text-xs text-warning-text leading-relaxed">
                   <strong className="font-semibold">Sobre a taxa:</strong> A
                   ArqDoor recebe apenas quando você recebe. A taxa de 5% (teto
                   de R$ 1.500) é descontada apenas no recebimento.
@@ -232,7 +232,7 @@ export function CreateAdditionalPaymentDialog({
             {!hasFixedTicket && (
               <div className="space-y-2">
                 <Label htmlFor="proposal">
-                  Vincular à proposta <span className="text-red-500">*</span>
+                  Vincular à proposta <span className="text-danger-dark">*</span>
                 </Label>
                 <Select
                   value={selectedTicketId}
@@ -241,7 +241,7 @@ export function CreateAdditionalPaymentDialog({
                 >
                   <SelectTrigger
                     id="proposal"
-                    className={errors.ticketId ? "border-red-500" : ""}
+                    className={errors.ticketId ? "border-danger" : ""}
                   >
                     <SelectValue
                       placeholder={
@@ -260,7 +260,7 @@ export function CreateAdditionalPaymentDialog({
                   </SelectContent>
                 </Select>
                 {errors.ticketId && (
-                  <p className="text-sm text-red-500">{errors.ticketId}</p>
+                  <p className="text-sm text-danger-dark">{errors.ticketId}</p>
                 )}
               </div>
             )}

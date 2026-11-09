@@ -24,7 +24,7 @@ export function ProviderPortfolioSection({ portfolio, loading, onOpen }: Provide
         {loading ? (
           <Loader2 className="animate-spin w-6 h-6 mx-auto" />
         ) : portfolio.length === 0 ? (
-          <p className="text-slate-500">Nenhum projeto no portfólio.</p>
+          <p className="text-muted-foreground">Nenhum projeto no portfólio.</p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {portfolio.map((p) => (
@@ -34,7 +34,7 @@ export function ProviderPortfolioSection({ portfolio, loading, onOpen }: Provide
                 onClick={() => onOpen(p)}
               >
                 {p.UserImage?.image_path ? (
-                  <div className="relative h-32 bg-slate-100">
+                  <div className="relative h-32 bg-surface-warm">
                     <img
                       src={buildImageUrl(p.UserImage.image_path)}
                       alt={p.title}
@@ -45,7 +45,7 @@ export function ProviderPortfolioSection({ portfolio, loading, onOpen }: Provide
                     </div>
                   </div>
                 ) : (
-                  <div className="h-32 flex flex-col items-center justify-center text-slate-400">
+                  <div className="h-32 flex flex-col items-center justify-center text-muted-foreground">
                     <ImageIcon className="w-6 h-6" />
                     <p className="text-sm mt-2 text-center">{p.title}</p>
                   </div>

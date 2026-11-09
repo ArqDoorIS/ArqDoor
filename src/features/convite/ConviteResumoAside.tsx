@@ -14,28 +14,28 @@ export function ConviteResumoAside({ invite, provider, total, currentStep, onCon
   const providerName = provider?.name || provider?.user?.name || null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5 space-y-4">
+    <div className="rounded-2xl border border-line bg-white shadow-sm p-5 space-y-4">
       {/* Provider */}
       {providerName && (
         <div>
-          <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">Prestador</p>
-          <p className="font-semibold text-slate-800 mt-0.5">{providerName}</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Prestador</p>
+          <p className="font-semibold text-ink mt-0.5">{providerName}</p>
           {provider?.profession && (
-            <p className="text-xs text-slate-500">{provider.profession}</p>
+            <p className="text-xs text-muted-foreground">{provider.profession}</p>
           )}
         </div>
       )}
 
       {/* Titulo */}
       <div>
-        <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">Proposta</p>
-        <p className="font-semibold text-slate-800 mt-0.5 leading-snug">{invite.title}</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Proposta</p>
+        <p className="font-semibold text-ink mt-0.5 leading-snug">{invite.title}</p>
       </div>
 
       {/* Total */}
       <div>
-        <p className="text-xs text-slate-400 uppercase tracking-wider font-medium">Total</p>
-        <p className="text-xl font-bold text-orange-600 mt-0.5">{formatPrice(total)}</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Total</p>
+        <p className="text-xl font-bold text-brand-dark mt-0.5">{formatPrice(total)}</p>
       </div>
 
       {/* CTA "Continuar" - visivel apenas no passo 1 */}
@@ -43,12 +43,12 @@ export function ConviteResumoAside({ invite, provider, total, currentStep, onCon
         <>
           <Button
             onClick={onContinue}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-sm font-semibold h-11 rounded-xl"
+            className="w-full bg-brand hover:bg-brand-dark text-sm font-semibold h-11 rounded-xl"
           >
             Continuar
           </Button>
           {invite.destinatario?.cpf_final && (
-            <p className="text-xs text-slate-500 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               O CPF é conferido quando você aceitar.
             </p>
           )}

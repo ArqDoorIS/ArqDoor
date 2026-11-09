@@ -280,13 +280,13 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-expired">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-brand-dark">
             <Clock className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Este convite expirou</h1>
+          <h1 className="text-xl font-semibold text-ink-strong">Este convite expirou</h1>
           <p className="text-sm text-muted-foreground">{falha.titulo}</p>
           {venceuEm ? <p className="text-xs text-muted-foreground">Venceu em {venceuEm}</p> : null}
-          <p className="text-sm text-gray-900">
+          <p className="text-sm text-ink-strong">
             {falha.prestador
               ? `Peça um novo link a ${falha.prestador}.`
               : "Peça um novo link a quem enviou a proposta."}
@@ -300,10 +300,10 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-not-found">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-brand-dark">
             <SearchX className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Convite não encontrado</h1>
+          <h1 className="text-xl font-semibold text-ink-strong">Convite não encontrado</h1>
           <p className="text-sm text-muted-foreground">
             Confira se o link está completo. Se copiou de uma mensagem, copie de novo inteiro.
           </p>
@@ -317,13 +317,13 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-bloqueado">
         <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-danger-bg text-danger-dark">
             <ShieldOff className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Este link foi bloqueado</h1>
+          <h1 className="text-xl font-semibold text-ink-strong">Este link foi bloqueado</h1>
           <p className="text-sm text-muted-foreground">
             {nome ? (
-              <>Peça a <span className="font-medium text-gray-900">{nome}</span> um link novo.</>
+              <>Peça a <span className="font-medium text-ink-strong">{nome}</span> um link novo.</>
             ) : (
               "Peça ao prestador um link novo."
             )}
@@ -340,7 +340,7 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-owner-error">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">Você é o prestador deste contrato</h1>
+          <h1 className="text-xl font-semibold text-ink-strong">Você é o prestador deste contrato</h1>
           <p className="text-sm text-muted-foreground">
             O prestador não pode assinar o próprio convite. Compartilhe o link com o cliente.
           </p>
@@ -377,7 +377,7 @@ export default function InvitePublic() {
       return (
         <div className="container mx-auto px-4 py-24" data-testid="invite-already-accepted">
           <div className="mx-auto max-w-md space-y-4 rounded-3xl border bg-white p-8 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-gray-900">Este convite já foi aceito</h1>
+            <h1 className="text-xl font-semibold text-ink-strong">Este convite já foi aceito</h1>
             {!isLoggedIn ? (
               <>
                 <p className="text-sm text-muted-foreground">
@@ -399,7 +399,7 @@ export default function InvitePublic() {
                       : "/messages"
                   )
                 }
-                className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+                className="w-full bg-brand hover:bg-brand-dark h-11"
               >
                 Abrir meu contrato
               </Button>
@@ -420,7 +420,7 @@ export default function InvitePublic() {
     };
 
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-stone-950" data-testid="pagina-acompanhamento">
+      <div className="min-h-screen dark:bg-stone-950" data-testid="pagina-acompanhamento">
         <ContratoAcompanhamento
           dados={acompanhamento}
           token={token!}
@@ -437,7 +437,7 @@ export default function InvitePublic() {
     return (
       <div className="container mx-auto px-4 py-24" data-testid="invite-unavailable">
         <div className="mx-auto max-w-md space-y-3 rounded-3xl border bg-white p-8 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">Este convite não está mais disponível</h1>
+          <h1 className="text-xl font-semibold text-ink-strong">Este convite não está mais disponível</h1>
           <p className="text-sm text-muted-foreground">Peça ao prestador um novo link.</p>
         </div>
       </div>
@@ -448,32 +448,32 @@ export default function InvitePublic() {
   if (cpfDiferente) {
     const nome = provider?.name || provider?.user?.name || null;
     return (
-      <div className="min-h-screen bg-stone-50" data-testid="convite-outra-pessoa">
+      <div className="min-h-screen" data-testid="convite-outra-pessoa">
         <div className="container mx-auto px-4 py-24">
           <div className="mx-auto max-w-md rounded-3xl border bg-white shadow-sm">
             <div className="p-8 text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50">
-                <Lock className="h-8 w-8 text-orange-600" />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-tint">
+                <Lock className="h-8 w-8 text-brand-dark" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">Este convite é para outra pessoa</h1>
-              <p className="text-sm leading-relaxed text-slate-600">
+              <h1 className="text-xl font-bold text-ink-strong">Este convite é para outra pessoa</h1>
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {nome ?? "O prestador"} enviou esta proposta para um CPF diferente do que está na sua conta. Nada foi aceito nem assinado.
               </p>
-              <p className="text-sm leading-relaxed text-slate-600">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 Se a proposta é para você, peça {nome ? `a ${nome}` : "ao prestador"} um link novo com o seu CPF.
               </p>
             </div>
-            <div className="border-t border-slate-100 p-6 space-y-3">
+            <div className="border-t border-line p-6 space-y-3">
               <Button
                 onClick={() => navigate("/")}
-                className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+                className="w-full bg-brand hover:bg-brand-dark h-11"
               >
                 Ir para o início
               </Button>
               <Button
                 variant="ghost"
                 onClick={handleEntrarComOutraConta}
-                className="w-full text-slate-600 hover:text-slate-900"
+                className="w-full text-muted-foreground hover:text-ink-strong"
               >
                 Entrar com outra conta
               </Button>
@@ -487,7 +487,7 @@ export default function InvitePublic() {
   // --- Layout principal com barra de progresso ---
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <ConviteProgress currentStep={step} />
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -497,10 +497,10 @@ export default function InvitePublic() {
             {step === 1 && invite.destinatario?.cpf_final && (
               <div
                 data-testid="faixa-convite-pessoal"
-                className="mb-4 flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+                className="mb-4 flex items-start gap-3 rounded-2xl border border-brand-disabled bg-brand-tint px-4 py-3"
               >
-                <Lock className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
-                <span className="text-sm text-orange-900">
+                <Lock className="h-5 w-5 text-brand-dark shrink-0 mt-0.5" />
+                <span className="text-sm text-brand-dark">
                   <strong className="font-semibold">Convite pessoal.</strong>{" "}
                   Destinado ao CPF terminado em{" "}
                   <strong>{formatarCpfFinal(invite.destinatario.cpf_final)}</strong>.{" "}

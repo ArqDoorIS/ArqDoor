@@ -59,18 +59,18 @@ const isNewService = (dateString: string) => {
 export default function ServiceCard({ service, currentUser }: ServiceCardProps) {
   return (
     <Card
-      className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border-white/30 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-orange-100/50 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02]"
+      className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border-white/30 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-soft/50 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02]"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
 
       <CardHeader className="pb-4 relative z-10">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-orange-600 transition-colors duration-300 line-clamp-2 mb-3">
+            <CardTitle className="text-xl font-bold text-ink group-hover:text-brand-dark transition-colors duration-300 line-clamp-2 mb-3">
               {service.title}
             </CardTitle>
             <div className="flex items-center space-x-2">
-              <CardDescription className="text-2xl font-bold text-green-600">
+              <CardDescription className="text-2xl font-bold text-success-dark">
                 {formatPrice(service.price)}
               </CardDescription>
             </div>
@@ -82,18 +82,18 @@ export default function ServiceCard({ service, currentUser }: ServiceCardProps) 
         <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-sm">
           <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
             <AvatarImage src={buildImageUrl((service as any).userPerfil)} alt={service.userName} className="object-cover" />
-            <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-600 text-white">
+            <AvatarFallback className="bg-brand text-white">
               <User className="h-6 w-6" />
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-slate-800 truncate text-lg">{service.userName}</p>
+            <p className="font-semibold text-ink truncate text-lg">{service.userName}</p>
             <div className="flex items-center space-x-1">
-              <Badge className="mt-1 bg-blue-100 text-blue-800 text-xs">
+              <Badge className="mt-1 bg-info-bg text-info-dark text-xs">
                 {service.ServiceProvider.profession || "Não informado"}
               </Badge>
               {currentUser && service.ServiceProvider.user_id === currentUser.id && (
-                <Badge className="mt-1 ml-2 bg-green-100 text-green-800 text-xs">
+                <Badge className="mt-1 ml-2 bg-success-bg text-success-dark text-xs">
                   Seu serviço
                 </Badge>
               )}
@@ -101,7 +101,7 @@ export default function ServiceCard({ service, currentUser }: ServiceCardProps) 
           </div>
         </div>
 
-        <div className="flex items-center text-sm text-slate-500">
+        <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-2" />
           Publicado em {formatDate(service.createdAt)}
         </div>
@@ -112,7 +112,7 @@ export default function ServiceCard({ service, currentUser }: ServiceCardProps) 
           <Button
             size="lg"
             variant="outline"
-            className="bg-white/80 backdrop-blur-sm border-white/30 hover:border-orange-400 hover:bg-orange-50/50 transition-all duration-300 rounded-xl hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-orange-300"
+            className="bg-white/80 backdrop-blur-sm border-white/30 hover:border-brand hover:bg-brand-tint/50 transition-all duration-300 rounded-xl hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-brand-disabled"
           >
             <User className="h-4 w-4 mr-2" />
             Ver Perfil
@@ -121,7 +121,7 @@ export default function ServiceCard({ service, currentUser }: ServiceCardProps) 
         <Link href={`/providers/${service.id_serviceFreelancer}`}>
           <Button
             size="lg"
-            className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-semibold shadow-lg rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1 focus:ring-2 focus:ring-orange-300"
+            className="bg-brand hover:bg-brand-dark text-white font-semibold shadow-lg rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1 focus:ring-2 focus:ring-brand-disabled"
           >
             Ver Detalhes
           </Button>

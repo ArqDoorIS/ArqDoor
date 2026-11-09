@@ -53,16 +53,16 @@ function CobrancaResult({
       : null;
 
     return (
-      <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <div className="space-y-3 rounded-xl border border-line bg-surface-soft p-4">
         {src && (
           <div className="flex flex-col items-center gap-2">
             <img src={src} alt="QR Code PIX" className="w-44 h-44 object-contain rounded-lg" />
-            <span className="text-xs text-slate-500">Escaneie para pagar</span>
+            <span className="text-xs text-muted-foreground">Escaneie para pagar</span>
           </div>
         )}
         <div>
           <p className="text-sm font-medium mb-1">Código copia e cola</p>
-          <div className="rounded-lg bg-white border border-slate-200 p-2 text-xs text-slate-700 break-all font-mono">
+          <div className="rounded-lg bg-white border border-line p-2 text-xs text-ink break-all font-mono">
             {pixData?.copy_and_paste || "Indisponível"}
           </div>
           <Button
@@ -77,7 +77,7 @@ function CobrancaResult({
           </Button>
         </div>
         {pixData?.expires_at && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Expira em {new Date(pixData.expires_at).toLocaleString("pt-BR")}
           </p>
         )}
@@ -88,14 +88,14 @@ function CobrancaResult({
   if (method === "CREDIT_CARD") {
     if (cobrancaRecusada(data)) return null;
     return (
-      <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-4">
+      <div className="space-y-2 rounded-xl border border-success/30 bg-success-bg p-4">
         {data?.credit_card_installment && (
-          <p className="text-sm font-medium text-green-800">
+          <p className="text-sm font-medium text-success-dark">
             {data.credit_card_installment.installment_count}x de{" "}
             {formatPrice(data.credit_card_installment.installment_value)}
           </p>
         )}
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-ink">
           Cobrança no cartão registrada. O resultado aparece assim que a operadora responder.
         </p>
       </div>
@@ -226,22 +226,22 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
   return (
     <div className="space-y-5" data-testid="step-pagamento">
       <div>
-        <h2 className="text-xl font-bold text-slate-900">Pagamento</h2>
+        <h2 className="text-xl font-bold text-ink-strong">Pagamento</h2>
         {pagamento.motivo && (
-          <p className="text-sm text-slate-600 mt-0.5">{pagamento.motivo}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{pagamento.motivo}</p>
         )}
       </div>
 
       {/* Detalhe do que vai ser pago */}
-      <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-1">
-        <p className="text-sm font-semibold text-orange-800">
+      <div className="rounded-xl border border-brand-disabled bg-brand-tint p-4 space-y-1">
+        <p className="text-sm font-semibold text-brand-dark">
           {devido.nome || (devido.tipo === "deposito" ? "Depósito em garantia" : "Grupo")}
         </p>
-        <p className="text-2xl font-bold text-slate-900">{formatPrice(devido.valor)}</p>
+        <p className="text-2xl font-bold text-ink-strong">{formatPrice(devido.valor)}</p>
         {devido.etapas && devido.etapas.length > 0 && (
           <div className="pt-1 space-y-0.5">
             {devido.etapas.map((etapa) => (
-              <div key={etapa.id} className="flex justify-between gap-2 text-xs text-slate-600">
+              <div key={etapa.id} className="flex justify-between gap-2 text-xs text-muted-foreground">
                 <span>{etapa.title}</span>
                 <span>{formatPrice(etapa.price)}</span>
               </div>
@@ -252,7 +252,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
 
       {/* Metodo de pagamento */}
       <div className="space-y-3">
-        <p className="text-sm font-medium text-slate-700">Forma de pagamento</p>
+        <p className="text-sm font-medium text-ink">Forma de pagamento</p>
         <RadioGroup
           value={method}
           onValueChange={(v) => setMethod(v as PaymentMethod)}
@@ -264,15 +264,15 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
               <label
                 key={opt.value}
                 htmlFor={`pay-${opt.value}`}
-                className="flex items-start gap-3 rounded-xl border border-slate-200 p-3 cursor-pointer hover:border-orange-300 transition-colors has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50"
+                className="flex items-start gap-3 rounded-xl border border-line p-3 cursor-pointer hover:border-brand-disabled transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand-tint"
               >
                 <RadioGroupItem value={opt.value} id={`pay-${opt.value}`} className="mt-0.5" />
                 <div>
-                  <div className="flex items-center gap-1.5 font-medium text-sm text-slate-800">
-                    <Icon className="h-4 w-4 text-orange-600" />
+                  <div className="flex items-center gap-1.5 font-medium text-sm text-ink">
+                    <Icon className="h-4 w-4 text-brand-dark" />
                     {opt.title}
                   </div>
-                  <p className="text-xs text-slate-500">{opt.description}</p>
+                  <p className="text-xs text-muted-foreground">{opt.description}</p>
                 </div>
               </label>
             );
@@ -289,8 +289,8 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
 
       {/* Aviso quando cartao nao disponivel */}
       {isCreditCard && !podeTokenizar && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 space-y-2">
-          <p className="text-xs text-red-700">
+        <div className="rounded-xl border border-danger/30 bg-danger-bg px-4 py-3 space-y-2">
+          <p className="text-xs text-danger-dark">
             O pagamento com cartão não está disponível nesta versão. Use PIX para continuar agora.
           </p>
           <Button
@@ -298,7 +298,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
             variant="outline"
             size="sm"
             onClick={() => setMethod("PIX")}
-            className="border-red-200 text-red-700 hover:bg-red-100"
+            className="border-danger/30 text-danger-dark hover:bg-danger-bg"
           >
             Pagar com PIX
           </Button>
@@ -307,7 +307,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
 
       {/* CardForm quando cartao disponivel e parcela escolhida */}
       {isCreditCard && podeTokenizar && !cobrancaDeCartaoEmPe && installmentOption != null && (
-        <div className="rounded-xl border border-slate-200 p-4">
+        <div className="rounded-xl border border-line p-4">
           <CardForm
             total={installmentOption?.total_amount ?? devido.valor}
             enviando={loading}
@@ -328,7 +328,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
           type="button"
           onClick={() => gerarCobranca()}
           disabled={loading}
-          className="bg-orange-600 hover:bg-orange-700 gap-2"
+          className="bg-brand hover:bg-brand-dark gap-2"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <QrCode className="h-4 w-4" />}
           Gerar cobrança
@@ -341,7 +341,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
           type="button"
           onClick={verificarPagamento}
           disabled={verificando}
-          className="w-full bg-orange-600 hover:bg-orange-700 h-11 gap-2"
+          className="w-full bg-brand hover:bg-brand-dark h-11 gap-2"
           data-testid="ja-paguei"
         >
           {verificando ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
@@ -353,7 +353,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
         type="button"
         variant="ghost"
         onClick={onSkip}
-        className="text-slate-500 hover:text-slate-700 text-sm"
+        className="text-muted-foreground hover:text-ink text-sm"
       >
         Pagar depois
       </Button>

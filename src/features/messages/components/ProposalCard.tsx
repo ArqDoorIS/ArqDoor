@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { statusTone } from '@/lib/statusTone';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Eye, FileText, Shield, CheckCircle, XCircle } from 'lucide-react';
 import { formatTotalDurationFromDays } from '@/lib/utils';
@@ -33,34 +34,34 @@ const calculateProposalTotal = (steps: any[]) =>
 const STATUS_CONFIG = {
   pendente: {
     label: 'Pendente',
-    badgeClass: 'bg-orange-100 text-orange-800 border-orange-300',
-    bg: 'bg-orange-50',
-    border: 'border-orange-200',
-    color: 'text-orange-700',
+    badgeClass: statusTone.aviso.selo,
+    bg: 'bg-warning-bg',
+    border: 'border-warning/30',
+    color: 'text-warning-text',
     icon: Clock,
   },
   'em andamento': {
     label: 'Em Andamento',
-    badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    color: 'text-blue-700',
+    badgeClass: statusTone.andamento.selo,
+    bg: 'bg-info-bg',
+    border: 'border-info/30',
+    color: 'text-info-dark',
     icon: Clock,
   },
   concluída: {
     label: 'Concluída',
-    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    color: 'text-emerald-700',
+    badgeClass: statusTone.sucesso.selo,
+    bg: 'bg-success-bg',
+    border: 'border-success/30',
+    color: 'text-success-dark',
     icon: CheckCircle,
   },
   cancelada: {
     label: 'Cancelada',
-    badgeClass: 'bg-red-100 text-red-800 border-red-300',
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    color: 'text-red-700',
+    badgeClass: statusTone.erro.selo,
+    bg: 'bg-danger-bg',
+    border: 'border-danger/30',
+    color: 'text-danger-dark',
     icon: XCircle,
   },
 } as const;
@@ -81,21 +82,21 @@ const PAYMENT_STATUS_CONFIG: Record<
 > = {
   awaiting_steps: {
     label: "Aguardando pagamento",
-    containerClass: "border-sky-200 bg-sky-50",
-    labelClass: "text-sky-800",
-    dotClass: "bg-sky-500",
+    containerClass: "border-info/30 bg-info-bg",
+    labelClass: "text-info-dark",
+    dotClass: "bg-info",
   },
   partial_steps: {
     label: "Pagamento parcial",
-    containerClass: "border-indigo-200 bg-indigo-50",
-    labelClass: "text-indigo-800",
-    dotClass: "bg-indigo-500",
+    containerClass: "border-category/30 bg-category-bg",
+    labelClass: "text-category-dark",
+    dotClass: "bg-category",
   },
   steps_paid: {
     label: "Pagamento finalizado",
-    containerClass: "border-emerald-200 bg-emerald-50",
-    labelClass: "text-emerald-800",
-    dotClass: "bg-emerald-500",
+    containerClass: "border-success/30 bg-success-bg",
+    labelClass: "text-success-dark",
+    dotClass: "bg-success",
   },
 };
 
@@ -181,14 +182,14 @@ export function ProposalCard({
     <div
       data-ticket-id={ticket.id}
       data-testid="proposal-card"
-      className={`flex flex-col justify-between p-3 shadow-sm border transition-all duration-200 hover:shadow-md ${cfg.bg} ${cfg.border}${highlighted ? ' ring-2 ring-orange-400 ring-offset-1' : ''}`}
+      className={`flex flex-col justify-between p-3 shadow-sm border transition-all duration-200 hover:shadow-md ${cfg.bg} ${cfg.border}${highlighted ? ' ring-2 ring-brand ring-offset-1' : ''}`}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="p-1 rounded-lg bg-white shadow-sm">
             <cfg.icon className={`h-5 w-5 ${cfg.color}`} />
           </div>
-          <h3 className="font-semibold text-gray-900">Proposta #{ticket.id}</h3>
+          <h3 className="font-semibold text-ink-strong">Proposta #{ticket.id}</h3>
         </div>
         <div className="flex shrink-0 items-start">
           <Badge className={cfg.badgeClass}>{cfg.label}</Badge>
@@ -198,7 +199,7 @@ export function ProposalCard({
       <div className="space-y-2">
         {paymentCfg && (
           <div className={`rounded-xl border px-3 py-2 ${paymentCfg.containerClass}`}>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Pagamento
             </div>
             <div className={`mt-1 flex items-center gap-2 ${paymentCfg.labelClass}`}>
@@ -219,28 +220,28 @@ export function ProposalCard({
           <div className={`mt-1 text-sm font-semibold ${workflowToneClasses.title}`}>
             {workflowSummary.title}
           </div>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {workflowSummary.description}
           </p>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">{steps.length} etapas</span>
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-sm font-medium text-ink">{steps.length} etapas</span>
+          <span className="text-lg font-bold text-ink-strong">
             {formatCurrency(total)}
           </span>
         </div>
 
         {formattedDuration && (
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-muted-foreground">
             <Clock className="h-4 w-4 mr-1.5 opacity-70" />
             Duração total: {formattedDuration}
           </div>
         )}
-        <div className="text-xs text-gray-600">
+        <div className="text-xs text-muted-foreground">
           Cobrança: <span className="font-medium">Em garantia por grupos</span>
         </div>
-        <div className="text-xs text-gray-600">
+        <div className="text-xs text-muted-foreground">
           Recebimento: <span className="font-medium">{receivingMethodLabel}</span>
         </div>
 
@@ -266,7 +267,7 @@ export function ProposalCard({
               <Button
                 size="sm"
                 onClick={() => onStartSignature(ticket)}
-                className="bg-purple-600 hover:bg-purple-700 text-white flex-1 min-w-[160px]"
+                className="flex-1 min-w-[160px]"
               >
                 <Shield className="h-4 w-4 mr-2" /> Eu assino e confirmo os termos
               </Button>

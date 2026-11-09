@@ -47,7 +47,7 @@ export function RatingsModal({
           <div className="space-y-4">
             <div>
               <p className="text-3xl font-bold">{data.average.toFixed(1)}</p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 {data.count} avaliação{data.count !== 1 ? "es" : ""}
               </p>
             </div>
@@ -57,22 +57,22 @@ export function RatingsModal({
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-medium">{rating.user?.name || "Cliente"}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         {new Date(rating.createdAt).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 text-amber-600 font-semibold">
+                    <div className="flex items-center gap-1 text-warning-text font-semibold">
                       <Star className="w-4 h-4" />
                       {rating.grade}
                     </div>
                   </div>
-                  {rating.comment && <p className="text-sm text-slate-700">{rating.comment}</p>}
+                  {rating.comment && <p className="text-sm text-ink">{rating.comment}</p>}
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-500">Ainda não há avaliações registradas.</p>
+          <p className="text-sm text-muted-foreground">Ainda não há avaliações registradas.</p>
         )}
       </DialogContent>
     </Dialog>

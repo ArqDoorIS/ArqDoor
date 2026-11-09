@@ -70,7 +70,7 @@ function PasswordInput({
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground p-1"
         aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
         tabIndex={-1}
       >
@@ -102,7 +102,7 @@ function FormLogin({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-1.5">
         <Label htmlFor="login-email">E-mail</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="login-email"
             type="email"
@@ -118,7 +118,7 @@ function FormLogin({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-1.5">
         <Label htmlFor="login-password">Senha</Label>
         <div className="relative pl-0">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
           <div className="pl-9">
             {/* O icone de olho fica dentro do PasswordInput via pr-10 */}
           </div>
@@ -134,7 +134,7 @@ function FormLogin({ onSuccess }: { onSuccess: () => void }) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+        className="w-full bg-brand hover:bg-brand-dark h-11"
       >
         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Entrar
@@ -220,7 +220,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-1.5">
         <Label htmlFor="cad-nome">Nome completo</Label>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="cad-nome"
             value={nome}
@@ -235,7 +235,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-1.5">
         <Label htmlFor="cad-email">E-mail</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="cad-email"
             type="email"
@@ -250,10 +250,10 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="cad-cpf">
-          CPF <span className="text-orange-600">*</span>
+          CPF <span className="text-brand-dark">*</span>
         </Label>
         <div className="relative">
-          <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="cad-cpf"
             value={cpf}
@@ -265,12 +265,12 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
             className="pl-9"
           />
         </div>
-        <p className="text-xs text-slate-400">Necessário para assinar o contrato.</p>
+        <p className="text-xs text-muted-foreground">Necessário para assinar o contrato.</p>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="cad-nascimento">Data de nascimento</Label>
         <div className="relative">
-          <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="cad-nascimento"
             type="date"
@@ -307,13 +307,13 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
           checked={termos}
           onCheckedChange={(v) => setTermos(v === true)}
         />
-        <Label htmlFor="cad-termos" className="text-xs leading-relaxed text-slate-600 cursor-pointer">
+        <Label htmlFor="cad-termos" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
           Li e aceito os{" "}
-          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-orange-600">
+          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">
             Termos de uso
           </a>{" "}
           e a{" "}
-          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-orange-600">
+          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">
             Política de privacidade
           </a>
           .
@@ -322,7 +322,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+        className="w-full bg-brand hover:bg-brand-dark h-11"
       >
         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Criar conta e continuar
@@ -363,13 +363,13 @@ function FormCpf({ user, onSuccess }: { user: UserType; onSuccess: () => void })
 
   return (
     <form onSubmit={handleSave} className="space-y-4">
-      <p className="text-sm text-slate-700">
+      <p className="text-sm text-ink">
         Sua conta não tem CPF cadastrado. Você precisa informar o CPF para assinar o contrato.
       </p>
       <div className="space-y-1.5">
         <Label htmlFor="cpf-field">CPF</Label>
         <div className="relative">
-          <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="cpf-field"
             value={cpf}
@@ -384,7 +384,7 @@ function FormCpf({ user, onSuccess }: { user: UserType; onSuccess: () => void })
       <Button
         type="submit"
         disabled={saving}
-        className="w-full bg-orange-600 hover:bg-orange-700 h-11"
+        className="w-full bg-brand hover:bg-brand-dark h-11"
       >
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Salvar e continuar
@@ -408,8 +408,8 @@ export function StepConta({ user, onSuccess }: Props) {
     return (
       <div className="space-y-5" data-testid="step-conta">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Confirmar CPF</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h2 className="text-xl font-bold text-ink-strong">Confirmar CPF</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
             Para assinar você precisa ter CPF cadastrado.
           </p>
         </div>
@@ -448,8 +448,8 @@ export function StepConta({ user, onSuccess }: Props) {
   return (
     <div className="space-y-5" data-testid="step-conta">
       <div>
-        <h2 className="text-xl font-bold text-slate-900">Entre para assinar</h2>
-        <p className="text-sm text-slate-500 mt-0.5">
+        <h2 className="text-xl font-bold text-ink-strong">Entre para assinar</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">
           Faca login ou crie sua conta para assinar o contrato.
         </p>
       </div>
@@ -474,9 +474,9 @@ export function StepConta({ user, onSuccess }: Props) {
           )}
 
           <div className="relative flex items-center gap-3 py-1">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-xs text-slate-400 uppercase tracking-wider">ou</span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-surface-cream" />
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">ou</span>
+            <div className="flex-1 h-px bg-surface-cream" />
           </div>
 
           <Button
@@ -487,7 +487,7 @@ export function StepConta({ user, onSuccess }: Props) {
             Entrar com e-mail e senha
           </Button>
           <Button
-            className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-sm font-medium"
+            className="w-full h-12 bg-brand hover:bg-brand-dark text-sm font-medium"
             onClick={() => setMode("cadastro")}
           >
             Criar uma conta nova
@@ -500,18 +500,18 @@ export function StepConta({ user, onSuccess }: Props) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-slate-500 -ml-1"
+            className="text-muted-foreground -ml-1"
             onClick={() => setMode("opcoes")}
           >
             Voltar
           </Button>
           <FormLogin onSuccess={onSuccess} />
-          <p className="text-sm text-center text-slate-500">
+          <p className="text-sm text-center text-muted-foreground">
             Não tem conta?{" "}
             <button
               type="button"
               onClick={() => setMode("cadastro")}
-              className="text-orange-600 font-medium hover:underline"
+              className="text-brand-dark font-medium hover:underline"
             >
               Criar uma
             </button>
@@ -524,7 +524,7 @@ export function StepConta({ user, onSuccess }: Props) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-slate-500 -ml-1"
+            className="text-muted-foreground -ml-1"
             onClick={() => setMode("opcoes")}
           >
             Voltar
@@ -545,19 +545,19 @@ export function StepConta({ user, onSuccess }: Props) {
                 Cadastrar com Google
               </Button>
               <div className="relative flex items-center gap-3 py-1">
-                <div className="flex-1 h-px bg-slate-200" />
-                <span className="text-xs text-slate-400 uppercase tracking-wider">ou</span>
-                <div className="flex-1 h-px bg-slate-200" />
+                <div className="flex-1 h-px bg-surface-cream" />
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">ou</span>
+                <div className="flex-1 h-px bg-surface-cream" />
               </div>
             </>
           )}
           <FormCadastro onSuccess={onSuccess} />
-          <p className="text-sm text-center text-slate-500">
+          <p className="text-sm text-center text-muted-foreground">
             Já tem conta?{" "}
             <button
               type="button"
               onClick={() => setMode("login")}
-              className="text-orange-600 font-medium hover:underline"
+              className="text-brand-dark font-medium hover:underline"
             >
               Entrar
             </button>
