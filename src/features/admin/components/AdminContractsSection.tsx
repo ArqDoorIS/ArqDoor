@@ -30,6 +30,10 @@ type StepRow = {
   is_financially_cleared: boolean;
   is_signature_step: boolean;
   fee_amount?: number | string | null;
+  /** quando o prestador declarou a entrega */
+  confirm_freelancerAt?: string | null;
+  /** aprovada sozinha depois de 3 dias sem resposta do cliente */
+  auto_approved_at?: string | null;
   paymentGroup?: { id: number; name: string; sequence: number } | null;
 };
 
@@ -106,6 +110,12 @@ function ContractStepsPanel({ ticketId }: { ticketId: number }) {
                       {step.start_date ? (
                         <span>{formatDate(step.start_date)} → {formatDate(step.end_date)}</span>
                       ) : null}
+                      {step.confirm_freelancerAt ? (
+                        <span>Entregue {formatDateTime(step.confirm_freelancerAt)}</span>
+                      ) : null}
+                      {step.auto_approved_at ? (
+                        <span>Aprovada sozinha {formatDateTime(step.auto_approved_at)} (cliente não respondeu em 3 dias)</span>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
@@ -116,6 +126,9 @@ function ContractStepsPanel({ ticketId }: { ticketId: number }) {
                       <StatusBadge label={step.status} tone={stepStatusTone(step.status)} />
                       {step.is_financially_cleared ? (
                         <StatusBadge label="Pago" tone="emerald" />
+                      ) : null}
+                      {step.auto_approved_at ? (
+                        <StatusBadge label="Aprovada automaticamente" tone="amber" />
                       ) : null}
                     </div>
                   </div>

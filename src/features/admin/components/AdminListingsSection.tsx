@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ADMIN_TOKENS } from "../tokens";
 import { cn, formatCurrency, formatDateTime, getFileUrl } from "../utils";
 import { EmptyState, PaginationControls, SectionCard, StatusBadge } from "./AdminPrimitives";
+import { AdminDemandOffersPanel } from "./AdminDemandOffersPanel";
 
 /**
  * Publicacoes da plataforma: demandas que clientes postaram e ofertas de servico que
@@ -28,6 +29,10 @@ type ListingRow = {
   images?: string[];
   invites_count?: number;
   profession?: string | null;
+  /** só pedidos: versão atual, pontos importantes e a faixa de preço privada do cliente */
+  versao?: number | null;
+  pontos_importantes?: string[] | null;
+  faixa_preco?: { ideal_ate?: number | null; negociavel_ate?: number | null } | null;
   author: {
     user_id: number;
     name: string;
@@ -299,6 +304,9 @@ export function AdminListingsSection() {
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-semibold text-slate-900">{row.title}</p>
                         <span className="text-xs text-slate-400">#{row.id}</span>
+                        {row.type === "demand" && row.versao && row.versao > 1 ? (
+                          <span className="text-xs text-slate-400">versão {row.versao}</span>
+                        ) : null}
                         {row.admin_hidden ? <StatusBadge label="Oculta" tone="amber" /> : null}
                         {row.type === "demand" && row.status ? (
                           <StatusBadge label={row.status} tone={demandStatusTone(row.status)} />
@@ -330,6 +338,20 @@ export function AdminListingsSection() {
                           </span>
                         ) : null}
                       </div>
+                      {row.type === "demand" && row.pontos_importantes?.length ? (
+                        <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-slate-600">
+                          {row.pontos_importantes.map((ponto, idx) => (
+                            <li key={idx}>{ponto}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                      {row.type === "demand" && (row.faixa_preco?.ideal_ate || row.faixa_preco?.negociavel_ate) ? (
+                        <p className="mt-2 text-xs text-slate-600">
+                          <span className="font-semibold text-slate-800">Faixa de preço (privada):</span>{" "}
+                          ideal até {row.faixa_preco?.ideal_ate ? formatCurrency(row.faixa_preco.ideal_ate) : "—"} · negocia até{" "}
+                          {row.faixa_preco?.negociavel_ate ? formatCurrency(row.faixa_preco.negociavel_ate) : "—"}
+                        </p>
+                      ) : null}
                       {row.admin_hidden ? (
                         <p className="mt-2 text-xs text-amber-800">
                           Oculta {formatDateTime(row.admin_hidden_at)}
@@ -369,6 +391,7 @@ export function AdminListingsSection() {
                       </button>
                     </div>
                   </div>
+                  {row.type === "demand" ? <AdminDemandOffersPanel demandId={row.id} versaoAtual={row.versao} /> : null}
                 </li>
               );
             })}

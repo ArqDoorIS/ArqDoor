@@ -62,6 +62,18 @@ describe("publicações no admin", () => {
     expect(apiRequestMock.mock.calls[0][1]).toMatch(/^\/admin\/listings\?type=demands/);
   });
 
+  it("pedido mostra pontos, faixa de preço privada e o painel de ofertas", async () => {
+    apiRequestMock.mockResolvedValue(
+      lista([demanda({ versao: 3, pontos_importantes: ["Piso porcelanato"], faixa_preco: { ideal_ate: 4000, negociavel_ate: 5500 } })])
+    );
+    render(<AdminListingsSection />);
+
+    expect(await screen.findByText("Piso porcelanato")).toBeInTheDocument();
+    expect(screen.getByText(/faixa de preço \(privada\)/i)).toBeInTheDocument();
+    expect(screen.getByText("versão 3")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ofertas e % de compatibilidade/i })).toBeInTheDocument();
+  });
+
   it("troca para ofertas de profissionais", async () => {
     apiRequestMock.mockResolvedValue(lista([]));
     render(<AdminListingsSection />);
