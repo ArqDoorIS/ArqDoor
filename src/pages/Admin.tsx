@@ -9,7 +9,7 @@ import { AdminDocumentsSection } from "@/features/admin/components/AdminDocument
 import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
 import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
-import { AdminAiSection } from "@/features/admin/components/AdminAiSection";
+import { AdminIaPainel } from "@/features/admin/components/AdminIaPainel";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
@@ -164,7 +164,7 @@ export default function Admin() {
       case "taxas":
         return <AdminFeesSection />;
       case "ia":
-        return <AdminAiSection />;
+        return <AdminIaPainel />;
       case "indicacoes":
         return <AdminReferralsSection />;
       case "publicacoes":
