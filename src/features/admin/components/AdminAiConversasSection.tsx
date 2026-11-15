@@ -46,6 +46,7 @@ const ler = async (res: Response) => {
   return body;
 };
 const quando = (iso?: string) => (iso ? new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "");
+const turnos = (n: number) => `${n} ${n === 1 ? "turno" : "turnos"}`;
 const quem = (p: Pessoa, publica: boolean) => (publica ? "Sem conta (teste)" : p?.nome ? `${p.nome}${p.email ? ` · ${p.email}` : ""}` : `Usuário ${p?.id ?? "?"}`);
 
 function DetalheDaConversa({ id, aoVoltar }: { id: number; aoVoltar: () => void }) {
@@ -57,17 +58,22 @@ function DetalheDaConversa({ id, aoVoltar }: { id: number; aoVoltar: () => void 
   return (
     <SectionCard
       title={c ? `${TIPOS[c.tipo] ?? c.tipo} · ${quem(c.pessoa, c.publica)}` : "Conversa"}
-      subtitle={c ? `Entrou por: ${ORIGENS[c.origem] ?? c.origem} · ${c.turnos} turnos · última ${quando(c.ultima_em)}` : undefined}
+      subtitle={c ? `Entrou por: ${ORIGENS[c.origem] ?? c.origem} · ${turnos(c.turnos)} · última ${quando(c.ultima_em)}` : undefined}
       action={<button type="button" onClick={aoVoltar} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-slate-900"><ChevronLeft className="h-4 w-4" /> Voltar</button>}
     >
       {erro ? <p className="text-sm text-red-700">{erro}</p> : !c ? <Loader2 className="h-4 w-4 animate-spin text-slate-400" /> : (
         <div className="space-y-2">
-          {c.mensagens.map((m, i) => (
-            <div key={i} className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${m.de === "eu" ? "ml-auto bg-slate-900 text-white" : "bg-orange-50 text-slate-800"}`}>
-              <div className="mb-0.5 text-[10px] opacity-70">{m.de === "eu" ? "Usuário" : "IA"} · {quando(m.em)}</div>
-              {m.texto}
-            </div>
-          ))}
+          {c.mensagens.map((m, i) => {
+            // o backend grava a falha da IA como "(erro) motivo" (middlewares/registrarConversaDaIA.js)
+            const falhou = m.de === "ia" && m.texto.startsWith("(erro)");
+            const cores = m.de === "eu" ? "ml-auto bg-slate-900 text-white" : falhou ? "border border-red-200 bg-red-50 text-red-800" : "bg-orange-50 text-slate-800";
+            return (
+              <div key={i} className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${cores}`}>
+                <div className="mb-0.5 text-[10px] opacity-70">{m.de === "eu" ? "Usuário" : falhou ? "IA · falhou" : "IA"} · {quando(m.em)}</div>
+                {falhou ? m.texto.replace(/^\(erro\)\s*/, "") : m.texto}
+              </div>
+            );
+          })}
           {c.resultado ? (
             <details className="rounded-lg border border-slate-200 p-2 text-xs">
               <summary className="cursor-pointer font-semibold text-slate-700">O que a IA montou (último retrato)</summary>
@@ -132,7 +138,7 @@ export function AdminAiConversasSection({ soComErro = false }: { soComErro?: boo
                 </div>
                 <div className="shrink-0 text-right text-xs text-slate-500">
                   <div>{quando(l.ultima_em)}</div>
-                  <div>{l.turnos} turnos</div>
+                  <div>{turnos(l.turnos)}</div>
                   {l.erros ? <StatusBadge label={`${l.erros} erro(s)`} tone="amber" /> : null}
                 </div>
               </button>
