@@ -26,6 +26,7 @@ import { useAdminSession } from "@/features/admin/hooks/useAdminSession";
 import type { AdminTab } from "@/features/admin/types";
 import { cn, formatRelativeTime, openSecureFile } from "@/features/admin/utils";
 import { ADMIN_TOKENS } from "@/features/admin/tokens";
+import { FaixaDoAmbiente, SeletorDeAmbiente } from "@/features/admin/components/AmbienteDoPainel";
 
 export default function Admin() {
   useAdminPageMeta();
@@ -205,7 +206,9 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="sticky top-0 z-40">
+      <FaixaDoAmbiente />
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-[1600px] items-center gap-3 px-4 sm:px-6">
           <button
             type="button"
@@ -226,6 +229,8 @@ export default function Admin() {
               </h1>
             </div>
           </div>
+
+          <SeletorDeAmbiente compacto />
 
           <div className="hidden text-right text-xs text-slate-500 xl:block">
             <p>Atualização automática a cada minuto</p>
@@ -270,6 +275,7 @@ export default function Admin() {
           </Button>
         </div>
       </header>
+      </div>
 
       <div className="mx-auto flex max-w-[1600px]">
         <aside

@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { servidorDoSite } from "@/lib/ambienteDoPainel";
 
 const getCookieValue = (name: string) => {
   if (typeof document === "undefined") return null;
@@ -12,13 +13,17 @@ const getStoredCsrfToken = () => {
   return sessionStorage.getItem("csrf_token");
 };
 
-const getBaseUrl = () => {
+const getBuildBaseUrl = () => {
   const v1 = import.meta.env.VITE_API_URL;
   const v2 = import.meta.env.VITE_API_BASE_URL;
   if (v1 && v1 !== "undefined") return v1;
   if (v2 && v2 !== "undefined") return v2;
   return "https://api.arqdoor.com";
 };
+/** O servidor da compilação; no painel admin, o do ambiente escolhido (lib/ambienteDoPainel.ts). */
+const getBaseUrl = () => servidorDoSite(getBuildBaseUrl());
+/** O servidor para o qual o site foi compilado (o painel mostra o ambiente a partir dele). */
+export const BUILD_API_BASE_URL = getBuildBaseUrl();
 export const API_BASE_URL = getBaseUrl();
 
 export async function apiRequest(

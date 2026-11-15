@@ -15,6 +15,7 @@ import type { FormEvent } from "react";
 import { AlertTriangle, ArrowLeft, Lock, Mail, ShieldCheck } from "lucide-react";
 
 import type { DesafioDeDispositivo } from "../hooks/useAdminSession";
+import { FaixaDoAmbiente, SeletorDeAmbiente } from "./AmbienteDoPainel";
 
 type AdminLoginViewProps = {
   email: string;
@@ -50,12 +51,17 @@ export function AdminLoginView({
 }: AdminLoginViewProps) {
   return (
     <div className="min-h-screen bg-slate-100">
+      <FaixaDoAmbiente />
       <div className="mx-auto flex min-h-screen max-w-3xl items-center px-6 py-10">
         <div className="w-full rounded-3xl border border-slate-200 bg-white p-6">
           <div className="mb-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              ArqDoor Admin
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                ArqDoor Admin
+              </div>
+              {/* cada ambiente tem o seu login: escolha antes de entrar */}
+              {desafio ? null : <SeletorDeAmbiente />}
             </div>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">
               {desafio ? "Confirme que é você" : "Painel interno da operação"}
