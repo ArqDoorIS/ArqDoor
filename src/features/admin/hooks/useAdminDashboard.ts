@@ -418,6 +418,7 @@ export function useAdminDashboard({
       activeTab === "publicacoes" ||
       activeTab === "verificacao" ||
       activeTab === "erros" ||
+      activeTab === "app" ||
       activeTab === "equipe" ||
       activeTab === "ia"
         ? "all"
