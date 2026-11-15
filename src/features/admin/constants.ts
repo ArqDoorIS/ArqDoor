@@ -31,14 +31,15 @@ export const TABS: AdminTabConfig[] = [
   { key: "taxas", label: "Taxas", icon: Percent, papeis: ["owner"] },
   // Chave da API da IA do assistente de orcamentos do app. So owner: e um segredo.
   { key: "ia", label: "IA", icon: Bot, papeis: ["owner"] },
-  // erros do app e da API, sozinhos, com log e contexto para investigar e reproduzir
-  { key: "erros", label: "Erros", icon: Bug, papeis: ["owner"] },
   { key: "indicacoes", label: "Indicações", icon: Gift, papeis: ["owner"] },
   // Demandas que clientes postaram e ofertas que prestadores anunciaram. Daqui o owner
   // oculta (reversivel) ou apaga (definitivo) uma publicacao.
   { key: "publicacoes", label: "Publicações", icon: Megaphone, papeis: ["owner"] },
   { key: "conversas", label: "Conversas", icon: MessageSquareText, papeis: ["owner"] },
   { key: "auditoria", label: "Auditoria", icon: ScrollText, papeis: ["owner"] },
+  // Espaço só dos erros: os do app e da API (sozinhos, com log e contexto para investigar e
+  // reproduzir) e as conversas com a IA que deram erro
+  { key: "erros", label: "Auditoria de erros", icon: Bug, papeis: ["owner"] },
   // Gestao do proprio time administrativo. So owner, porque e onde se concede e
   // revoga acesso ao painel.
   { key: "equipe", label: "Equipe", icon: UserCog, papeis: ["owner"] },

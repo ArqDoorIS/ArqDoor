@@ -80,7 +80,7 @@ function DetalheDaConversa({ id, aoVoltar }: { id: number; aoVoltar: () => void 
   );
 }
 
-export function AdminAiConversasSection() {
+export function AdminAiConversasSection({ soComErro = false }: { soComErro?: boolean } = {}) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [total, setTotal] = useState(0);
   const [origens, setOrigens] = useState<string[]>([]);
@@ -92,19 +92,19 @@ export function AdminAiConversasSection() {
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    const q = new URLSearchParams({ pagina: String(pagina), ...(tipo ? { tipo } : {}), ...(origem ? { origem } : {}), ...(busca.trim() ? { busca: busca.trim() } : {}) });
+    const q = new URLSearchParams({ pagina: String(pagina), ...(soComErro ? { com_erro: "1" } : {}), ...(tipo ? { tipo } : {}), ...(origem ? { origem } : {}), ...(busca.trim() ? { busca: busca.trim() } : {}) });
     setLinhas(null);
     apiRequest("GET", `/admin/ai-conversas?${q}`).then(ler)
       .then((b) => { setLinhas(b.conversas ?? []); setTotal(b.total ?? 0); setOrigens(b.origens ?? []); })
       .catch((e) => setErro(e.message));
-  }, [tipo, origem, busca, pagina]);
+  }, [tipo, origem, busca, pagina, soComErro]);
 
   if (aberta != null) return <div className="mt-2"><DetalheDaConversa id={aberta} aoVoltar={() => setAberta(null)} /></div>;
 
   const campo = "h-10 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-orange-500";
   return (
     <div className="mt-2 space-y-2">
-      <SectionCard title="Conversas com a IA" subtitle={`${total} conversas. Cada uma mostra quem usou, qual IA e por qual botão entrou.`}>
+      <SectionCard title={soComErro ? "Conversas com a IA que deram erro" : "Conversas com a IA"} subtitle={soComErro ? `${total} conversas em que a IA falhou ao responder (sem chave, fora do ar, resposta fora do formato…).` : `${total} conversas. Cada uma mostra quem usou, qual IA e por qual botão entrou.`}>
         <div className="mb-3 flex flex-wrap gap-2">
           <select value={tipo} onChange={(e) => { setTipo(e.target.value); setPagina(1); }} className={campo}>
             <option value="">Todas as IAs</option>

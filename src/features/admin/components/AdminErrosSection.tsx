@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, Loader2, Save, Search } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { SectionCard, StatusBadge } from "./AdminPrimitives";
+import { AdminAiConversasSection } from "./AdminAiConversasSection";
 
 /**
  * Aba "Erros" (15/11/2026): o que deu errado na plataforma, sozinho. O app manda os erros
@@ -131,7 +132,7 @@ function DetalheDoErro({ id, aoVoltar }: { id: number; aoVoltar: () => void }) {
   );
 }
 
-export function AdminErrosSection() {
+function ErrosDoAppEDaApi() {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [total, setTotal] = useState(0);
   const [novos, setNovos] = useState(0);
@@ -195,6 +196,24 @@ export function AdminErrosSection() {
           <button type="button" disabled={(linhas?.length ?? 0) < 30} onClick={() => setPagina(pagina + 1)} className="rounded-lg border border-slate-200 px-3 py-1 disabled:opacity-50">Próxima</button>
         </div>
       </SectionCard>
+    </div>
+  );
+}
+
+/** Aba "Auditoria de erros": os erros do app e da API e as conversas com a IA que deram erro. */
+export function AdminErrosSection() {
+  const [parte, setParte] = useState<"plataforma" | "ia">("plataforma");
+  const abas: [typeof parte, string][] = [["plataforma", "App e API"], ["ia", "IA com erro"]];
+  return (
+    <div>
+      <div className="mt-2 inline-flex rounded-xl border border-slate-200 bg-white p-1">
+        {abas.map(([k, n]) => (
+          <button key={k} type="button" onClick={() => setParte(k)} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${parte === k ? "bg-orange-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}>
+            {n}
+          </button>
+        ))}
+      </div>
+      {parte === "plataforma" ? <ErrosDoAppEDaApi /> : <AdminAiConversasSection soComErro />}
     </div>
   );
 }
