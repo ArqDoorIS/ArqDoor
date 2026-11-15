@@ -12,6 +12,7 @@ export type AdminTab =
   | "verificacao"
   | "taxas"
   | "ia"
+  | "erros"
   | "indicacoes"
   | "publicacoes"
   | "conversas"

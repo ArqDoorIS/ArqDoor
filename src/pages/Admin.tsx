@@ -9,7 +9,8 @@ import { AdminDocumentsSection } from "@/features/admin/components/AdminDocument
 import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
 import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
-import { AdminAiSection } from "@/features/admin/components/AdminAiSection";
+import { AdminIaPainel } from "@/features/admin/components/AdminIaPainel";
+import { AdminErrosSection } from "@/features/admin/components/AdminErrosSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
@@ -25,6 +26,7 @@ import { useAdminSession } from "@/features/admin/hooks/useAdminSession";
 import type { AdminTab } from "@/features/admin/types";
 import { cn, formatRelativeTime, openSecureFile } from "@/features/admin/utils";
 import { ADMIN_TOKENS } from "@/features/admin/tokens";
+import { FaixaDoAmbiente, SeletorDeAmbiente } from "@/features/admin/components/AmbienteDoPainel";
 
 export default function Admin() {
   useAdminPageMeta();
@@ -79,7 +81,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "auditoria"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "auditoria"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -164,7 +166,9 @@ export default function Admin() {
       case "taxas":
         return <AdminFeesSection />;
       case "ia":
-        return <AdminAiSection />;
+        return <AdminIaPainel />;
+      case "erros":
+        return <AdminErrosSection />;
       case "indicacoes":
         return <AdminReferralsSection />;
       case "publicacoes":
@@ -202,7 +206,9 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="sticky top-0 z-40">
+      <FaixaDoAmbiente />
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-[1600px] items-center gap-3 px-4 sm:px-6">
           <button
             type="button"
@@ -223,6 +229,8 @@ export default function Admin() {
               </h1>
             </div>
           </div>
+
+          <SeletorDeAmbiente compacto />
 
           <div className="hidden text-right text-xs text-slate-500 xl:block">
             <p>Atualização automática a cada minuto</p>
@@ -267,6 +275,7 @@ export default function Admin() {
           </Button>
         </div>
       </header>
+      </div>
 
       <div className="mx-auto flex max-w-[1600px]">
         <aside
