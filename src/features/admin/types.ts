@@ -13,6 +13,7 @@ export type AdminTab =
   | "taxas"
   | "ia"
   | "erros"
+  | "app"
   | "indicacoes"
   | "publicacoes"
   | "conversas"

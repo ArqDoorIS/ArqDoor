@@ -10,6 +10,7 @@ import {
   Gift,
   Bot,
   Bug,
+  Star,
   ScrollText,
   ShieldCheck,
   Sparkles,
@@ -40,6 +41,8 @@ export const TABS: AdminTabConfig[] = [
   // Espaço só dos erros: os do app e da API (sozinhos, com log e contexto para investigar e
   // reproduzir) e as conversas com a IA que deram erro
   { key: "erros", label: "Auditoria de erros", icon: Bug, papeis: ["owner"] },
+  // textos do app editáveis (ex.: a página do foguete) e as estrelas que o app pede
+  { key: "app", label: "Textos e avaliações", icon: Star, papeis: ["owner"] },
   // Gestao do proprio time administrativo. So owner, porque e onde se concede e
   // revoga acesso ao painel.
   { key: "equipe", label: "Equipe", icon: UserCog, papeis: ["owner"] },
@@ -73,6 +76,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   taxas: 1,
   ia: 1,
   erros: 1,
+  app: 1,
   indicacoes: 1,
   publicacoes: 1,
   conversas: 1,
@@ -92,6 +96,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   taxas: 10,
   ia: 10,
   erros: 30,
+  app: 30,
   indicacoes: 10,
   publicacoes: 20,
   conversas: 10,
