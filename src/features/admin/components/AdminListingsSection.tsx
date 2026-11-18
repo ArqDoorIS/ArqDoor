@@ -356,7 +356,7 @@ export function AdminListingsSection() {
                       ) : null}
                       {row.type === "demand" && row.endereco && (row.endereco.rua || row.endereco.cidade) ? (
                         <p className="mt-2 text-xs text-slate-600">
-                          <span className="font-semibold text-slate-800">Endereço da obra (privado):</span>{" "}
+                          <span className="font-semibold text-slate-800">Endereço do serviço (privado):</span>{" "}
                           {[
                             [row.endereco.rua, row.endereco.numero].filter(Boolean).join(", "),
                             row.endereco.complemento,
