@@ -3,6 +3,7 @@ import { Eye, EyeOff, Loader2, Search, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ADMIN_TOKENS } from "../tokens";
 import { cn, formatCurrency, formatDateTime, getFileUrl } from "../utils";
+import { SinaisConsolidados, type Sinal } from "./SinaisDaIA";
 import { EmptyState, PaginationControls, SectionCard, StatusBadge } from "./AdminPrimitives";
 import { AdminDemandOffersPanel } from "./AdminDemandOffersPanel";
 
@@ -27,6 +28,7 @@ type ListingRow = {
   status: string | null;
   created_at: string | null;
   images?: string[];
+  sinais_ia?: { conversa_id?: number; sinais?: Record<string, Sinal> } | null;
   invites_count?: number;
   profession?: string | null;
   /** só pedidos: versão atual, pontos importantes e a faixa de preço privada do cliente */
@@ -354,13 +356,14 @@ export function AdminListingsSection() {
                           {row.faixa_preco?.negociavel_ate ? formatCurrency(row.faixa_preco.negociavel_ate) : "—"}
                         </p>
                       ) : null}
+                      {row.type === "demand" && row.sinais_ia?.sinais ? <SinaisConsolidados sinais={row.sinais_ia.sinais} /> : null}
                       {row.type === "demand" && row.images?.length ? (
                         <div className="mt-2">
                           <p className="text-xs font-semibold text-slate-800">Fotos do pedido ({row.images.length})</p>
                           <div className="mt-1 flex flex-wrap gap-1.5">
                             {row.images.map((caminho, idx) => (
-                              <a key={`${caminho}-${idx}`} href={getFileUrl(caminho)} target="_blank" rel="noreferrer" title="Abrir a foto">
-                                <img src={getFileUrl(caminho)} alt={`Foto ${idx + 1} do pedido`} className="h-14 w-14 rounded-lg border border-slate-200 object-cover" loading="lazy" />
+                              <a key={`${caminho}-${idx}`} href={getFileUrl(caminho) ?? undefined} target="_blank" rel="noreferrer" title="Abrir a foto">
+                                <img src={getFileUrl(caminho) ?? undefined} alt={`Foto ${idx + 1} do pedido`} className="h-14 w-14 rounded-lg border border-slate-200 object-cover" loading="lazy" />
                               </a>
                             ))}
                           </div>
