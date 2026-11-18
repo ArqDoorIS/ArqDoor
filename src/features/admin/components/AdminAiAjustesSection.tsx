@@ -15,13 +15,14 @@ type Ajuste = {
   ligada: boolean;
   instrucoes: string | null;
   extra: string | null;
+  exemplos: string | null;
   modelo: string | null;
   esforco: string | null;
   max_tokens: number | null;
   limite_por_hora: number | null;
   teto_diario_usd: number | null;
 };
-type Versao = { instrucoes: string | null; extra: string | null; em: string | null; por: string | null };
+type Versao = { instrucoes: string | null; extra: string | null; exemplos?: string | null; em: string | null; por: string | null };
 type TipoDeIA = {
   tipo: string;
   nome: string;
@@ -64,7 +65,7 @@ function CartaoDaIA({ ia, aoSalvar }: { ia: TipoDeIA; aoSalvar: (tipo: string, a
   };
   const carregarVersao = (v: Versao) => {
     setInstrucoes(v.instrucoes ?? ia.padrao);
-    setA({ ...a, extra: v.extra });
+    setA({ ...a, extra: v.extra, exemplos: v.exemplos ?? null });
   };
   const versoes = ia.historico ?? [];
   return (
@@ -137,6 +138,17 @@ function CartaoDaIA({ ia, aoSalvar }: { ia: TipoDeIA; aoSalvar: (tipo: string, a
           className={`${campo} py-2 text-sm`}
         />
       </label>
+      <label className="mt-3 block text-sm font-medium text-slate-700">
+        Exemplos de conversas boas (opcional)
+        <textarea
+          aria-label="Exemplos"
+          value={a.exemplos ?? ""}
+          onChange={(e) => setA({ ...a, exemplos: e.target.value || null })}
+          rows={4}
+          placeholder={"Cole 3 a 5 trechos de conversas que deram certo, por exemplo:\nCliente: quero trocar o piso da sala\nIA: Pelo que contou, é uma sala de uns 15 m². É isso? E o piso atual sai?"}
+          className={`${campo} py-2 text-sm`}
+        />
+      </label>
       <p className="mt-2 text-[11px] text-slate-500">
         Mude o formato das respostas com cuidado: o app espera os mesmos campos. Para pequenos ajustes, prefira o campo de acrescentar.
       </p>
@@ -161,7 +173,7 @@ function CartaoDaIA({ ia, aoSalvar }: { ia: TipoDeIA; aoSalvar: (tipo: string, a
                   Carregar esta versão
                 </button>
               </div>
-              <p className="mt-1 line-clamp-2">{v.instrucoes ? "Instruções próprias" : "Instruções do código"}{v.extra ? ` + acréscimo: ${v.extra}` : ""}</p>
+              <p className="mt-1 line-clamp-2">{v.instrucoes ? "Instruções próprias" : "Instruções do código"}{v.extra ? ` + acréscimo: ${v.extra}` : ""}{v.exemplos ? " + exemplos" : ""}</p>
             </li>
           ))}
           <li className="text-[11px] text-slate-500">Carregar só preenche o formulário: confira e toque em Salvar para valer.</li>

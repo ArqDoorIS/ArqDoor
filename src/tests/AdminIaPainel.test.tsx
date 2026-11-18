@@ -15,7 +15,7 @@ const ok = (body: unknown) => ({ ok: true, json: async () => body });
 beforeEach(() => apiRequestMock.mockReset());
 
 describe("ajustes de cada IA", () => {
-  const ia = { tipo: "perfil", nome: "Perfil de demanda (profissional)", onde: "Conversa do perfil", padrao: "INSTRUCOES DO CODIGO", padroes: { esforco: "medium", max_tokens: 8000 }, ajuste: { ligada: true, instrucoes: null, extra: null, modelo: null, esforco: null, max_tokens: null, limite_por_hora: null, teto_diario_usd: null }, historico: [{ instrucoes: null, extra: "Versão antiga", em: "2026-11-15T10:00:00Z", por: "a@b.com" }] };
+  const ia = { tipo: "perfil", nome: "Perfil de demanda (profissional)", onde: "Conversa do perfil", padrao: "INSTRUCOES DO CODIGO", padroes: { esforco: "medium", max_tokens: 8000 }, ajuste: { ligada: true, instrucoes: null, extra: null, exemplos: null, modelo: null, esforco: null, max_tokens: null, limite_por_hora: null, teto_diario_usd: null }, historico: [{ instrucoes: null, extra: "Versão antiga", em: "2026-11-15T10:00:00Z", por: "a@b.com" }] };
 
   it("mostra as instruções do código e salva o acréscimo, o esforço, o limite e o teto", async () => {
     apiRequestMock.mockResolvedValueOnce(ok({ ajustes: [ia] })).mockResolvedValueOnce(ok({ success: true }));
@@ -27,20 +27,21 @@ describe("ajustes de cada IA", () => {
     fireEvent.change(screen.getByLabelText("Esforço"), { target: { value: "high" } });
     fireEvent.change(screen.getByPlaceholderText(/Padrão: 120/), { target: { value: "30" } });
     fireEvent.change(screen.getByPlaceholderText("Sem teto"), { target: { value: "2.5" } });
+    fireEvent.change(screen.getByLabelText("Exemplos"), { target: { value: "Cliente: oi\nIA: olá" } });
     fireEvent.click(screen.getByText("Salvar"));
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledTimes(2));
     const [metodo, caminho, corpo] = apiRequestMock.mock.calls[1];
     expect(metodo).toBe("PUT");
     expect(caminho).toBe("/admin/ai-settings/ajustes/perfil");
     // instruções iguais às do código não vão como próprias
-    expect(corpo).toMatchObject({ ligada: true, extra: "Seja breve", esforco: "high", limite_por_hora: 30, teto_diario_usd: 2.5, max_tokens: null, instrucoes: null });
+    expect(corpo).toMatchObject({ ligada: true, extra: "Seja breve", esforco: "high", limite_por_hora: 30, teto_diario_usd: 2.5, max_tokens: null, exemplos: "Cliente: oi\nIA: olá", instrucoes: null });
     expect(await screen.findByText(/Vale no app em até 30 segundos/)).toBeTruthy();
   });
 });
 
 describe("versões e uso", () => {
   it("carrega uma versão anterior no formulário sem salvar sozinho", async () => {
-    const ia = { tipo: "pedido", nome: "Pedido", onde: "x", padrao: "PADRAO", ajuste: { ligada: true, instrucoes: null, extra: "Atual", modelo: null, esforco: null, max_tokens: null, limite_por_hora: null, teto_diario_usd: null }, historico: [{ instrucoes: null, extra: "Antiga", em: "2026-11-15T10:00:00Z", por: "a@b.com" }] };
+    const ia = { tipo: "pedido", nome: "Pedido", onde: "x", padrao: "PADRAO", ajuste: { ligada: true, instrucoes: null, extra: "Atual", exemplos: null, modelo: null, esforco: null, max_tokens: null, limite_por_hora: null, teto_diario_usd: null }, historico: [{ instrucoes: null, extra: "Antiga", em: "2026-11-15T10:00:00Z", por: "a@b.com" }] };
     apiRequestMock.mockResolvedValueOnce(ok({ ajustes: [ia] }));
     render(<AdminAiAjustesSection />);
     fireEvent.click(await screen.findByText(/Versões anteriores \(1\)/));
@@ -63,12 +64,14 @@ describe("conversas com a IA", () => {
   it("lista quem usou, qual IA e o botão, e abre a conversa inteira", async () => {
     apiRequestMock
       .mockResolvedValueOnce(ok({ total: 1, origens: ["inicio_barra"], conversas: [{ id: 5, tipo: "proposta", origem: "inicio_barra", publica: false, turnos: 2, erros: 0, ultima_em: "2026-11-15T15:00:00Z", criada_em: "2026-11-15T14:58:00Z", pessoa: { id: 1, nome: "Rafael Pereira", email: "r@x.com" }, primeira_mensagem: "Reforma de banheiro" }] }))
-      .mockResolvedValueOnce(ok({ conversa: { id: 5, tipo: "proposta", origem: "inicio_barra", publica: false, turnos: 2, erros: 0, ultima_em: "2026-11-15T15:00:00Z", pessoa: { id: 1, nome: "Rafael Pereira" }, mensagens: [{ de: "eu", texto: "Reforma de banheiro", em: "2026-11-15T14:58:00Z" }, { de: "ia", texto: "Quais são as fases?", em: "2026-11-15T14:58:05Z" }], resultado: null } }));
+      .mockResolvedValueOnce(ok({ conversa: { id: 5, tipo: "proposta", origem: "inicio_barra", publica: false, turnos: 2, erros: 0, ultima_em: "2026-11-15T15:00:00Z", pessoa: { id: 1, nome: "Rafael Pereira" }, mensagens: [{ de: "eu", texto: "Reforma de banheiro", em: "2026-11-15T14:58:00Z" }, { de: "ia", texto: "Quais são as fases?", em: "2026-11-15T14:58:05Z", bastidores: { entendi: "Quer orçar a reforma", suposicoes: [], faltando: ["fases"], confianca: "media" } }], resultado: null } }));
     render(<AdminAiConversasSection />);
     expect(await screen.findByText(/Rafael Pereira · r@x.com/)).toBeTruthy();
     expect(screen.getByText(/Proposta com IA · Início do profissional: barra/)).toBeTruthy();
     fireEvent.click(screen.getByText(/Rafael Pereira · r@x.com/));
     expect(await screen.findByText("Quais são as fases?")).toBeTruthy();
     expect(screen.getByText(/Entrou por: Início do profissional: barra/)).toBeTruthy();
+    expect(screen.getByText("Bastidores")).toBeTruthy();
+    expect(screen.getByText("Quer orçar a reforma")).toBeTruthy();
   });
 });

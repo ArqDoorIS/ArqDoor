@@ -10,7 +10,27 @@ import { SectionCard, StatusBadge } from "./AdminPrimitives";
  */
 type Pessoa = { id: number; nome?: string; email?: string; tipo?: string } | null;
 type Linha = { id: number; tipo: string; origem: string; publica: boolean; turnos: number; erros: number; ultima_em: string; criada_em: string; pessoa: Pessoa; primeira_mensagem: string | null };
-type Conversa = Linha & { mensagens: { de: "eu" | "ia"; texto: string; em: string }[]; resultado: unknown };
+type Bastidores = { entendi?: string | null; suposicoes?: string[]; faltando?: string[]; confianca?: string | null; calculos?: { ferramenta: string; erro?: string; resultado?: unknown }[] };
+type Conversa = Linha & { mensagens: { de: "eu" | "ia"; texto: string; em: string; bastidores?: Bastidores }[]; resultado: unknown };
+
+/** O que a IA entendeu, supôs, deixou faltando e calculou naquele turno (o app não mostra). */
+function BastidoresDoTurno({ b }: { b: Bastidores }) {
+  const linhas: [string, string][] = [];
+  if (b.entendi) linhas.push(["Entendeu", b.entendi]);
+  if (b.suposicoes?.length) linhas.push(["Supondo", b.suposicoes.join("; ")]);
+  if (b.faltando?.length) linhas.push(["Falta", b.faltando.join("; ")]);
+  if (b.confianca) linhas.push(["Confiança", b.confianca]);
+  if (b.calculos?.length) linhas.push(["Calculou", b.calculos.map((c) => (c.erro ? `${c.ferramenta}: erro (${c.erro})` : c.ferramenta)).join(", ")]);
+  if (!linhas.length) return null;
+  return (
+    <details className="mt-1 text-[11px] text-slate-600">
+      <summary className="cursor-pointer font-semibold">Bastidores</summary>
+      <dl className="mt-1 space-y-0.5">
+        {linhas.map(([k, v]) => <div key={k}><dt className="inline font-semibold">{k}: </dt><dd className="inline">{v}</dd></div>)}
+      </dl>
+    </details>
+  );
+}
 
 const TIPOS: Record<string, string> = {
   proposta: "Proposta com IA",
@@ -72,6 +92,7 @@ function DetalheDaConversa({ id, aoVoltar }: { id: number; aoVoltar: () => void 
               <div key={i} className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${cores}`}>
                 <div className="mb-0.5 text-[10px] opacity-70">{m.de === "eu" ? "Usuário" : falhou ? "IA · falhou" : "IA"} · {quando(m.em)}</div>
                 {falhou ? m.texto.replace(/^\(erro\)\s*/, "") : m.texto}
+                {m.de === "ia" && m.bastidores ? <BastidoresDoTurno b={m.bastidores} /> : null}
               </div>
             );
           })}
