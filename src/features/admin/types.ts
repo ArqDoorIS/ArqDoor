@@ -12,6 +12,7 @@ export type AdminTab =
   | "verificacao"
   | "taxas"
   | "ia"
+  | "analise"
   | "erros"
   | "app"
   | "indicacoes"

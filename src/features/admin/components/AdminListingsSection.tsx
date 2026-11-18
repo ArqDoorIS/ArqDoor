@@ -3,6 +3,7 @@ import { Eye, EyeOff, Loader2, Search, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ADMIN_TOKENS } from "../tokens";
 import { cn, formatCurrency, formatDateTime, getFileUrl } from "../utils";
+import { SinaisConsolidados, type Sinal } from "./SinaisDaIA";
 import { EmptyState, PaginationControls, SectionCard, StatusBadge } from "./AdminPrimitives";
 import { AdminDemandOffersPanel } from "./AdminDemandOffersPanel";
 
@@ -27,12 +28,15 @@ type ListingRow = {
   status: string | null;
   created_at: string | null;
   images?: string[];
+  sinais_ia?: { conversa_id?: number; sinais?: Record<string, Sinal> } | null;
   invites_count?: number;
   profession?: string | null;
   /** só pedidos: versão atual, pontos importantes e a faixa de preço privada do cliente */
   versao?: number | null;
   pontos_importantes?: string[] | null;
   faixa_preco?: { ideal_ate?: number | null; negociavel_ate?: number | null } | null;
+  /** endereço completo da obra (privado: só o admin dono e quem o cliente contratar veem) */
+  endereco?: { cep?: string | null; rua?: string | null; numero?: string | null; complemento?: string | null; bairro?: string | null; cidade?: string | null; uf?: string | null; lat?: number | null; lng?: number | null } | null;
   author: {
     user_id: number;
     name: string;
@@ -350,6 +354,44 @@ export function AdminListingsSection() {
                           <span className="font-semibold text-slate-800">Faixa de preço (privada):</span>{" "}
                           ideal até {row.faixa_preco?.ideal_ate ? formatCurrency(row.faixa_preco.ideal_ate) : "—"} · negocia até{" "}
                           {row.faixa_preco?.negociavel_ate ? formatCurrency(row.faixa_preco.negociavel_ate) : "—"}
+                        </p>
+                      ) : null}
+                      {row.type === "demand" && row.sinais_ia?.sinais ? <SinaisConsolidados sinais={row.sinais_ia.sinais} /> : null}
+                      {row.type === "demand" && row.images?.length ? (
+                        <div className="mt-2">
+                          <p className="text-xs font-semibold text-slate-800">Fotos do pedido ({row.images.length})</p>
+                          <div className="mt-1 flex flex-wrap gap-1.5">
+                            {row.images.map((caminho, idx) => (
+                              <a key={`${caminho}-${idx}`} href={getFileUrl(caminho) ?? undefined} target="_blank" rel="noreferrer" title="Abrir a foto">
+                                <img src={getFileUrl(caminho) ?? undefined} alt={`Foto ${idx + 1} do pedido`} className="h-14 w-14 rounded-lg border border-slate-200 object-cover" loading="lazy" />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {row.type === "demand" && row.endereco && (row.endereco.rua || row.endereco.cidade) ? (
+                        <p className="mt-2 text-xs text-slate-600">
+                          <span className="font-semibold text-slate-800">Endereço do serviço (privado):</span>{" "}
+                          {[
+                            [row.endereco.rua, row.endereco.numero].filter(Boolean).join(", "),
+                            row.endereco.complemento,
+                            row.endereco.bairro,
+                            [row.endereco.cidade, row.endereco.uf].filter(Boolean).join("/"),
+                            row.endereco.cep ? `CEP ${String(row.endereco.cep).replace(/(\d{5})(\d{3})/, "$1-$2")}` : null,
+                          ].filter(Boolean).join(" · ")}
+                          {row.endereco.lat != null && row.endereco.lng != null ? (
+                            <>
+                              {" · "}
+                              <a
+                                href={`https://www.openstreetmap.org/?mlat=${row.endereco.lat}&mlon=${row.endereco.lng}#map=17/${row.endereco.lat}/${row.endereco.lng}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-semibold text-orange-700 underline"
+                              >
+                                ver no mapa
+                              </a>
+                            </>
+                          ) : null}
                         </p>
                       ) : null}
                       {row.admin_hidden ? (
