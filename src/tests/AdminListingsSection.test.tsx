@@ -77,6 +77,14 @@ describe("publicações no admin", () => {
     expect(screen.getByRole("button", { name: /ofertas e % de compatibilidade/i })).toBeInTheDocument();
   });
 
+  it("pedido mostra todas as fotos que o cliente mandou", async () => {
+    apiRequestMock.mockResolvedValue(lista([demanda({ images: ["uploads/a.jpg", "uploads/b.jpg", "uploads/c.jpg"] })]));
+    render(<AdminListingsSection />);
+
+    expect(await screen.findByText("Fotos do pedido (3)")).toBeInTheDocument();
+    expect(screen.getByAltText("Foto 3 do pedido")).toBeInTheDocument();
+  });
+
   it("troca para ofertas de profissionais", async () => {
     apiRequestMock.mockResolvedValue(lista([]));
     render(<AdminListingsSection />);

@@ -354,6 +354,18 @@ export function AdminListingsSection() {
                           {row.faixa_preco?.negociavel_ate ? formatCurrency(row.faixa_preco.negociavel_ate) : "—"}
                         </p>
                       ) : null}
+                      {row.type === "demand" && row.images?.length ? (
+                        <div className="mt-2">
+                          <p className="text-xs font-semibold text-slate-800">Fotos do pedido ({row.images.length})</p>
+                          <div className="mt-1 flex flex-wrap gap-1.5">
+                            {row.images.map((caminho, idx) => (
+                              <a key={`${caminho}-${idx}`} href={getFileUrl(caminho)} target="_blank" rel="noreferrer" title="Abrir a foto">
+                                <img src={getFileUrl(caminho)} alt={`Foto ${idx + 1} do pedido`} className="h-14 w-14 rounded-lg border border-slate-200 object-cover" loading="lazy" />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
                       {row.type === "demand" && row.endereco && (row.endereco.rua || row.endereco.cidade) ? (
                         <p className="mt-2 text-xs text-slate-600">
                           <span className="font-semibold text-slate-800">Endereço do serviço (privado):</span>{" "}
