@@ -2,11 +2,12 @@ import { useState } from "react";
 import { AdminAiSection } from "./AdminAiSection";
 import { AdminAiAjustesSection } from "./AdminAiAjustesSection";
 import { AdminAiConversasSection } from "./AdminAiConversasSection";
+import { AdminAiUsoSection } from "./AdminAiUsoSection";
 
-/** Aba "IA" do painel: a chave, os ajustes de cada IA e as conversas. */
+/** Aba "IA" do painel: a chave, a ficha de cada IA, o uso e custo, e as conversas. */
 export function AdminIaPainel() {
-  const [parte, setParte] = useState<"chave" | "ajustes" | "conversas">("chave");
-  const abas: [typeof parte, string][] = [["chave", "Chave e liga/desliga"], ["ajustes", "Ajustar cada IA"], ["conversas", "Conversas"]];
+  const [parte, setParte] = useState<"chave" | "ajustes" | "uso" | "conversas">("chave");
+  const abas: [typeof parte, string][] = [["chave", "Chave e liga/desliga"], ["ajustes", "Ajustar cada IA"], ["uso", "Uso e custo"], ["conversas", "Conversas"]];
   return (
     <div>
       <div className="mt-2 inline-flex rounded-xl border border-slate-200 bg-white p-1">
@@ -16,7 +17,7 @@ export function AdminIaPainel() {
           </button>
         ))}
       </div>
-      {parte === "chave" ? <AdminAiSection /> : parte === "ajustes" ? <AdminAiAjustesSection /> : <AdminAiConversasSection />}
+      {parte === "chave" ? <AdminAiSection /> : parte === "ajustes" ? <AdminAiAjustesSection /> : parte === "uso" ? <AdminAiUsoSection /> : <AdminAiConversasSection />}
     </div>
   );
 }

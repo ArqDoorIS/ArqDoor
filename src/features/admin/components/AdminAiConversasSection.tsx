@@ -14,9 +14,10 @@ type Conversa = Linha & { mensagens: { de: "eu" | "ia"; texto: string; em: strin
 
 const TIPOS: Record<string, string> = {
   proposta: "Proposta com IA",
-  contrato: "Texto do contrato",
+  contrato: "Texto do orçamento",
   pedido: "Pedido do cliente",
   perfil: "Perfil de demanda",
+  fases: "Explicação das fases",
 };
 
 /** Nome de cada botão/tela por onde a pessoa entra na IA (o app manda o código). */
