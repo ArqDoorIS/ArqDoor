@@ -1,6 +1,7 @@
 import type { AdminTabConfig, AdminTab, FilterState } from "./types";
 import {
   BadgeDollarSign,
+  ChartNoAxesCombined,
   BriefcaseBusiness,
   FileSignature,
   Landmark,
@@ -32,6 +33,8 @@ export const TABS: AdminTabConfig[] = [
   { key: "taxas", label: "Taxas", icon: Percent, papeis: ["owner"] },
   // Chave da API da IA do assistente de orcamentos do app. So owner: e um segredo.
   { key: "ia", label: "IA", icon: Bot, papeis: ["owner"] },
+  // vendas, follow-up e perfil de cada conta (a IA analista só roda por botão)
+  { key: "analise", label: "Análise", icon: ChartNoAxesCombined, papeis: ["owner"] },
   { key: "indicacoes", label: "Indicações", icon: Gift, papeis: ["owner"] },
   // Demandas que clientes postaram e ofertas que prestadores anunciaram. Daqui o owner
   // oculta (reversivel) ou apaga (definitivo) uma publicacao.
@@ -75,6 +78,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   verificacao: 1,
   taxas: 1,
   ia: 1,
+  analise: 1,
   erros: 1,
   app: 1,
   indicacoes: 1,
@@ -95,6 +99,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   verificacao: 12,
   taxas: 10,
   ia: 10,
+  analise: 25,
   erros: 30,
   app: 30,
   indicacoes: 10,

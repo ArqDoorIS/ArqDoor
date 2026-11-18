@@ -10,6 +10,7 @@ import { AdminTeamSection } from "@/features/admin/components/AdminTeamSection";
 import { AdminVerificationSection } from "@/features/admin/components/AdminVerificationSection";
 import { AdminFeesSection } from "@/features/admin/components/AdminFeesSection";
 import { AdminIaPainel } from "@/features/admin/components/AdminIaPainel";
+import { AdminAnaliseSection } from "@/features/admin/components/AdminAnaliseSection";
 import { AdminErrosSection } from "@/features/admin/components/AdminErrosSection";
 import { AdminAppSection } from "@/features/admin/components/AdminAppSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
@@ -168,6 +169,8 @@ export default function Admin() {
         return <AdminFeesSection />;
       case "ia":
         return <AdminIaPainel />;
+      case "analise":
+        return <AdminAnaliseSection />;
       case "erros":
         return <AdminErrosSection />;
       case "app":

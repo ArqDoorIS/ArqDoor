@@ -410,7 +410,7 @@ export function useAdminDashboard({
      * `verificacao` entra aqui junto de `indicacoes`: a fila de documentos vem de
      * `/admin/documents`, e pedir uma secao inexistente ao backend so renderia erro.
      * `equipe` pelo mesmo motivo: ela le `/admin/members`. `publicacoes` le `/admin/listings`.
-   * `ia` le `/admin/ai-settings`; `erros` le `/admin/erros`.
+   * `ia` le `/admin/ai-settings`; `erros` le `/admin/erros`; `analise` le `/admin/analise/*`.
      */
     const requestedSection: DashboardSection =
       activeTab === "dashboard" ||
@@ -418,6 +418,7 @@ export function useAdminDashboard({
       activeTab === "publicacoes" ||
       activeTab === "verificacao" ||
       activeTab === "erros" ||
+      activeTab === "analise" ||
       activeTab === "app" ||
       activeTab === "equipe" ||
       activeTab === "ia"
