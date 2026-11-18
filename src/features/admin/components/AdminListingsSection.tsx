@@ -33,6 +33,8 @@ type ListingRow = {
   versao?: number | null;
   pontos_importantes?: string[] | null;
   faixa_preco?: { ideal_ate?: number | null; negociavel_ate?: number | null } | null;
+  /** endereço completo da obra (privado: só o admin dono e quem o cliente contratar veem) */
+  endereco?: { cep?: string | null; rua?: string | null; numero?: string | null; complemento?: string | null; bairro?: string | null; cidade?: string | null; uf?: string | null; lat?: number | null; lng?: number | null } | null;
   author: {
     user_id: number;
     name: string;
@@ -350,6 +352,31 @@ export function AdminListingsSection() {
                           <span className="font-semibold text-slate-800">Faixa de preço (privada):</span>{" "}
                           ideal até {row.faixa_preco?.ideal_ate ? formatCurrency(row.faixa_preco.ideal_ate) : "—"} · negocia até{" "}
                           {row.faixa_preco?.negociavel_ate ? formatCurrency(row.faixa_preco.negociavel_ate) : "—"}
+                        </p>
+                      ) : null}
+                      {row.type === "demand" && row.endereco && (row.endereco.rua || row.endereco.cidade) ? (
+                        <p className="mt-2 text-xs text-slate-600">
+                          <span className="font-semibold text-slate-800">Endereço da obra (privado):</span>{" "}
+                          {[
+                            [row.endereco.rua, row.endereco.numero].filter(Boolean).join(", "),
+                            row.endereco.complemento,
+                            row.endereco.bairro,
+                            [row.endereco.cidade, row.endereco.uf].filter(Boolean).join("/"),
+                            row.endereco.cep ? `CEP ${String(row.endereco.cep).replace(/(\d{5})(\d{3})/, "$1-$2")}` : null,
+                          ].filter(Boolean).join(" · ")}
+                          {row.endereco.lat != null && row.endereco.lng != null ? (
+                            <>
+                              {" · "}
+                              <a
+                                href={`https://www.openstreetmap.org/?mlat=${row.endereco.lat}&mlon=${row.endereco.lng}#map=17/${row.endereco.lat}/${row.endereco.lng}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-semibold text-orange-700 underline"
+                              >
+                                ver no mapa
+                              </a>
+                            </>
+                          ) : null}
                         </p>
                       ) : null}
                       {row.admin_hidden ? (

@@ -64,12 +64,15 @@ describe("publicações no admin", () => {
 
   it("pedido mostra pontos, faixa de preço privada e o painel de ofertas", async () => {
     apiRequestMock.mockResolvedValue(
-      lista([demanda({ versao: 3, pontos_importantes: ["Piso porcelanato"], faixa_preco: { ideal_ate: 4000, negociavel_ate: 5500 } })])
+      lista([demanda({ versao: 3, pontos_importantes: ["Piso porcelanato"], faixa_preco: { ideal_ate: 4000, negociavel_ate: 5500 }, endereco: { rua: "Avenida Paulista", numero: "1578", complemento: "apto 12", bairro: "Bela Vista", cidade: "São Paulo", uf: "SP", cep: "01310300", lat: -23.56, lng: -46.65 } })])
     );
     render(<AdminListingsSection />);
 
     expect(await screen.findByText("Piso porcelanato")).toBeInTheDocument();
     expect(screen.getByText(/faixa de preço \(privada\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/endereço da obra \(privado\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Avenida Paulista, 1578 · apto 12 · Bela Vista · São Paulo\/SP · CEP 01310-300/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "ver no mapa" })).toHaveAttribute("href", expect.stringContaining("mlat=-23.56"));
     expect(screen.getByText("versão 3")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /ofertas e % de compatibilidade/i })).toBeInTheDocument();
   });
