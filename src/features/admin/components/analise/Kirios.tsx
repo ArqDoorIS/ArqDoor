@@ -3,6 +3,7 @@ import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { Barras, Bloco, Carregando, Erro, dia, rotulo, useApi } from "./comum";
 import type { Kirios } from "./tipos";
+import { PerfisElegiveis } from "./PerfisElegiveis";
 
 /**
  * Aba Algoritmo (Kirios por dentro): o desempenho do algoritmo de match (o % de cada cartão). Separada da Precisão da IA,
@@ -61,6 +62,9 @@ export function AbaKirios() {
           ))}
         </div>
       </section>
+
+      {/* quem entra no match (19/11/2026) */}
+      <PerfisElegiveis />
 
       {/* acerto */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
