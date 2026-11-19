@@ -240,7 +240,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Conversas" }));
     fireEvent.click(within(await linhaDaIA()).getByRole("button", { name: "ver" }));
     const janela = await screen.findByRole("dialog");
     await waitFor(() => expect(within(janela).getAllByTestId("mensagem-da-conversa")).toHaveLength(10));
@@ -263,7 +263,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Conversas" }));
     fireEvent.click(within(await linhaDaIA()).getByRole("button", { name: "Baixar" }));
     await waitFor(() => expect(baixarMock).toHaveBeenCalledTimes(1));
     expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/ai-conversas/77");
@@ -277,15 +277,26 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(semana).getByLabelText("3 contratos")).toHaveTextContent("3");
   });
 
-  it("aba Conta mostra o chat inteiro, os contratos com as fases, rascunhos e arquivados", async () => {
+  it("aba Conta mostra os contratos com as fases, rascunhos e arquivados, sem as conversas", async () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
-    expect(await screen.findByText("Posso começar segunda")).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    expect(await screen.findByText(/1 de 2 fases concluídas · 1 recusada/)).toBeInTheDocument();
     expect(screen.getByText(/Reforma do banheiro/)).toBeInTheDocument();
     expect(screen.getByText("Oferta de Carlos Pinto arquivada")).toBeInTheDocument();
-    expect(screen.getByText(/1 de 2 fases concluídas · 1 recusada/)).toBeInTheDocument();
+    expect(screen.queryByText("Conversas no chat")).not.toBeInTheDocument();
+    expect(screen.queryByText("Conversas com a IA")).not.toBeInTheDocument();
+  });
+
+  it("aba Conversas mostra o chat inteiro na ordem e baixa o .txt", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conversas" }));
+    expect(await screen.findByText("Posso começar segunda")).toBeInTheDocument();
+    expect(screen.getByText("Conversas com a IA")).toBeInTheDocument();
+    expect(screen.queryByText(/contrato 700/)).not.toBeInTheDocument();
 
     const linhaDoChat = screen.getAllByRole("row").find((r) => within(r).queryByText("Posso começar segunda"))!;
     fireEvent.click(within(linhaDoChat).getByRole("button", { name: "ver" }));
@@ -304,7 +315,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
     fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
     const janela = await screen.findByRole("dialog");
     expect(within(janela).getByText("Assentar piso")).toBeInTheDocument();

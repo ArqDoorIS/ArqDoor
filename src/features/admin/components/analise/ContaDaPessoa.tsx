@@ -10,10 +10,10 @@ import { Carregando, Erro, EtiquetaPH, ler, quando, reais, rotulo, usd, useApi, 
 import type { Ficha, GuardadoDaConta } from "./tipos";
 
 /**
- * Investigar › Conta (19/11/2026): tudo o que existe na conta da pessoa.
- *   conversas no chat (com quem, quantas mensagens, a conversa inteira e o Baixar)
- *   contratos com as fases (GET /admin/users/:id/operations, a mesma visão da tela Usuários)
- *   conversas com a IA, rascunhos e arquivados (da ficha: ficha.guardados)
+ * Investigar (19/11/2026), duas abas:
+ *   Conversas  o chat com cada pessoa (inteiro, com Baixar) e as conversas com a IA
+ *   Conta      contratos com as fases (GET /admin/users/:id/operations, a mesma visão da tela
+ *              Usuários), rascunhos e arquivados (da ficha: ficha.guardados)
  */
 
 type RespostaDoChat = { data: { conversation: { conversation_id: number; participants: Participant[] }; messages: MensagemDoChat[] } };
@@ -145,22 +145,20 @@ function Guardados({ itens, vazio, nome, rotuloDoTipo, abrir }: { itens: Guardad
   );
 }
 
-export function ContaDaPessoa({ id, nome, f, abrir, investigar }: { id: number; nome: string; f: Ficha | undefined; abrir: (c: ConteudoJanela) => void; investigar: (id: number) => void }) {
+type Props = { id: number; nome: string; f: Ficha | undefined; abrir: (c: ConteudoJanela) => void; investigar: (id: number) => void };
+
+/** A visão operacional da conta (a mesma da tela Usuários): conversas e contratos. */
+const useOperacoes = (id: number) => {
   const ops = useApi<{ data: AdminUserOperationsOverview }>(`/admin/users/${id}/operations`, 90000);
   const o = ops.dado?.data;
-  const conversas = (o?.conversations ?? []).filter((c) => !c.is_admin_thread);
-  const contratos = (o?.conversations ?? []).flatMap((c) => c.contracts);
-  const g = f?.guardados;
+  return { ops, o, conversas: (o?.conversations ?? []).filter((c) => !c.is_admin_thread), contratos: (o?.conversations ?? []).flatMap((c) => c.contracts) };
+};
+
+/** Investigar › Conversas: o chat com cada pessoa e as conversas com a IA. */
+export function ConversasDaPessoa({ id, nome, f, abrir, investigar }: Props) {
+  const { ops, o, conversas } = useOperacoes(id);
   return (
     <div className="space-y-4">
-      {o ? (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {([["Conversas no chat", conversas.length], ["Contratos", o.summary.contracts_count], ["Contratos ativos", o.summary.active_contracts_count], ["Pronto para repassar", reais(o.summary.ready_payout_total)]] as [string, string | number][]).map(([k, v]) => (
-            <div key={k} className="rounded-xl border border-slate-200 bg-white px-3 py-2"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{k}</p><p className="text-lg font-bold text-slate-950">{v}</p></div>
-          ))}
-        </div>
-      ) : null}
-
       <SectionCard title="Conversas no chat" subtitle="Com quem a pessoa conversou no app. Ver abre a conversa inteira; Baixar salva em .txt">
         {ops.erro ? <Erro msg={ops.erro} /> : !o ? <Carregando /> : !conversas.length ? <p className="text-sm text-slate-500">Nenhuma conversa no chat.</p> : (
           <div className="overflow-x-auto">
@@ -189,6 +187,41 @@ export function ContaDaPessoa({ id, nome, f, abrir, investigar }: { id: number; 
         )}
       </SectionCard>
 
+      <SectionCard title="Conversas com a IA" subtitle="Ver abre a conversa inteira; Baixar salva em .txt">
+        {!f?.conversas_ia?.length ? <p className="text-sm text-slate-500">Nenhuma conversa com a IA ainda.</p> : (
+          <table className="w-full text-left text-sm">
+            <thead className="text-[11px] uppercase tracking-wide text-slate-400"><tr><th className="py-1">Conversa</th><th>Quando</th><th>Mensagens</th><th>Custo</th><th>Sinais</th><th /></tr></thead>
+            <tbody>{f.conversas_ia.map((c) => (
+              <tr key={c.id} className="border-t border-slate-100">
+                <td className="py-1.5 font-semibold">{rotulo(c.tipo)}</td><td>{quando(c.quando)}</td><td>{c.mensagens}</td><td>{c.custo_usd == null ? "—" : usd(c.custo_usd)}</td><td>{c.sinais}</td>
+                <td className="whitespace-nowrap text-right">
+                  <button type="button" className="mr-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold" onClick={() => abrir({ titulo: `Conversa: ${rotulo(c.tipo)}`, sub: `${nome} · ${quando(c.quando)}`, corpo: <ConversaCompleta id={c.id} nome={nome} /> })}>ver</button>
+                  <BotaoBaixarConversa id={c.id} />
+                </td>
+              </tr>
+            ))}</tbody>
+          </table>
+        )}
+      </SectionCard>
+
+    </div>
+  );
+}
+
+/** Investigar › Conta: contratos com as fases, rascunhos e arquivados. */
+export function ContaDaPessoa({ id, nome, f, abrir }: Props) {
+  const { ops, o, contratos } = useOperacoes(id);
+  const g = f?.guardados;
+  return (
+    <div className="space-y-4">
+      {o ? (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {([["Contratos", o.summary.contracts_count], ["Contratos ativos", o.summary.active_contracts_count], ["Pronto para repassar", reais(o.summary.ready_payout_total)], ["Rascunhos", g ? g.rascunhos.length : "—"]] as [string, string | number][]).map(([k, v]) => (
+            <div key={k} className="rounded-xl border border-slate-200 bg-white px-3 py-2"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{k}</p><p className="text-lg font-bold text-slate-950">{v}</p></div>
+          ))}
+        </div>
+      ) : null}
+
       <SectionCard title="Contratos" subtitle="Todos os contratos da conta, com as fases. Clique para ver o detalhe.">
         {ops.erro ? <Erro msg={ops.erro} /> : !o ? <Carregando /> : !contratos.length ? <p className="text-sm text-slate-500">Nenhum contrato.</p> : (
           <div className="space-y-1.5">
@@ -209,23 +242,6 @@ export function ContaDaPessoa({ id, nome, f, abrir, investigar }: { id: number; 
               );
             })}
           </div>
-        )}
-      </SectionCard>
-
-      <SectionCard title="Conversas com a IA" subtitle="Ver abre a conversa inteira; Baixar salva em .txt">
-        {!f?.conversas_ia?.length ? <p className="text-sm text-slate-500">Nenhuma conversa com a IA ainda.</p> : (
-          <table className="w-full text-left text-sm">
-            <thead className="text-[11px] uppercase tracking-wide text-slate-400"><tr><th className="py-1">Conversa</th><th>Quando</th><th>Mensagens</th><th>Custo</th><th>Sinais</th><th /></tr></thead>
-            <tbody>{f.conversas_ia.map((c) => (
-              <tr key={c.id} className="border-t border-slate-100">
-                <td className="py-1.5 font-semibold">{rotulo(c.tipo)}</td><td>{quando(c.quando)}</td><td>{c.mensagens}</td><td>{c.custo_usd == null ? "—" : usd(c.custo_usd)}</td><td>{c.sinais}</td>
-                <td className="whitespace-nowrap text-right">
-                  <button type="button" className="mr-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold" onClick={() => abrir({ titulo: `Conversa: ${rotulo(c.tipo)}`, sub: `${nome} · ${quando(c.quando)}`, corpo: <ConversaCompleta id={c.id} nome={nome} /> })}>ver</button>
-                  <BotaoBaixarConversa id={c.id} />
-                </td>
-              </tr>
-            ))}</tbody>
-          </table>
         )}
       </SectionCard>
 

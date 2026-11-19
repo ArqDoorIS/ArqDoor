@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Banknote, Calendar, Clock3, Copy, Database, ExternalLink, FileText, Flag, Lightbulb, Loader2, Map as Mapa, MapPin, Megaphone, MessageCircle,
+  Archive, Banknote, Calendar, Clock3, Copy, Database, ExternalLink, FileText, Flag, Lightbulb, Loader2, Map as Mapa, MapPin, Megaphone, MessageCircle,
   Search, Smartphone, Sparkles, Target, TrendingUp, User, AlertTriangle,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -11,12 +11,12 @@ import {
   nomeCategoria, pct, quando, rotulo, urlPosthog, useApi, usd, type ConteudoJanela,
 } from "./comum";
 import { Sankey } from "./Sankey";
-import { ContaDaPessoa } from "./ContaDaPessoa";
+import { ContaDaPessoa, ConversasDaPessoa } from "./ContaDaPessoa";
 import { janelaDaFaixa, janelaDoBloco, Legenda } from "./Caminhos";
 import type { Caminhos, Ficha, ItemDaFicha, RespostaDaFicha } from "./tipos";
 
-type Sub = "resumo" | "mapa" | "dados" | "conta" | "previsoes";
-const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conta", "Conta e conversas", MessageCircle], ["previsoes", "Previsões", TrendingUp]];
+type Sub = "resumo" | "mapa" | "dados" | "conversas" | "previsoes" | "conta";
+const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conversas", "Conversas", MessageCircle], ["previsoes", "Previsões", TrendingUp], ["conta", "Conta", Archive]];
 
 function Itens({ itens, nome, rotuloDoTipo, abrir }: { itens: ItemDaFicha[]; nome: string; rotuloDoTipo: string; abrir: (c: ConteudoJanela) => void }) {
   if (!itens.length) return <p className="text-xs text-slate-400">Nenhum.</p>;
@@ -201,7 +201,7 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
       ) : null}
       {sub === "dados" && !f ? <p className="text-sm text-slate-500">Os dados detalhados ainda não chegaram do servidor.</p> : null}
 
-      {sub === "conta" ? <ContaDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
+      {sub === "conversas" ? <ConversasDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
 
       {sub === "previsoes" ? (
         !a?.previsoes.length ? <p className="text-sm text-slate-500">Ainda sem análise da IA para esta pessoa.</p> : (
@@ -217,6 +217,8 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
           </SectionCard>
         )
       ) : null}
+
+      {sub === "conta" ? <ContaDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
     </div>
   );
 }
