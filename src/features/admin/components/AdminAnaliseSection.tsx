@@ -20,7 +20,7 @@ import { AbaKirios } from "./analise/Kirios";
  *   Perfis          um cartão por tipo de pessoa que a IA analista classificou
  *   Pessoas         todo mundo, com filtro e busca pelo nome ou pelo código do PostHog
  *   Investigar      a ficha de uma pessoa: resumo da IA, mapa do caminho dela, dados, conversas e previsões
- *   Kirios          o desempenho do algoritmo de match: o % de cada cartão acerta quem fecha?
+ *   Algoritmo       o desempenho do algoritmo de match (Kirios): o % de cada cartão acerta quem fecha?
  *   Precisão da IA  as previsões da IA analista conferidas pelo código quando vencem
  *
  * O código PH #id é o mesmo da pessoa no PostHog (o app manda o id do usuário como distinct_id).
@@ -31,7 +31,7 @@ import { AbaKirios } from "./analise/Kirios";
 type Aba = "visao" | "caminhos" | "perfis" | "pessoas" | "investigar" | "kirios" | "precisao";
 const ABAS: [Aba, string, typeof Users][] = [
   ["visao", "Visão geral", LayoutDashboard], ["caminhos", "Caminhos", Route], ["perfis", "Perfis", Layers],
-  ["pessoas", "Pessoas", Users], ["investigar", "Investigar", Search], ["kirios", "Kirios", Cpu], ["precisao", "Precisão da IA", Target],
+  ["pessoas", "Pessoas", Users], ["investigar", "Investigar", Search], ["kirios", "Algoritmo", Cpu], ["precisao", "Precisão da IA", Target],
 ];
 
 /** Liga o PostHog para os passos antes do login (chave pessoal de leitura, guardada cifrada no servidor). */

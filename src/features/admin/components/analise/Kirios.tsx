@@ -5,7 +5,7 @@ import { Barras, Bloco, Carregando, Erro, dia, rotulo, useApi } from "./comum";
 import type { Kirios } from "./tipos";
 
 /**
- * Aba Kirios: o desempenho do algoritmo de match (o % de cada cartão). Separada da Precisão da IA,
+ * Aba Algoritmo (Kirios por dentro): o desempenho do algoritmo de match (o % de cada cartão). Separada da Precisão da IA,
  * que mede a IA analista. Aqui a pergunta é uma só: o % do cartão acerta quem fecha?
  */
 
@@ -35,7 +35,7 @@ export function AbaKirios() {
   if (erro) return <Erro msg={erro} />;
   if (!k) return <Carregando />;
   const v = k.versao, a = k.acerto, m = k.mercado;
-  const fonte = v.fonte_do_match === "kirios" ? "o Kirios calcula o % de cada cartão" : v.fonte_do_match === "misto" ? "parte dos cartões com % do Kirios, parte posta pelo admin" : "o % de cada cartão ainda é posto pelo admin";
+  const fonte = v.fonte_do_match === "kirios" ? "o algoritmo calcula o % de cada cartão" : v.fonte_do_match === "misto" ? "parte dos cartões com % do algoritmo, parte posta pelo admin" : "o % de cada cartão ainda é posto pelo admin";
   const maxPos = Math.max(1, ...(k.posicao ?? []).map((p) => p.cartoes));
   const maxSem = Math.max(1, ...(k.semanas ?? []).map((s) => s.cartoes));
   return (
@@ -45,14 +45,14 @@ export function AbaKirios() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-slate-900 text-white"><Cpu className="h-5 w-5" /></span>
-            <h2 className="text-xl font-bold text-slate-950">{v.nome}</h2>
+            <h2 className="text-xl font-bold text-slate-950">Algoritmo de match</h2><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">versão {v.nome.replace(/^kirios\s*/i, "")}</span>
             <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold", v.ligado ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700")}><Radio className="h-3 w-3" />{v.ligado ? "ligado no app" : "ainda não ligado no app"}</span>
           </div>
           <p className="mt-1.5 text-sm text-slate-600">Hoje {fonte}. Fase: <b>{v.fase === "arranque" ? "arranque (sem dado real, usa o treino em mercados inventados e o palpite)" : "principal (aprende com os contratos reais)"}</b>.</p>
-          <p className="mt-1 text-xs text-slate-400">O acerto abaixo mede o % que os cartões mostraram nos últimos {k.dias} dias, seja de onde ele veio: é a régua para comparar quando o Kirios entrar.</p>
+          <p className="mt-1 text-xs text-slate-400">O acerto abaixo mede o % que os cartões mostraram nos últimos {k.dias} dias, seja de onde ele veio: é a régua para comparar quando o algoritmo entrar.</p>
         </div>
         <div className="space-y-2.5">
-          {[["Seleção de dados liga", v.minimo_para_selecao, "a partir daqui o Kirios pode promover ou rebaixar dados"], ["Troca do arranque pelo modelo real", v.transicao_em, "o treino inventado perde peso conforme o dado real chega"]].map(([r, alvo, ajuda]) => (
+          {[["Seleção de dados liga", v.minimo_para_selecao, "a partir daqui o algoritmo pode promover ou rebaixar dados"], ["Troca do arranque pelo modelo real", v.transicao_em, "o treino inventado perde peso conforme o dado real chega"]].map(([r, alvo, ajuda]) => (
             <div key={String(r)}>
               <div className="flex justify-between text-xs"><span className="font-semibold text-slate-700">{r}</span><span className="text-slate-500"><b className="text-slate-900">{v.contratos_reais}</b> de {alvo} contratos reais</span></div>
               <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100"><i className="block h-full rounded-full bg-orange-500" style={{ width: `${Math.min(100, (v.contratos_reais / Number(alvo)) * 100)}%` }} /></div>
@@ -69,7 +69,7 @@ export function AbaKirios() {
         <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-white p-3 lg:col-span-2">
           <Numero rotulo="Cartões medidos" valor={a.cartoes} ajuda={`últimos ${k.dias} dias`} />
           <Numero rotulo="Viraram contrato" valor={a.contratos} ajuda={a.cartoes ? `${Math.round((a.contratos / a.cartoes) * 100)}% dos cartões` : undefined} />
-          {a.sem_dado ? <p className="col-span-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs text-amber-800">{a.sem_dado}</p> : <p className="col-span-2 text-xs text-slate-500">Na simulação, o Kirios Alpha 1.1 teve 0,75 de acerto geral no arranque e 0,78 com ~700 contratos reais.</p>}
+          {a.sem_dado ? <p className="col-span-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs text-amber-800">{a.sem_dado}</p> : <p className="col-span-2 text-xs text-slate-500">Na simulação, a versão Alpha 1.1 teve 0,75 de acerto geral no arranque e 0,78 com ~700 contratos reais.</p>}
         </div>
       </div>
 
@@ -145,8 +145,8 @@ export function AbaKirios() {
         )}
       </SectionCard>
 
-      <Bloco titulo="Registro do Kirios" icone={ScrollText}>
-        {!(k.registro ?? []).length ? <p className="text-xs text-slate-400">Nenhuma mudança ainda. Quando o Kirios promover, rebaixar ou bloquear um dado, aparece aqui com o motivo (só depois de 100 contratos reais e 2 ciclos seguidos).</p> : (
+      <Bloco titulo="Registro do algoritmo" icone={ScrollText}>
+        {!(k.registro ?? []).length ? <p className="text-xs text-slate-400">Nenhuma mudança ainda. Quando o algoritmo promover, rebaixar ou bloquear um dado, aparece aqui com o motivo (só depois de 100 contratos reais e 2 ciclos seguidos).</p> : (
           <ul className="space-y-1 text-sm">{k.registro.map((r, i) => <li key={i} className="flex flex-wrap gap-2"><span className="text-xs text-slate-400">{dia(r.em)}</span><b>{r.tipo}</b><span>{r.dado}</span><span className="text-xs text-slate-500">{r.motivo}</span></li>)}</ul>
         )}
       </Bloco>

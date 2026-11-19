@@ -129,10 +129,12 @@ describe("Análise no painel", () => {
     confirmar.mockRestore();
   });
 
-  it("a aba Kirios é separada da precisão da IA e mostra o acerto do % dos cartões", async () => {
+  it("a aba Algoritmo é separada da precisão da IA e mostra o acerto do % dos cartões", async () => {
     render(<AdminAnaliseSection />);
-    fireEvent.click(screen.getByRole("tab", { name: /Kirios/ }));
-    expect(await screen.findByText("Kirios Alpha 1.1")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    expect(await screen.findByText("Algoritmo de match")).toBeInTheDocument();
+    expect(screen.getByText("versão Alpha 1.1")).toBeInTheDocument();
+    expect(screen.queryByText(/Kirios/)).not.toBeInTheDocument();
     expect(screen.getByText("ainda não ligado no app")).toBeInTheDocument();
     expect(screen.getByText(/entre 0,66 e 0,76/)).toBeInTheDocument();
     expect(screen.getByText("1º cartão")).toBeInTheDocument();
