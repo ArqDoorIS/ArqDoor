@@ -66,3 +66,46 @@ export function baixarConversa(c: ConversaParaBaixar, formato: "txt" | "json" = 
   if (formato === "json") baixarArquivo(conversaEmJson(c), nomeDoArquivoDaConversa(c, "json"), "application/json;charset=utf-8");
   else baixarArquivo(`﻿${conversaEmTexto(c)}`, nomeDoArquivoDaConversa(c, "txt"), "text/plain;charset=utf-8");
 }
+
+/* ---------- conversa no chat entre duas pessoas (Investigar › Conta) ---------- */
+export type MensagemDoChat = { message_id: number; sender_id: number; content: string; createdAt: string };
+export type ChatParaBaixar = {
+  conversation_id: number;
+  participantes: { id: number; nome: string | null }[];
+  mensagens: MensagemDoChat[];
+};
+
+const nomeNoChat = (c: ChatParaBaixar, id: number) => c.participantes.find((p) => p.id === id)?.nome ?? `Conta ${id}`;
+
+/** O chat inteiro em texto, na ordem em que as mensagens foram mandadas. */
+export function chatEmTexto(c: ChatParaBaixar): string {
+  const topo = [
+    `Conversa no chat #${c.conversation_id}`,
+    `Entre: ${c.participantes.map((p) => `${p.nome ?? "sem nome"} (PH #${p.id})`).join(" e ")}`,
+    `Mensagens: ${c.mensagens.length}`,
+    "",
+  ];
+  const falas = [...c.mensagens]
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    .map((m) => {
+      const h = horaDaMensagem(m.createdAt);
+      return `${h ? `[${h}] ` : ""}${nomeNoChat(c, m.sender_id)}: ${String(m.content ?? "").replace(/\r\n/g, "\n")}`;
+    });
+  return `${[...topo, ...falas].join("\n")}\n`;
+}
+
+export function chatEmJson(c: ChatParaBaixar): string {
+  return JSON.stringify({
+    conversa: c.conversation_id,
+    participantes: c.participantes,
+    mensagens: [...c.mensagens]
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map((m) => ({ de: m.sender_id, nome: nomeNoChat(c, m.sender_id), texto: m.content, em: m.createdAt })),
+  }, null, 2);
+}
+
+export function baixarChat(c: ChatParaBaixar, formato: "txt" | "json" = "txt") {
+  const nome = `chat-${c.conversation_id}.${formato}`;
+  if (formato === "json") baixarArquivo(chatEmJson(c), nome, "application/json;charset=utf-8");
+  else baixarArquivo(`﻿${chatEmTexto(c)}`, nome, "text/plain;charset=utf-8");
+}

@@ -49,8 +49,44 @@ const FICHA = {
     previsoes: [{ pergunta: "fecha_contrato", probabilidade: 0.35, vence_em: "2026-12-18T10:00:00Z", aconteceu: null }],
     resultado: { resumo: "Cliente com pressa e pedido claro.", categoria_de_perfil: "decidido_com_pressa", temperatura: { nivel: "quente", motivo: "disse urgente", diverge_das_regras: true, provas: ["E1"] }, tracos: [{ traco: "urgencia_real", nivel: "alto", confianca: "alta", provas: ["E1"] }], chance_de_fechar_90_dias: 0.4, previsoes: [], follow_up: { acao: "ligar", quando: "hoje", por_que: "Está quente.", mensagem_sugerida: "" }, alertas: [], lacunas: [], o_que_mudaria_a_leitura: "", fatos_citados: { E1: { em: "2026-11-15T10:00:00Z", tipo: "pedido", texto: "pedido 11 Piso" } } } }],
   ficha: { papel: "cliente", cidade: "Campinas", uf: "SP", profissao: null, criado_em: "2026-11-12T10:00:00Z", ultimo_acesso: "2026-11-18T10:00:00Z", origem: "Sem indicação", etapa: "Pediu ajuste na proposta", posthog_url: "https://us.posthog.com/project/715328/person/5",
-    conta: [["Conta criada", "12/11"]], uso_do_app: null, pedidos: [{ titulo: "Piso da sala", sub: "publicado", campos: { "Onde no imóvel": "Sala" } }], propostas: [], pagamentos: [], sinais: [], conversas_ia: [{ id: 77, tipo: "pedido", quando: "2026-11-19T02:40:00Z", mensagens: 10, custo_usd: 0.01, sinais: 0, trecho: [{ de: "ia", texto: "trecho curto" }] }], caminho: { principal: ["ia"], pos: [] }, trajetoria: [] },
+    conta: [["Conta criada", "12/11"]], uso_do_app: null, pedidos: [{ titulo: "Piso da sala", sub: "publicado", campos: { "Onde no imóvel": "Sala" } }], propostas: [], pagamentos: [], sinais: [], conversas_ia: [{ id: 77, tipo: "pedido", quando: "2026-11-19T02:40:00Z", mensagens: 10, custo_usd: 0.01, sinais: 0, trecho: [{ de: "ia", texto: "trecho curto" }] }], caminho: { principal: ["ia"], pos: [] }, trajetoria: [],
+    guardados: {
+      rascunhos: [{ titulo: "Pedido começado com a IA, não publicado: Reforma do banheiro", sub: "6 mensagens · parou 17/11", campos: { IA: "pedido" }, conversa_id: 77 }],
+      arquivados: [{ titulo: "Oferta de Carlos Pinto arquivada", sub: "pedido Piso da sala · 16/11", campos: { "Compatibilidade": "81%" } }],
+      aviso_rascunhos: null,
+    } },
 };
+const PARTICIPANTE = (id: number, name: string, type: "prestador" | "contratante") => ({ id, name, type, masked_email: null, is_admin: false, perfil_completo: true, city: null, state: null, perfil: null, banner: null });
+const OPERACOES = { data: {
+  user: PARTICIPANTE(5, "Ana Lima", "contratante"),
+  summary: { conversations_count: 1, contracts_count: 1, active_contracts_count: 1, running_payments_count: 0, paid_payments_count: 1, financially_cleared_steps_count: 1, concluded_steps_count: 1, ready_payout_steps_count: 0, ready_payout_total: 0 },
+  generated_at: "2026-11-19T03:00:00Z",
+  conversations: [{
+    conversation_id: 40, created_at: "2026-11-15T10:00:00Z", updated_at: "2026-11-18T10:00:00Z", is_negotiation: true, is_admin_thread: false, message_count: 3,
+    last_message_preview: "Posso começar segunda", last_message_at: "2026-11-18T10:00:00Z",
+    participants: [PARTICIPANTE(5, "Ana Lima", "contratante"), PARTICIPANTE(50, "Carlos Pinto", "prestador")],
+    active_contracts_count: 1, ready_payout_steps_count: 0, ready_payout_total: 0,
+    contracts: [{
+      id: 700, status: "em andamento", conversation_id: 40, created_at: "2026-11-16T10:00:00Z", updated_at: "2026-11-18T10:00:00Z", total_price: 2400, total_date: 10,
+      payment_preference: "per_step", payment_status: "partial_steps", allow_grouped_payment: false, provider_receiving_method: "escrow", provider_receiving_account_label: null,
+      provider: PARTICIPANTE(50, "Carlos Pinto", "prestador"), contractor: PARTICIPANTE(5, "Ana Lima", "contratante"),
+      running_payments_count: 0, paid_payments_count: 1, failed_payments_count: 0, financially_cleared_steps_count: 1, concluded_steps_count: 1, ready_payout_steps_count: 0, ready_payout_total: 0,
+      latest_document: null, groups: [],
+      steps: [
+        { id: 1, title: "Demolição", status: "Concluido", price: 1200, signature: true, confirm_freelancer: true, confirm_contractor: true, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
+        { id: 2, title: "Assentar piso", status: "Recusado", price: 1200, signature: false, confirm_freelancer: true, confirm_contractor: false, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
+      ],
+    }],
+  }],
+} };
+const CHAT = { data: {
+  conversation: { conversation_id: 40, participants: [PARTICIPANTE(5, "Ana Lima", "contratante"), PARTICIPANTE(50, "Carlos Pinto", "prestador")] },
+  messages: [
+    { message_id: 3, conversation_id: 40, sender_id: 50, content: "Posso começar segunda", createdAt: "2026-11-18T10:00:00Z" },
+    { message_id: 1, conversation_id: 40, sender_id: 5, content: "Oi, quanto fica o piso?", createdAt: "2026-11-17T10:00:00Z" },
+    { message_id: 2, conversation_id: 40, sender_id: 50, content: "R$ 2.400 com material", createdAt: "2026-11-17T11:00:00Z" },
+  ],
+} };
 
 const KIRIOS = {
   dias: 90,
@@ -69,12 +105,20 @@ const CONVERSA = {
   mensagens: Array.from({ length: 10 }, (_, i) => ({ de: i % 2 ? "ia" : "eu", texto: i === 9 ? TEXTO_LONGO : `mensagem ${i + 1}`, em: `2026-11-19T02:${String(26 + i).padStart(2, "0")}:00Z` })),
 };
 
+/** A linha da conversa com a IA na aba Conta (a única com custo em US$). */
+const linhaDaIA = async () => {
+  await screen.findByText(/US\$ 0,01/);
+  return screen.getAllByRole("row").find((r) => within(r).queryByText(/US\$ 0,01/))!;
+};
+
 beforeEach(() => {
   apiRequestMock.mockReset();
   baixarMock.mockReset();
   apiRequestMock.mockImplementation((_metodo: string, rota: string, corpo?: { confirmar?: boolean }) => {
     if (rota === "/admin/analise/perguntar") return Promise.resolve(ok(corpo?.confirmar ? { success: true, resposta: "Ligue hoje para PH #5: está quente, chance de 40%.", sabe: true, fontes: ["Últimas análises"], custo_usd: 0.05 } : { success: true, previa: true, custo_estimado_usd: 0.072 }));
     if (rota.startsWith("/admin/analise/previsoes")) return Promise.resolve(ok({ pendentes: 0, conferidas_agora: 0, geral: null }));
+    if (rota === "/admin/users/5/operations") return Promise.resolve(ok(OPERACOES));
+    if (rota === "/admin/conversations/40/messages") return Promise.resolve(ok(CHAT));
     if (rota === "/admin/ai-conversas/77") return Promise.resolve(ok({ conversa: CONVERSA }));
     if (rota === "/admin/analise/exportar") return Promise.resolve(ok({ planilhas: { Pessoas: { colunas: ["id", "nome"], linhas: [[5, "Ana Lima"]] } } }));
     if (rota.startsWith("/admin/analise/visao")) return Promise.resolve(ok(VISAO));
@@ -196,8 +240,8 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conversas com a IA/ }));
-    fireEvent.click(await screen.findByRole("button", { name: "ver" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(within(await linhaDaIA()).getByRole("button", { name: "ver" }));
     const janela = await screen.findByRole("dialog");
     await waitFor(() => expect(within(janela).getAllByTestId("mensagem-da-conversa")).toHaveLength(10));
     // nada cortado: a mensagem longa aparece inteira
@@ -219,10 +263,52 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
-    fireEvent.click(await screen.findByRole("button", { name: /Conversas com a IA/ }));
-    fireEvent.click(await screen.findByRole("button", { name: "Baixar" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(within(await linhaDaIA()).getByRole("button", { name: "Baixar" }));
     await waitFor(() => expect(baixarMock).toHaveBeenCalledTimes(1));
     expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/ai-conversas/77");
     expect(baixarMock.mock.calls[0][0]).toContain("Mensagens: 10");
+  });
+
+  it("o gráfico por semana mostra o número de pedidos e de contratos", async () => {
+    render(<AdminAnaliseSection />);
+    const semana = await screen.findByTestId("semana");
+    expect(within(semana).getByLabelText("8 pedidos")).toHaveTextContent("8");
+    expect(within(semana).getByLabelText("3 contratos")).toHaveTextContent("3");
+  });
+
+  it("aba Conta mostra o chat inteiro, os contratos com as fases, rascunhos e arquivados", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    expect(await screen.findByText("Posso começar segunda")).toBeInTheDocument();
+    expect(screen.getByText(/Reforma do banheiro/)).toBeInTheDocument();
+    expect(screen.getByText("Oferta de Carlos Pinto arquivada")).toBeInTheDocument();
+    expect(screen.getByText(/1 de 2 fases concluídas · 1 recusada/)).toBeInTheDocument();
+
+    const linhaDoChat = screen.getAllByRole("row").find((r) => within(r).queryByText("Posso começar segunda"))!;
+    fireEvent.click(within(linhaDoChat).getByRole("button", { name: "ver" }));
+    const janela = await screen.findByRole("dialog");
+    await waitFor(() => expect(within(janela).getAllByTestId("mensagem-do-chat")).toHaveLength(3));
+    // na ordem em que foram mandadas
+    expect(within(janela).getAllByTestId("mensagem-do-chat")[0]).toHaveTextContent("Oi, quanto fica o piso?");
+    fireEvent.click(within(janela).getByRole("button", { name: /Baixar \.txt/ }));
+    const [conteudo, nome] = baixarMock.mock.calls[0];
+    expect(nome).toBe("chat-40.txt");
+    expect(conteudo).toContain("Entre: Ana Lima (PH #5) e Carlos Pinto (PH #50)");
+    expect(conteudo.indexOf("Oi, quanto fica o piso?")).toBeLessThan(conteudo.indexOf("Posso começar segunda"));
+  });
+
+  it("contrato abre o detalhe com cada fase", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: /Conta e conversas/ }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    expect(within(janela).getByText("Assentar piso")).toBeInTheDocument();
+    expect(within(janela).getByText("recusada pelo cliente")).toBeInTheDocument();
+    expect(within(janela).getByText("parte das fases paga")).toBeInTheDocument();
   });
 });
