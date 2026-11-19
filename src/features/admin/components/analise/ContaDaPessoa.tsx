@@ -4,8 +4,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { baixarChat, horaDaMensagem, type ChatParaBaixar, type MensagemDoChat } from "../conversaParaBaixar";
-import type { AdminOperationalConversation, AdminOperationalStep, AdminOperationalTicket, AdminUserOperationsOverview, Participant } from "../../types";
+import type { AdminOperationalConversation, AdminUserOperationsOverview, Participant } from "../../types";
 import { BotaoBaixarConversa, ConversaCompleta } from "./ConversaCompleta";
+import { DetalheDoContrato } from "./DetalheDoContrato";
 import { Carregando, Erro, EtiquetaPH, ler, quando, reais, rotulo, usd, useApi, type ConteudoJanela } from "./comum";
 import type { Ficha, GuardadoDaConta } from "./tipos";
 
@@ -23,7 +24,6 @@ const STATUS_PAGAMENTO: Record<string, string> = {
   awaiting_deposit: "esperando o 1º pagamento", deposit_pending: "1º pagamento em processamento", deposit_paid: "1º pagamento feito",
   awaiting_steps: "esperando pagar as fases", partial_steps: "parte das fases paga", steps_paid: "todas as fases pagas",
 };
-const STATUS_FASE: Record<string, string> = { Pendente: "não começou", "Em Andamento": "em andamento", Concluido: "concluída", Recusado: "recusada pelo cliente" };
 
 const paraBaixar = (r: RespostaDoChat["data"]): ChatParaBaixar => ({
   conversation_id: r.conversation.conversation_id,
@@ -83,43 +83,6 @@ function BotaoBaixarChat({ id }: { id: number }) {
 }
 
 const outro = (c: AdminOperationalConversation, dono: number) => c.participants.find((p) => p && p.id !== dono) ?? null;
-
-function SimNao({ sim, texto }: { sim: boolean; texto: string }) {
-  return <span className={cn("whitespace-nowrap rounded px-1.5 text-[11px] font-semibold", sim ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-400")}>{sim ? "✓ " : ""}{texto}</span>;
-}
-
-/** Detalhe de um contrato: situação, pagamento e cada fase. */
-function DetalheDoContrato({ t }: { t: AdminOperationalTicket }) {
-  const fases = t.steps.filter((s) => s.price > 0);
-  return (
-    <div className="space-y-3">
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
-        <dt className="text-slate-500">Situação</dt><dd className="font-semibold text-slate-900">{STATUS_CONTRATO[t.status] ?? t.status}</dd>
-        <dt className="text-slate-500">Pagamento</dt><dd className="font-semibold text-slate-900">{t.payment_status ? STATUS_PAGAMENTO[t.payment_status] ?? t.payment_status : "—"}</dd>
-        <dt className="text-slate-500">Cliente</dt><dd className="font-semibold text-slate-900">{t.contractor?.name ?? "—"}{t.contractor ? <> <EtiquetaPH id={t.contractor.id} leve /></> : null}</dd>
-        <dt className="text-slate-500">Profissional</dt><dd className="font-semibold text-slate-900">{t.provider?.name ?? "—"}{t.provider ? <> <EtiquetaPH id={t.provider.id} leve /></> : null}</dd>
-        <dt className="text-slate-500">Criado em</dt><dd className="font-semibold text-slate-900">{quando(t.created_at)}</dd>
-        <dt className="text-slate-500">Última mudança</dt><dd className="font-semibold text-slate-900">{quando(t.updated_at)}</dd>
-        <dt className="text-slate-500">Contrato assinado</dt><dd className="font-semibold text-slate-900">{t.latest_document ? (t.latest_document.signed ? `sim, ${quando(t.latest_document.date)}` : "gerado, sem assinatura") : "sem documento"}</dd>
-        <dt className="text-slate-500">Pronto para repassar</dt><dd className="font-semibold text-slate-900">{t.ready_payout_steps_count ? `${t.ready_payout_steps_count} fase(s) · ${reais(t.ready_payout_total)}` : "nada"}</dd>
-      </dl>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="text-[11px] uppercase tracking-wide text-slate-400"><tr><th className="py-1">Fase</th><th>Valor</th><th>Situação</th><th>Andamento</th></tr></thead>
-          <tbody>{fases.map((s: AdminOperationalStep) => (
-            <tr key={s.id} className="border-t border-slate-100 align-top">
-              <td className="py-1.5"><b className="block text-slate-900">{s.title}</b>{t.groups.length > 1 ? <small className="text-xs text-slate-400">{s.group_label}</small> : null}</td>
-              <td className="py-1.5 font-semibold">{reais(s.price)}</td>
-              <td className={cn("py-1.5", s.status === "Recusado" && "font-semibold text-rose-600")}>{STATUS_FASE[s.status] ?? s.status}</td>
-              <td className="py-1.5"><div className="flex flex-wrap gap-1"><SimNao sim={s.is_financially_cleared} texto="paga" /><SimNao sim={s.confirm_freelancer} texto="entregue" /><SimNao sim={s.confirm_contractor} texto="aprovada" /><SimNao sim={s.payout_ready} texto="pronta p/ repasse" /></div></td>
-            </tr>
-          ))}</tbody>
-        </table>
-      </div>
-      <p className="text-xs text-slate-400">Para mexer no contrato (repasse, fases), use a tela Usuários ou Contratos do painel.</p>
-    </div>
-  );
-}
 
 function Guardados({ itens, vazio, nome, rotuloDoTipo, abrir }: { itens: GuardadoDaConta[]; vazio: string; nome: string; rotuloDoTipo: string; abrir: (c: ConteudoJanela) => void }) {
   if (!itens.length) return <p className="text-xs text-slate-400">{vazio}</p>;
@@ -231,7 +194,7 @@ export function ContaDaPessoa({ id, nome, f, abrir }: Props) {
               const recusadas = fases.filter((s) => s.status === "Recusado").length;
               const comQuem = id === t.contractor?.id ? t.provider?.name : t.contractor?.name;
               return (
-                <button key={t.id} type="button" onClick={() => abrir({ titulo: `Contrato ${t.id} · ${reais(t.total_price)}`, sub: `${nome} com ${comQuem ?? "—"}`, corpo: <DetalheDoContrato t={t} /> })}
+                <button key={t.id} type="button" onClick={() => abrir({ titulo: `Contrato ${t.id} · ${reais(t.total_price)}`, sub: `${nome} com ${comQuem ?? "—"}`, corpo: <DetalheDoContrato t={t} donoId={id} aoMudar={ops.deNovo} /> })}
                   className="flex w-full items-center justify-between gap-3 rounded-lg border border-slate-200 px-2.5 py-2 text-left hover:border-orange-300">
                   <span>
                     <b className="block text-[13px] text-slate-900">{reais(t.total_price)} · contrato {t.id} · com {comQuem ?? "—"}</b>

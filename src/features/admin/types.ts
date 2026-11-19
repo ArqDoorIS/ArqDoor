@@ -347,6 +347,13 @@ export type AdminOperationalStep = {
   payout_ready: boolean;
   payout_reason: string;
   payment_status_bucket: PaymentBucket;
+  /** Repasse: null (a repassar), "processando", "pago" ou "manual". Servidor de 19/11/2026 em diante. */
+  payout_status?: string | null;
+  payout_paid_at?: string | null;
+  /** Quando o profissional declarou a entrega (conta o prazo de conferência). */
+  delivered_at?: string | null;
+  auto_approved_at?: string | null;
+  rework_count?: number;
   group_id: number | null;
   group_sequence: number | null;
   group_key: string;
@@ -382,6 +389,8 @@ export type AdminOperationalTicket = {
   total_date: number;
   payment_preference: "per_step" | "at_end" | "custom" | null;
   payment_status: string | null;
+  /** Dias que o cliente tem para conferir a entrega (3, 5 ou 7). */
+  prazo_conferencia_dias?: number;
   allow_grouped_payment: boolean;
   provider_receiving_method: "escrow" | "standard";
   provider_receiving_account_label: string | null;

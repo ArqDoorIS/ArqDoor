@@ -71,10 +71,15 @@ const OPERACOES = { data: {
       payment_preference: "per_step", payment_status: "partial_steps", allow_grouped_payment: false, provider_receiving_method: "escrow", provider_receiving_account_label: null,
       provider: PARTICIPANTE(50, "Carlos Pinto", "prestador"), contractor: PARTICIPANTE(5, "Ana Lima", "contratante"),
       running_payments_count: 0, paid_payments_count: 1, failed_payments_count: 0, financially_cleared_steps_count: 1, concluded_steps_count: 1, ready_payout_steps_count: 0, ready_payout_total: 0,
-      latest_document: null, groups: [],
+      latest_document: null,
+      groups: [
+        { key: "b", label: "Banheiro", order: 2, steps_count: 1, financially_cleared_steps_count: 0, concluded_steps_count: 0, payout_ready_steps_count: 0, total_amount: 900, ready_payout_total: 0 },
+        { key: "a", label: "Cozinha", order: 1, steps_count: 2, financially_cleared_steps_count: 2, concluded_steps_count: 1, payout_ready_steps_count: 0, total_amount: 2400, ready_payout_total: 0 },
+      ],
       steps: [
-        { id: 1, title: "Demolição", status: "Concluido", price: 1200, signature: true, confirm_freelancer: true, confirm_contractor: true, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
+        { id: 1, title: "Demolição", status: "Concluido", price: 1200, signature: true, confirm_freelancer: true, confirm_contractor: true, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", payout_status: "pago", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
         { id: 2, title: "Assentar piso", status: "Recusado", price: 1200, signature: false, confirm_freelancer: true, confirm_contractor: false, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
+        { id: 3, title: "Louças", status: "Pendente", price: 900, signature: false, confirm_freelancer: false, confirm_contractor: false, is_financially_cleared: false, payout_ready: false, payout_reason: "", payment_status_bucket: "other", group_id: null, group_sequence: null, group_key: "b", group_label: "Grupo 2", group_order: 2, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
       ],
     }],
   }],
@@ -282,7 +287,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
     fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
-    expect(await screen.findByText(/1 de 2 fases concluídas · 1 recusada/)).toBeInTheDocument();
+    expect(await screen.findByText(/1 de 3 fases concluídas · 1 recusada/)).toBeInTheDocument();
     expect(screen.getByText(/Reforma do banheiro/)).toBeInTheDocument();
     expect(screen.getByText("Oferta de Carlos Pinto arquivada")).toBeInTheDocument();
     expect(screen.queryByText("Conversas no chat")).not.toBeInTheDocument();
@@ -318,8 +323,63 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
     fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
     const janela = await screen.findByRole("dialog");
-    expect(within(janela).getByText("Assentar piso")).toBeInTheDocument();
-    expect(within(janela).getByText("recusada pelo cliente")).toBeInTheDocument();
+    // grupos de pagamento na ordem do contrato, cada um com as suas fases
+    const grupos = within(janela).getAllByRole("region", { name: /Grupo de pagamento/ });
+    expect(grupos.map((g) => g.getAttribute("aria-label"))).toEqual(["Grupo de pagamento: Cozinha", "Grupo de pagamento: Banheiro"]);
+    expect(within(grupos[0]).getByText("Pago")).toBeInTheDocument();
+    expect(within(grupos[1]).getByText("Esperando pagamento")).toBeInTheDocument();
     expect(within(janela).getByText("parte das fases paga")).toBeInTheDocument();
+    expect(within(janela).getByTestId("situacao-agora")).toHaveTextContent('O cliente recusou "Assentar piso"');
+
+    const [demolicao, piso, loucas] = within(janela).getAllByTestId("fase");
+    // fase repassada: sem botão, só o aviso de que não muda mais
+    expect(within(demolicao).getByText("Repassada ao profissional")).toBeInTheDocument();
+    expect(within(demolicao).queryAllByRole("button")).toHaveLength(0);
+    expect(within(demolicao).getByText(/já saiu/)).toBeInTheDocument();
+    // recusada: refazer ou liberar com acordo
+    expect(within(piso).getByText("Recusada pelo cliente")).toBeInTheDocument();
+    expect(within(piso).getByRole("button", { name: /Mandar refazer/ })).toBeInTheDocument();
+    expect(within(piso).getByRole("button", { name: /Liberar: os dois concordaram/ })).toBeInTheDocument();
+    // grupo sem pagamento: a fase espera e o lembrete fica no grupo (pago de uma vez)
+    expect(within(loucas).queryAllByRole("button")).toHaveLength(0);
+    expect(within(loucas).getByText(/Começa quando o cliente pagar o grupo Banheiro/)).toBeInTheDocument();
+    expect(within(grupos[1]).getByRole("button", { name: /Lembrar o cliente de pagar/ })).toBeInTheDocument();
+  });
+
+  it("mandar refazer pede motivo, muda a fase, avisa os dois no chat e recarrega", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    const piso = within(janela).getAllByTestId("fase")[1];
+    fireEvent.click(within(piso).getByRole("button", { name: /Mandar refazer/ }));
+    const caixa = within(piso).getByRole("group", { name: /Confirmar: Mandar refazer/ });
+    const confirmar = within(caixa).getByRole("button", { name: "Confirmar" });
+    expect(confirmar).toBeDisabled();
+    fireEvent.change(within(caixa).getByPlaceholderText(/cliente confirmou/), { target: { value: "Conversei com os dois" } });
+    expect(within(caixa).getByLabelText("Texto do aviso")).toHaveValue('ArqDoor: a fase "Assentar piso" do contrato 700 voltou para em andamento para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.');
+    fireEvent.click(confirmar);
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/steps/2/status", { status: "Em Andamento", reason: "Mandar refazer: Conversei com os dois" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 5 })));
+    expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 50 }));
+    expect(await within(janela).findByRole("status")).toHaveTextContent("As duas pessoas foram avisadas");
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/users/5/operations", undefined, undefined, 90000));
+  });
+
+  it("lembrar de pagar só manda mensagem ao cliente, sem mexer na fase", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    const banheiro = within(janela).getByRole("region", { name: "Grupo de pagamento: Banheiro" });
+    fireEvent.click(within(banheiro).getByRole("button", { name: /Lembrar o cliente de pagar/ }));
+    fireEvent.click(within(banheiro).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 5, content: expect.stringContaining('o grupo "Banheiro" do contrato 700') })));
+    expect(apiRequestMock).not.toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 50 }));
+    expect(apiRequestMock).not.toHaveBeenCalledWith("POST", expect.stringContaining("/admin/steps/"), expect.anything());
   });
 });
