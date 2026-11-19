@@ -214,6 +214,27 @@ describe("Análise no painel", () => {
     expect(screen.getByText("1º cartão")).toBeInTheDocument();
     expect(apiRequestMock).not.toHaveBeenCalledWith("GET", expect.stringContaining("/previsoes"), undefined, undefined, 120000);
   });
+
+  it("perfis elegíveis: o admin tira e põe profissionais no match", async () => {
+    const LISTA = { profissionais: [
+      { user_id: 50, nome: "Carlos Pinto", profissao: "Pedreiro", profissoes_reconhecidas: ["Pedreiro"], cidade: "Campinas", verificado: true, perfil_publico: true, suspenso: false, tem_perfil_de_demanda: true, nota: 4.8, avaliacoes: 6, elegivel: true },
+      { user_id: 51, nome: "Dora Lima", profissao: "Faz tudo", profissoes_reconhecidas: [], cidade: "Campinas", verificado: false, perfil_publico: true, suspenso: false, tem_perfil_de_demanda: false, nota: null, avaliacoes: 0, elegivel: true },
+    ] };
+    const padrao = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) => (rota === "/admin/algoritmo/elegiveis" ? Promise.resolve(ok(m === "GET" ? LISTA : { success: true, mudou: 1 })) : padrao(m, rota, c)));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    expect(await screen.findAllByTestId("perfil-elegivel")).toHaveLength(2);
+    expect(screen.getByTestId("contagem-elegiveis")).toHaveTextContent("2 de 2 elegíveis");
+    expect(screen.getByText(/sem profissão reconhecida: nunca é sugerido/)).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("Carlos Pinto no match"));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PATCH", "/admin/algoritmo/elegiveis", { ids: [50], elegivel: false }));
+    expect(screen.getByTestId("contagem-elegiveis")).toHaveTextContent("1 de 2 elegíveis");
+    fireEvent.click(screen.getByRole("button", { name: "Fora do match" }));
+    expect(screen.getAllByTestId("perfil-elegivel")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "Marcar os da lista" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PATCH", "/admin/algoritmo/elegiveis", { ids: [50], elegivel: true }));
+  });
 });
 
 describe("Pergunte à IA, planilha e conversa inteira", () => {
