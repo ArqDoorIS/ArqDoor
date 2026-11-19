@@ -73,10 +73,28 @@ type Acao = {
   status?: StatusFase;
   repassar?: boolean;
   explica: string[];
-  aviso: string;
+  /** O aviso no chat: o mesmo texto para os dois, ou um texto para cada um. */
+  aviso: string | Avisos;
   para: Para;
   bloqueada?: string;
 };
+
+type Avisos = { cliente: string; profissional: string };
+
+/** Dinheiro liberado porque o cliente não conferiu no prazo: cada um lê o que é dele. */
+const avisoDoPrazo = (t: AdminOperationalTicket, f: AdminOperationalStep): Avisos => {
+  const dias = prazoDe(t);
+  return {
+    cliente: `ArqDoor: o prazo de ${dias} dias para você conferir a fase "${f.title}" do contrato ${t.id} acabou sem resposta, então ela foi aprovada automaticamente. O valor de ${reais(f.price)} foi liberado para o profissional. Se algo não ficou certo, fale com a gente por aqui.`,
+    profissional: `ArqDoor: a fase "${f.title}" do contrato ${t.id} foi aprovada porque o prazo de ${dias} dias para o cliente conferir acabou. O valor de ${reais(f.price)} foi liberado para você.`,
+  };
+};
+
+/** Dinheiro liberado com a concordância dos dois. */
+const avisoDoAcordo = (t: AdminOperationalTicket, f: AdminOperationalStep): Avisos => ({
+  cliente: `ArqDoor: como você e o profissional concordaram, a fase "${f.title}" do contrato ${t.id} foi aprovada. O valor de ${reais(f.price)} foi liberado para o profissional.`,
+  profissional: `ArqDoor: o cliente concordou e a fase "${f.title}" do contrato ${t.id} foi aprovada. O valor de ${reais(f.price)} foi liberado para você.`,
+});
 
 /** O grupo é pago de uma vez: o lembrete de pagar fica no grupo, não em cada fase. */
 const lembrarDePagar = (t: AdminOperationalTicket, grupo: string, valor: number): Acao => ({
@@ -94,9 +112,20 @@ const acoesDaFase = (f: Fase, t: AdminOperationalTicket): Acao[] => {
   const liberarAcordo: Acao = {
     chave: "liberar_acordo", rotulo: "Liberar: os dois concordaram", icone: <ShieldCheck className="h-3.5 w-3.5" />, jeito: "normal", status: "Concluido",
     explica: ["A fase fica aprovada (entrega e aprovação marcadas pelo admin).", `${reais(f.price)} fica pronto para repassar ao profissional.`, "O repasse continua no botão Repassar, lá em cima."],
-    aviso: `ArqDoor: ${ref} foi aprovada com a concordância do cliente e do profissional. O valor de ${reais(f.price)} está liberado para o profissional.`,
+    aviso: avisoDoAcordo(t, f),
     para: "dois",
   };
+  // Fase já aprovada (pelo cliente, sozinha pelo prazo ou já repassada): nada muda, só o
+  // aviso certo de como o dinheiro foi liberado, um texto para cada um.
+  const pelaAprovacao = f.auto_approved_at ? "prazo" : "acordo";
+  const avisarLiberacao: Acao[] = [
+    { chave: "avisar_prazo", rotulo: "Avisar: liberado pelo prazo", icone: <Clock className="h-3.5 w-3.5" />, jeito: pelaAprovacao === "prazo" ? "principal" : "normal",
+      explica: ["Nada muda no contrato: só vai o aviso no chat da ArqDoor.", `O cliente fica sabendo que o prazo de ${dias} dias acabou e o dinheiro foi liberado; o profissional, que o valor foi liberado para ele.`],
+      aviso: avisoDoPrazo(t, f), para: "dois" },
+    { chave: "avisar_acordo", rotulo: "Avisar: liberado com acordo", icone: <ShieldCheck className="h-3.5 w-3.5" />, jeito: pelaAprovacao === "acordo" ? "principal" : "normal",
+      explica: ["Nada muda no contrato: só vai o aviso no chat da ArqDoor.", "Cada um recebe a mensagem de que a fase foi aprovada com a concordância dos dois."],
+      aviso: avisoDoAcordo(t, f), para: "dois" },
+  ];
   switch (f.estado) {
     case "nao_comecou":
       return [{
@@ -117,7 +146,7 @@ const acoesDaFase = (f: Fase, t: AdminOperationalTicket): Acao[] => {
           chave: "liberar_prazo", rotulo: "Liberar: o prazo acabou", icone: <Clock className="h-3.5 w-3.5" />, jeito: "principal", status: "Concluido",
           bloqueada: prazoAcabou ? undefined : `O prazo de conferência de ${dias} dias vence em ${diaCurto(vence!)}`,
           explica: [`O cliente não conferiu em ${dias} dias depois da entrega: a fase fica aprovada.`, `${reais(f.price)} fica pronto para repassar ao profissional.`],
-          aviso: `ArqDoor: ${ref} foi aprovada porque o prazo de conferência de ${dias} dias acabou sem resposta do cliente. O valor de ${reais(f.price)} está liberado para o profissional.`,
+          aviso: avisoDoPrazo(t, f),
           para: "dois",
         },
         // Prazo ainda correndo: o caminho que sobra é o acordo, então ele vira o principal.
@@ -135,11 +164,14 @@ const acoesDaFase = (f: Fase, t: AdminOperationalTicket): Acao[] => {
       ];
     case "aprovada":
     case "pronta":
-      return [{
+      return [...avisarLiberacao, {
         chave: "voltar", rotulo: "Voltar para em andamento", icone: <Undo2 className="h-3.5 w-3.5" />, jeito: "perigo", status: "Em Andamento",
         explica: ["A aprovação é desfeita: o profissional entrega de novo e o cliente confere de novo.", "O valor sai de pronto para repassar e volta a ficar guardado."],
         aviso: `ArqDoor: ${ref} voltou para em andamento.`, para: "dois",
       }];
+    case "repasse_andamento":
+    case "repassada":
+      return avisarLiberacao;
     default:
       return [];
   }
@@ -184,12 +216,16 @@ function Confirmar({ acao, t, fase, aoTerminar, aoCancelar }: {
 }) {
   const [motivo, setMotivo] = useState("");
   const [avisar, setAvisar] = useState(true);
-  const [texto, setTexto] = useState(acao.aviso);
+
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const mexe = Boolean(acao.status || acao.repassar);
-  const pronto = (!mexe || motivo.trim().length >= 3) && (mexe || texto.trim().length > 0);
   const destinos = ([acao.para !== "profissional" ? t.contractor : null, acao.para !== "cliente" ? t.provider : null].filter(Boolean) as Participant[]);
+  const papelDe = (p: Participant) => (p.id === t.contractor?.id ? "cliente" : "profissional");
+  const [textos, setTextos] = useState<Record<number, string>>(() =>
+    Object.fromEntries(destinos.map((p) => [p.id, typeof acao.aviso === "string" ? acao.aviso : acao.aviso[papelDe(p)]])));
+  const vaiAviso = avisar || !mexe;
+  const pronto = (!mexe || motivo.trim().length >= 3) && (!vaiAviso || destinos.every((p) => (textos[p.id] ?? "").trim()));
 
   const executar = async () => {
     setEnviando(true); setErro(null);
@@ -203,10 +239,11 @@ function Confirmar({ acao, t, fase, aoTerminar, aoCancelar }: {
         await apiRequest("POST", `/admin/transfers/${t.id}/pay`).then(ler);
         mudou = true;
       }
-      if (avisar || !mexe) {
-        for (const p of destinos) await apiRequest("POST", "/admin/message", { userId: p.id, content: texto.trim() }).then(ler);
+      if (vaiAviso) {
+        for (const p of destinos) await apiRequest("POST", "/admin/message", { userId: p.id, content: textos[p.id].trim() }).then(ler);
       }
-      aoTerminar(mexe ? (avisar ? "Feito. As duas pessoas foram avisadas no chat." : "Feito.") : "Mensagem enviada.");
+      const quem = destinos.length > 1 ? "As duas pessoas foram avisadas no chat." : `${destinos[0]?.name ?? "A pessoa"} foi avisada no chat.`;
+      aoTerminar(mexe ? (avisar ? `Feito. ${quem}` : "Feito.") : quem);
     } catch (e: any) {
       // Já mudou e só o aviso falhou: fecha e diz; senão fica aberto com o erro para tentar de novo.
       if (mudou) aoTerminar(`A mudança foi feita, mas o aviso no chat não foi: ${e.message}`, true);
@@ -230,11 +267,14 @@ function Confirmar({ acao, t, fase, aoTerminar, aoCancelar }: {
           <input type="checkbox" checked={avisar} onChange={(e) => setAvisar(e.target.checked)} />
           Avisar {destinos.map((p) => p.name).join(" e ")} no chat da ArqDoor
         </label>
-      ) : <p className="text-xs font-semibold text-slate-600">Mensagem para {destinos.map((p) => p.name).join(" e ")}</p>}
-      {avisar || !mexe ? (
-        <textarea aria-label="Texto do aviso" value={texto} onChange={(e) => setTexto(e.target.value)} rows={3}
-          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-orange-400" />
       ) : null}
+      {vaiAviso ? destinos.map((p) => (
+        <label key={p.id} className="block">
+          <span className="text-xs font-semibold text-slate-600">Mensagem para {p.name ?? "—"} ({papelDe(p)})</span>
+          <textarea aria-label={`Aviso para o ${papelDe(p)}`} value={textos[p.id] ?? ""} onChange={(e) => setTextos((x) => ({ ...x, [p.id]: e.target.value }))} rows={3}
+            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-orange-400" />
+        </label>
+      )) : null}
       {erro ? <p className="rounded-lg bg-rose-50 px-2 py-1.5 text-xs font-semibold text-rose-700">{erro}</p> : null}
       <div className="flex justify-end gap-2">
         <button type="button" onClick={aoCancelar} disabled={enviando} className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
@@ -437,11 +477,12 @@ export function DetalheDoContrato({ t: inicial, donoId, aoMudar }: { t: AdminOpe
                       <Trilha f={f} />
                     </div>
                     <div className="mt-2.5 flex flex-wrap items-center gap-1.5 md:pl-8">
-                      {acoes.length ? acoes.map((a) => botao(a, `fase:${f.id}`, f)) : f.estado === "a_pagar" ? (
+                      {acoes.map((a) => botao(a, `fase:${f.id}`, f))}
+                      {f.estado === "a_pagar" ? (
                         <span className="inline-flex items-center gap-1 text-[11px] text-slate-400"><Clock className="h-3 w-3" />Começa quando o cliente pagar o grupo {g.nome}.</span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-slate-400"><Lock className="h-3 w-3" />O dinheiro desta fase já saiu. A situação dela não muda mais.</span>
-                      )}
+                      ) : f.estado === "repassada" || f.estado === "repasse_andamento" ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-slate-400"><Lock className="h-3 w-3" />O dinheiro desta fase já saiu: a situação dela não muda mais, só dá para avisar.</span>
+                      ) : null}
                     </div>
                     {painelAberto(`fase:${f.id}`)}
                   </li>

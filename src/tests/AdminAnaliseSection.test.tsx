@@ -332,9 +332,9 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(janela).getByTestId("situacao-agora")).toHaveTextContent('O cliente recusou "Assentar piso"');
 
     const [demolicao, piso, loucas] = within(janela).getAllByTestId("fase");
-    // fase repassada: sem botão, só o aviso de que não muda mais
+    // fase repassada: não muda mais, só os avisos de como o dinheiro foi liberado
     expect(within(demolicao).getByText("Repassada ao profissional")).toBeInTheDocument();
-    expect(within(demolicao).queryAllByRole("button")).toHaveLength(0);
+    expect(within(demolicao).getAllByRole("button").map((b) => b.textContent)).toEqual(["Avisar: liberado pelo prazo", "Avisar: liberado com acordo"]);
     expect(within(demolicao).getByText(/já saiu/)).toBeInTheDocument();
     // recusada: refazer ou liberar com acordo
     expect(within(piso).getByText("Recusada pelo cliente")).toBeInTheDocument();
@@ -359,13 +359,49 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     const confirmar = within(caixa).getByRole("button", { name: "Confirmar" });
     expect(confirmar).toBeDisabled();
     fireEvent.change(within(caixa).getByPlaceholderText(/cliente confirmou/), { target: { value: "Conversei com os dois" } });
-    expect(within(caixa).getByLabelText("Texto do aviso")).toHaveValue('ArqDoor: a fase "Assentar piso" do contrato 700 voltou para em andamento para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.');
+    expect(within(caixa).getByLabelText("Aviso para o cliente")).toHaveValue('ArqDoor: a fase "Assentar piso" do contrato 700 voltou para em andamento para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.');
     fireEvent.click(confirmar);
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/steps/2/status", { status: "Em Andamento", reason: "Mandar refazer: Conversei com os dois" }));
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 5 })));
     expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 50 }));
     expect(await within(janela).findByRole("status")).toHaveTextContent("As duas pessoas foram avisadas");
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/users/5/operations", undefined, undefined, 90000));
+  });
+
+  it("fase já aprovada: avisar liberado com acordo manda um texto para cada um, sem mexer na fase", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    const demolicao = within(janela).getAllByTestId("fase")[0];
+    fireEvent.click(within(demolicao).getByRole("button", { name: /Avisar: liberado com acordo/ }));
+    expect(within(demolicao).getByLabelText("Aviso para o cliente")).toHaveValue('ArqDoor: como você e o profissional concordaram, a fase "Demolição" do contrato 700 foi aprovada. O valor de R$ 1.200 foi liberado para o profissional.');
+    expect(within(demolicao).getByLabelText("Aviso para o profissional")).toHaveValue('ArqDoor: o cliente concordou e a fase "Demolição" do contrato 700 foi aprovada. O valor de R$ 1.200 foi liberado para você.');
+    fireEvent.click(within(demolicao).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", { userId: 50, content: expect.stringContaining("liberado para você") }));
+    expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", { userId: 5, content: expect.stringContaining("como você e o profissional concordaram") });
+    expect(apiRequestMock).not.toHaveBeenCalledWith("POST", expect.stringContaining("/admin/steps/"), expect.anything());
+  });
+
+  it("fase aprovada sozinha pelo prazo: o aviso do prazo é o botão principal", async () => {
+    const op = JSON.parse(JSON.stringify(OPERACOES));
+    Object.assign(op.data.conversations[0].contracts[0].steps[0], { payout_status: null, auto_approved_at: "2026-11-18T10:00:00Z" });
+    const padrao = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) => (rota === "/admin/users/5/operations" ? Promise.resolve(ok(op)) : padrao(m, rota, c)));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    const demolicao = within(janela).getAllByTestId("fase")[0];
+    expect(within(demolicao).getByRole("button", { name: /Avisar: liberado pelo prazo/ }).className).toContain("bg-orange-600");
+    expect(within(demolicao).getByRole("button", { name: /Avisar: liberado com acordo/ }).className).not.toContain("bg-orange-600");
+    expect(within(demolicao).getByRole("button", { name: /Voltar para em andamento/ })).toBeInTheDocument();
+    fireEvent.click(within(demolicao).getByRole("button", { name: /Avisar: liberado pelo prazo/ }));
+    expect((within(demolicao).getByLabelText("Aviso para o cliente") as HTMLTextAreaElement).value).toContain("o prazo de 3 dias para você conferir");
   });
 
   it("lembrar de pagar só manda mensagem ao cliente, sem mexer na fase", async () => {
