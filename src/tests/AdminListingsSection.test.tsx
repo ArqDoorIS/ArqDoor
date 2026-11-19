@@ -140,4 +140,40 @@ describe("publicações no admin", () => {
     expect(screen.getByRole("button", { name: /reexibir/i })).toBeInTheDocument();
     expect(screen.getByText(/Spam/)).toBeInTheDocument();
   });
+
+  it("inativar sem escolher motivo vai como administração; com inatividade, vai inatividade", async () => {
+    apiRequestMock.mockImplementation((metodo: string, rota: string) =>
+      Promise.resolve(rota.startsWith("/admin/listings?") ? lista([demanda()]) : ok)
+    );
+    render(<AdminListingsSection />);
+    fireEvent.click(await screen.findByRole("button", { name: /^Inativar$/ }));
+    const caixa = screen.getByRole("group", { name: /Inativar Reforma da cozinha/ });
+    expect(caixa).toHaveTextContent("Sem escolher, fica como");
+    fireEvent.click(caixa.querySelectorAll("button")[1]);
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/listings/demands/11/inativar", { motivo: "administracao", nota: undefined }));
+
+    fireEvent.click(await screen.findByRole("button", { name: /^Inativar$/ }));
+    const caixa2 = screen.getByRole("group", { name: /Inativar Reforma da cozinha/ });
+    fireEvent.click(screen.getByText("Por inatividade"));
+    fireEvent.change(screen.getByLabelText("Nota da inativação"), { target: { value: "Parado há 40 dias" } });
+    fireEvent.click(caixa2.querySelectorAll("button")[1]);
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/listings/demands/11/inativar", { motivo: "inatividade", nota: "Parado há 40 dias" }));
+  });
+
+  it("pedido inativo mostra o ícone do motivo e oferece reativar", async () => {
+    apiRequestMock.mockImplementation((metodo: string, rota: string) =>
+      Promise.resolve(rota.startsWith("/admin/listings?")
+        ? lista([
+            demanda({ id: 11, status: "cancelada", inativado_em: "2026-11-19T10:00:00Z", inativado_motivo: "inatividade" }),
+            demanda({ id: 12, title: "Telhado", status: "cancelada", inativado_em: "2026-11-19T11:00:00Z", inativado_motivo: "administracao" }),
+          ])
+        : ok)
+    );
+    render(<AdminListingsSection />);
+    const selos = await screen.findAllByTestId("selo-inativo");
+    expect(selos.map((s) => s.textContent)).toEqual(["Inativo · inatividade", "Inativo · administração"]);
+    expect(screen.queryByRole("button", { name: /^Inativar$/ })).toBeNull();
+    fireEvent.click(screen.getAllByRole("button", { name: /Reativar/ })[0]);
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/listings/demands/11/reativar", {}));
+  });
 });
