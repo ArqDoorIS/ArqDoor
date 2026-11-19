@@ -230,10 +230,10 @@ function Tendencias({ v }: { v: Visao }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <SectionCard title="Pedidos e contratos por semana" subtitle="Últimas 8 semanas">
-        <div className="flex h-40 items-end gap-2">
+        <div className="flex items-end gap-2">
           {(t.semanas ?? []).map((s) => (
             <div key={s.inicio} className="flex flex-1 flex-col items-center gap-1" title={`Semana de ${dia(s.inicio)}: ${s.pedidos} pedidos, ${s.contratos} contratos`}>
-              <div className="relative flex w-full flex-1 items-end justify-center">
+              <div className="relative flex h-28 w-full items-end justify-center">
                 <i className="block w-full rounded-t-md bg-orange-200" style={{ height: `${(s.pedidos / max) * 100}%` }} />
                 <i className="absolute bottom-0 block w-1/2 rounded-t-md bg-orange-600" style={{ height: `${(s.contratos / max) * 100}%` }} />
               </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Layers, Loader2, Route, Search, Target, Users } from "lucide-react";
+import { Cpu, LayoutDashboard, Layers, Loader2, Route, Search, Target, Users } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "../utils";
 import { Alternador, Janela, ler, type ConteudoJanela } from "./analise/comum";
@@ -9,9 +9,10 @@ import { AbaPerfis } from "./analise/Perfis";
 import { AbaPessoas } from "./analise/Pessoas";
 import { AbaInvestigar } from "./analise/Investigar";
 import { AbaPrecisao } from "./analise/Precisao";
+import { AbaKirios } from "./analise/Kirios";
 
 /**
- * Painel > Análise (v2, 19/11/2026). Seis abas:
+ * Painel > Análise (v2, 19/11/2026). Sete abas:
  *
  *   Visão geral     os 4 números, o funil desde o download (cliente e profissional), a fila de ação,
  *                   a temperatura dos leads e as tendências
@@ -19,17 +20,18 @@ import { AbaPrecisao } from "./analise/Precisao";
  *   Perfis          um cartão por tipo de pessoa que a IA analista classificou
  *   Pessoas         todo mundo, com filtro e busca pelo nome ou pelo código do PostHog
  *   Investigar      a ficha de uma pessoa: resumo da IA, mapa do caminho dela, dados, conversas e previsões
- *   Precisão da IA  as previsões conferidas pelo código quando vencem
+ *   Kirios          o desempenho do algoritmo de match: o % de cada cartão acerta quem fecha?
+ *   Precisão da IA  as previsões da IA analista conferidas pelo código quando vencem
  *
  * O código PH #id é o mesmo da pessoa no PostHog (o app manda o id do usuário como distinct_id).
  * O log de cada clique fica no PostHog; aqui entra só o resumo. A IA analista só roda por botão.
  * Backend: /admin/analise/* (controllers/admin/adminAnaliseController.js).
  */
 
-type Aba = "visao" | "caminhos" | "perfis" | "pessoas" | "investigar" | "precisao";
+type Aba = "visao" | "caminhos" | "perfis" | "pessoas" | "investigar" | "kirios" | "precisao";
 const ABAS: [Aba, string, typeof Users][] = [
   ["visao", "Visão geral", LayoutDashboard], ["caminhos", "Caminhos", Route], ["perfis", "Perfis", Layers],
-  ["pessoas", "Pessoas", Users], ["investigar", "Investigar", Search], ["precisao", "Precisão da IA", Target],
+  ["pessoas", "Pessoas", Users], ["investigar", "Investigar", Search], ["kirios", "Kirios", Cpu], ["precisao", "Precisão da IA", Target],
 ];
 
 /** Liga o PostHog para os passos antes do login (chave pessoal de leitura, guardada cifrada no servidor). */
@@ -91,6 +93,7 @@ export function AdminAnaliseSection() {
       {aba === "perfis" ? <AbaPerfis abrir={setJanela} investigar={investigar} /> : null}
       {aba === "pessoas" ? <AbaPessoas investigar={investigar} /> : null}
       {aba === "investigar" ? <AbaInvestigar id={pessoa} abrir={setJanela} investigar={investigar} irParaPerfis={() => { setJanela(null); setAba("perfis"); }} /> : null}
+      {aba === "kirios" ? <AbaKirios /> : null}
       {aba === "precisao" ? <AbaPrecisao /> : null}
 
       <Janela conteudo={janela} fechar={() => setJanela(null)} />

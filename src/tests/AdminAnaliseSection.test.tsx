@@ -51,12 +51,24 @@ const FICHA = {
     conta: [["Conta criada", "12/11"]], uso_do_app: null, pedidos: [{ titulo: "Piso da sala", sub: "publicado", campos: { "Onde no imóvel": "Sala" } }], propostas: [], pagamentos: [], sinais: [], conversas_ia: [], caminho: { principal: ["ia"], pos: [] }, trajetoria: [] },
 };
 
+const KIRIOS = {
+  dias: 90,
+  versao: { nome: "Kirios Alpha 1.1", ligado: false, fonte_do_match: "admin", fase: "arranque", contratos_reais: 62, minimo_para_selecao: 100, transicao_em: 700 },
+  acerto: { cartoes: 412, contratos: 62, auc: 0.71, auc_dentro_do_pedido: 0.63, intervalo: [0.66, 0.76], sem_dado: null },
+  calibracao: [{ faixa: "80–100%", cartoes: 50, disse_media: 88, fechou_pct: 34 }],
+  funil_por_faixa: [{ faixa: "80–100%", mostrados: 50, perfil_aberto: null, conversa: 29, proposta: 22, contrato: 17 }],
+  posicao: [{ posicao: 1, cartoes: 145, contratos: 31 }],
+  mercado: { pedidos: 145, liquidez_48h_pct: 64, ofertas_por_pedido: 2.8, pedidos_sem_oferta: 25, retomadas: null, profissionais_ativos: 88, profissionais_sem_oferta_pct: 31, concentracao_top10_pct: 38, sairam: null },
+  sinais: [{ sinal: "data_confirmada", pedidos_com: 58, pct: 40 }], semanas: [], registro: [],
+};
+
 beforeEach(() => {
   apiRequestMock.mockReset();
   apiRequestMock.mockImplementation((_metodo: string, rota: string) => {
     if (rota.startsWith("/admin/analise/visao")) return Promise.resolve(ok(VISAO));
     if (rota.startsWith("/admin/analise/funil")) return Promise.resolve(ok(FUNIL));
     if (rota.startsWith("/admin/analise/caminhos")) return Promise.resolve(ok(CAMINHOS));
+    if (rota.startsWith("/admin/analise/kirios")) return Promise.resolve(ok(KIRIOS));
     if (rota.startsWith("/admin/analise/pessoas/5/analisar")) return Promise.resolve(ok({ success: true }));
     if (rota.startsWith("/admin/analise/pessoas/5")) return Promise.resolve(ok(FICHA));
     if (rota.startsWith("/admin/analise/pessoas")) return Promise.resolve(ok(PESSOAS));
@@ -115,5 +127,15 @@ describe("Análise no painel", () => {
     fireEvent.click(await screen.findByRole("button", { name: /Analisar com IA/ }));
     expect(apiRequestMock).not.toHaveBeenCalledWith("POST", expect.stringContaining("/analisar"), expect.anything(), undefined, 180000);
     confirmar.mockRestore();
+  });
+
+  it("a aba Kirios é separada da precisão da IA e mostra o acerto do % dos cartões", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Kirios/ }));
+    expect(await screen.findByText("Kirios Alpha 1.1")).toBeInTheDocument();
+    expect(screen.getByText("ainda não ligado no app")).toBeInTheDocument();
+    expect(screen.getByText(/entre 0,66 e 0,76/)).toBeInTheDocument();
+    expect(screen.getByText("1º cartão")).toBeInTheDocument();
+    expect(apiRequestMock).not.toHaveBeenCalledWith("GET", expect.stringContaining("/previsoes"), undefined, undefined, 120000);
   });
 });

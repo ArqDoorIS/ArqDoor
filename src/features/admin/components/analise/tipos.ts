@@ -114,3 +114,18 @@ export type Nota = {
   faixas: { faixa: string; previsoes: number; disse: number | null; aconteceu: number | null }[];
   por_pergunta: Record<string, { conferidas: number; aconteceu: number; media_dita: number }>;
 };
+
+/* ---------- Kirios (algoritmo de match) ---------- */
+export type FaixaKirios = { faixa: string; cartoes: number; disse_media: number | null; fechou_pct: number | null };
+export type Kirios = {
+  dias: number;
+  versao: { nome: string; ligado: boolean; fonte_do_match: "admin" | "kirios" | "misto"; fase: "arranque" | "principal"; contratos_reais: number; minimo_para_selecao: number; transicao_em: number };
+  acerto: { cartoes: number; contratos: number; auc: number | null; auc_dentro_do_pedido: number | null; intervalo: [number, number] | null; sem_dado: string | null };
+  calibracao: FaixaKirios[];
+  funil_por_faixa: { faixa: string; mostrados: number; perfil_aberto: number | null; conversa: number; proposta: number; contrato: number }[];
+  posicao: { posicao: number; cartoes: number; contratos: number }[];
+  mercado: { pedidos: number; liquidez_48h_pct: number | null; ofertas_por_pedido: number | null; pedidos_sem_oferta: number; retomadas: number | null; profissionais_ativos: number; profissionais_sem_oferta_pct: number | null; concentracao_top10_pct: number | null; sairam: number | null };
+  sinais: { sinal: string; pedidos_com: number; pct: number }[];
+  semanas: { inicio: string; cartoes: number; contratos: number; auc: number | null }[];
+  registro: { em: string; tipo: string; dado: string; motivo: string }[];
+};
