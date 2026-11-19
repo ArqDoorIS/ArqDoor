@@ -16,6 +16,9 @@ const NOMES: Record<string, string> = {
   contrato: "Texto do orçamento",
   perfil: "Perfil de demanda",
   fases: "Explicação das fases",
+  analise_cliente: "Analista do cliente (painel)",
+  analise_profissional: "Analista do profissional (painel)",
+  analise_perguntas: "Pergunte à IA (painel)",
   teste: "Teste da chave",
 };
 const PERIODOS = [7, 30, 90];

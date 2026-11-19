@@ -2,6 +2,7 @@ import { CheckCircle2, Clock3, Target, TrendingUp } from "lucide-react";
 import { SectionCard, StatCard } from "../AdminPrimitives";
 import { Carregando, Erro, PERGUNTAS, useApi } from "./comum";
 import type { Nota } from "./tipos";
+import { PergunteAIA } from "./PergunteAIA";
 
 type Resposta = { pendentes: number; conferidas_agora: number; geral: Nota; cliente: Nota; profissional: Nota };
 
@@ -30,7 +31,17 @@ function Calibracao({ titulo, x }: { titulo: string; x: Nota }) {
   );
 }
 
-export function AbaPrecisao() {
+/** A aba: o "Pergunte à IA" no topo e, embaixo, a nota das previsões da IA analista. */
+export function AbaPrecisao({ investigar }: { investigar?: (id: number) => void } = {}) {
+  return (
+    <div className="space-y-4">
+      <PergunteAIA investigar={investigar} />
+      <NotaDasPrevisoes />
+    </div>
+  );
+}
+
+function NotaDasPrevisoes() {
   const { dado: n, erro } = useApi<Resposta>("/admin/analise/previsoes", 120000);
   if (erro) return <Erro msg={erro} />;
   if (!n) return <Carregando />;
