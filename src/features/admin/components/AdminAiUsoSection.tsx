@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { EmptyState, SectionCard } from "./AdminPrimitives";
+import { AdminAiLimitesCard } from "./AdminAiLimitesCard";
 
 /**
  * Uso e custo de cada IA (18/11/2026). Backend: GET /admin/ai-uso?dias=N.
  * O custo é calculado pelo servidor com a tabela de preços da Anthropic, em dólar.
+ * Em cima, os limites de gasto (teto por pessoa e alertas do mês): AdminAiLimitesCard.
  */
 type LinhaDoTipo = { tipo: string; chamadas: number; erros: number; tokens_entrada: number; tokens_saida: number; tokens_cache: number; custo_usd: number; hoje_usd: number };
 type Uso = { desde: string; dias: number; tipos: LinhaDoTipo[]; por_dia: { dia: string; custo_usd: number }[] };
@@ -16,6 +18,8 @@ const NOMES: Record<string, string> = {
   contrato: "Texto do orçamento",
   perfil: "Perfil de demanda",
   fases: "Explicação das fases",
+  analise_cliente: "Analista do cliente (painel)",
+  analise_profissional: "Analista do profissional (painel)",
   teste: "Teste da chave",
 };
 const PERIODOS = [7, 30, 90];
@@ -45,6 +49,7 @@ export function AdminAiUsoSection() {
   const maiorDia = Math.max(0.0001, ...(uso?.por_dia ?? []).map((d) => d.custo_usd));
   return (
     <div className="mt-2 space-y-2">
+      <AdminAiLimitesCard />
       <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1">
         {PERIODOS.map((p) => (
           <button key={p} type="button" onClick={() => setDias(p)} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${dias === p ? "bg-orange-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}>
