@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { cn, openSecureFile } from "../../utils";
 import type { AdminOperationalStep, AdminOperationalTicket, AdminUserOperationsOverview, Participant } from "../../types";
 import { EtiquetaPH, ler, quando, reais } from "./comum";
+import { acaoDeEncerrar, acoesDaReclamacao, CartaoDaReclamacao, ondeEsta, reclamacaoDaFase } from "./ReclamacaoDoPainel";
 
 /**
  * Detalhe do contrato no Investigar › Conta (19/11/2026).
@@ -23,13 +24,16 @@ import { EtiquetaPH, ler, quando, reais } from "./comum";
  */
 
 type StatusFase = "Pendente" | "Em Andamento" | "Concluido" | "Recusado";
-type Estado = "a_pagar" | "nao_comecou" | "em_andamento" | "entregue" | "recusada" | "aprovada" | "pronta" | "repasse_andamento" | "repassada";
+type Estado = "a_pagar" | "nao_comecou" | "em_andamento" | "entregue" | "recusada" | "aprovada" | "pronta" | "repasse_andamento" | "repassada" | "reembolsada" | "repasse_ajuste";
 type Fase = AdminOperationalStep & { numero: number; estado: Estado };
 
 const DIA = 86400000;
 
 export const estadoDaFase = (s: AdminOperationalStep): Estado => {
   if (s.payout_status === "processando") return "repasse_andamento";
+  // reclamação: devolvida ao cliente, ou repasse parcial a fazer na Pagar.me
+  if (s.payout_status === "reembolsado") return "reembolsada";
+  if (s.payout_status === "ajuste") return "repasse_ajuste";
   if (s.payout_status || s.payout_paid_at) return "repassada";
   if (!s.is_financially_cleared) return "a_pagar";
   if (s.status === "Recusado") return "recusada";
@@ -43,11 +47,13 @@ const ESTADO: Record<Estado, { texto: string; cor: string }> = {
   nao_comecou: { texto: "Paga, ainda não começou", cor: "bg-slate-100 text-slate-700" },
   em_andamento: { texto: "Em andamento", cor: "bg-sky-50 text-sky-700" },
   entregue: { texto: "Entregue, esperando o cliente conferir", cor: "bg-amber-50 text-amber-800" },
-  recusada: { texto: "Recusada pelo cliente", cor: "bg-rose-50 text-rose-700" },
+  recusada: { texto: "Reclamação aberta", cor: "bg-rose-50 text-rose-700" },
   aprovada: { texto: "Aprovada", cor: "bg-emerald-50 text-emerald-700" },
   pronta: { texto: "Aprovada, pronta para repassar", cor: "bg-emerald-50 text-emerald-700" },
   repasse_andamento: { texto: "Repasse em andamento", cor: "bg-emerald-50 text-emerald-700" },
   repassada: { texto: "Repassada ao profissional", cor: "bg-emerald-600 text-white" },
+  reembolsada: { texto: "Reembolsada ao cliente", cor: "bg-slate-700 text-white" },
+  repasse_ajuste: { texto: "Repasse parcial a fazer", cor: "bg-amber-50 text-amber-800" },
 };
 
 const STATUS_CONTRATO: Record<string, string> = { pendente: "Esperando assinar e pagar", "em andamento": "Em andamento", "concluída": "Concluído", cancelada: "Cancelado" };
@@ -64,7 +70,7 @@ const diaCurto = (d: Date) => d.toLocaleDateString("pt-BR", { day: "2-digit", mo
 /* ---------- ações ---------- */
 
 type Para = "dois" | "cliente" | "profissional";
-type Acao = {
+export type Acao = {
   chave: string;
   rotulo: string;
   icone: ReactNode;
@@ -77,6 +83,14 @@ type Acao = {
   aviso: string | Avisos;
   para: Para;
   bloqueada?: string;
+  /** Ação da reclamação: POST /admin/reclamacoes/:id/<rota> (com a decisão, quando decide). */
+  reclamacao?: { id: number; rota: string; decisao?: string };
+  /** Pede um valor em reais (reembolso parcial). */
+  valor?: { rotulo: string; inicial: number; max: number };
+  /** Ação de marcar o que já foi feito: não pede motivo. */
+  semMotivo?: boolean;
+  /** Letras mínimas do motivo (padrão 3). */
+  minimoMotivo?: number;
 };
 
 type Avisos = { cliente: string; profissional: string };
@@ -106,6 +120,12 @@ const lembrarDePagar = (t: AdminOperationalTicket, grupo: string, valor: number)
 
 const acoesDaFase = (f: Fase, t: AdminOperationalTicket): Acao[] => {
   const ref = `a fase "${f.title}" do contrato ${t.id}`;
+  // Reclamação aberta, ou resolvida com algo ainda por fazer: só os botões dela.
+  const r = reclamacaoDaFase(t, f.id);
+  if (r) {
+    const daReclamacao = acoesDaReclamacao(r, f, t);
+    if (r.situacao !== "resolvida" || daReclamacao.length) return daReclamacao;
+  }
   const dias = prazoDe(t);
   const vence = venceEm(f, dias);
   const prazoAcabou = !vence || vence.getTime() <= Date.now();
@@ -151,15 +171,16 @@ const acoesDaFase = (f: Fase, t: AdminOperationalTicket): Acao[] => {
         },
         // Prazo ainda correndo: o caminho que sobra é o acordo, então ele vira o principal.
         prazoAcabou ? liberarAcordo : { ...liberarAcordo, jeito: "principal" },
-        { chave: "recusar", rotulo: "Recusar a entrega", icone: <RotateCcw className="h-3.5 w-3.5" />, jeito: "perigo", status: "Recusado",
-          explica: ["A entrega é recusada em nome do cliente. O profissional precisa refazer e entregar de novo.", "O dinheiro continua guardado."],
-          aviso: `ArqDoor: a entrega da ${ref.replace("a fase", "fase")} foi recusada e precisa ser refeita.`, para: "dois" },
+        { chave: "recusar", rotulo: "Abrir reclamação pelo cliente", icone: <RotateCcw className="h-3.5 w-3.5" />, jeito: "perigo", status: "Recusado", minimoMotivo: 10,
+          explica: ["Recusa a entrega em nome do cliente e abre uma reclamação: o motivo vira o texto dela (pelo menos 10 letras).", "O profissional tem 3 dias para responder. O dinheiro continua guardado."],
+          aviso: `ArqDoor: registramos uma reclamação sobre a ${ref.replace("a fase", "fase")}. O profissional responde no app.`, para: "dois" },
       ];
     case "recusada":
+      // recusada antes de existir a reclamação (19/11/2026): reabrir ou liberar
       return [
-        { chave: "refazer", rotulo: "Mandar refazer", icone: <RotateCcw className="h-3.5 w-3.5" />, jeito: "principal", status: "Em Andamento",
-          explica: ["A fase volta para em andamento: o profissional refaz e entrega de novo, e o cliente confere de novo.", "O dinheiro continua guardado."],
-          aviso: `ArqDoor: ${ref} voltou para em andamento para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.`, para: "dois" },
+        { chave: "refazer", rotulo: "Reabrir para refazer", icone: <RotateCcw className="h-3.5 w-3.5" />, jeito: "principal", status: "Pendente",
+          explica: ["A fase volta para o profissional: ele aperta Iniciar, refaz e entrega de novo, e o cliente confere de novo.", "O dinheiro continua guardado."],
+          aviso: `ArqDoor: ${ref} foi reaberta para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.`, para: "dois" },
         liberarAcordo,
       ];
     case "aprovada":
@@ -216,23 +237,37 @@ function Confirmar({ acao, t, fase, aoTerminar, aoCancelar }: {
 }) {
   const [motivo, setMotivo] = useState("");
   const [avisar, setAvisar] = useState(true);
+  const [valor, setValor] = useState(acao.valor ? String(acao.valor.inicial).replace(".", ",") : "");
+  const valorNum = Number(valor.replace(/\./g, "").replace(",", "."));
+  const valorOk = !acao.valor || (valorNum > 0 && valorNum < acao.valor.max);
 
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const mexe = Boolean(acao.status || acao.repassar);
+  const mexe = Boolean(acao.status || acao.repassar || acao.reclamacao);
+  const pedeMotivo = mexe && !acao.semMotivo;
+  const minimo = acao.minimoMotivo ?? 3;
   const destinos = ([acao.para !== "profissional" ? t.contractor : null, acao.para !== "cliente" ? t.provider : null].filter(Boolean) as Participant[]);
   const papelDe = (p: Participant) => (p.id === t.contractor?.id ? "cliente" : "profissional");
   const [textos, setTextos] = useState<Record<number, string>>(() =>
     Object.fromEntries(destinos.map((p) => [p.id, typeof acao.aviso === "string" ? acao.aviso : acao.aviso[papelDe(p)]])));
   const vaiAviso = avisar || !mexe;
-  const pronto = (!mexe || motivo.trim().length >= 3) && (!vaiAviso || destinos.every((p) => (textos[p.id] ?? "").trim()));
+  const pronto = (!pedeMotivo || motivo.trim().length >= minimo) && valorOk && (!vaiAviso || destinos.every((p) => (textos[p.id] ?? "").trim()));
 
   const executar = async () => {
     setEnviando(true); setErro(null);
     let mudou = false;
     try {
       if (acao.status && fase) {
-        await apiRequest("POST", `/admin/steps/${fase.id}/status`, { status: acao.status, reason: `${acao.rotulo}: ${motivo.trim()}` }).then(ler);
+        // recusar pelo painel abre a reclamação: o motivo é o texto dela, sem prefixo
+        const reason = acao.status === "Recusado" ? motivo.trim() : `${acao.rotulo}: ${motivo.trim()}`;
+        await apiRequest("POST", `/admin/steps/${fase.id}/status`, { status: acao.status, reason }).then(ler);
+        mudou = true;
+      }
+      if (acao.reclamacao) {
+        const corpo = acao.reclamacao.decisao
+          ? { decisao: acao.reclamacao.decisao, motivo: motivo.trim(), ...(acao.valor ? { valor_reembolso: valorNum } : {}) }
+          : {};
+        await apiRequest("POST", `/admin/reclamacoes/${acao.reclamacao.id}/${acao.reclamacao.rota}`, corpo).then(ler);
         mudou = true;
       }
       if (acao.repassar) {
@@ -255,9 +290,18 @@ function Confirmar({ acao, t, fase, aoTerminar, aoCancelar }: {
     <div role="group" aria-label={`Confirmar: ${acao.rotulo}`} className="mt-2 space-y-2 rounded-xl border border-orange-200 bg-orange-50/50 p-3 text-sm">
       <p className="font-bold text-slate-900">{acao.rotulo}{fase ? ` · ${fase.title}` : ""}</p>
       <ul className="list-disc space-y-0.5 pl-5 text-slate-700">{acao.explica.map((x) => <li key={x}>{x}</li>)}</ul>
-      {mexe ? (
+      {acao.valor ? (
         <label className="block">
-          <span className="text-xs font-semibold text-slate-600">Motivo (fica no registro do painel)</span>
+          <span className="text-xs font-semibold text-slate-600">{acao.valor.rotulo}</span>
+          <input aria-label={acao.valor.rotulo} inputMode="decimal" value={valor} onChange={(e) => setValor(e.target.value)}
+            className="mt-1 w-40 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-orange-400" />
+          {!valorOk ? <span className="ml-2 text-xs font-semibold text-rose-700">Maior que zero e menor que {reais(acao.valor.max)}</span> : null}
+          <span className="mt-0.5 block text-[11px] text-slate-500">Se mudar o valor, ajuste também o texto dos avisos abaixo.</span>
+        </label>
+      ) : null}
+      {pedeMotivo ? (
+        <label className="block">
+          <span className="text-xs font-semibold text-slate-600">{acao.status === "Recusado" ? "O que o cliente reclamou (vira o texto da reclamação)" : "Motivo (fica no registro do painel)"}{minimo > 3 ? ` · pelo menos ${minimo} letras` : ""}</span>
           <textarea value={motivo} onChange={(e) => setMotivo(e.target.value)} rows={2} placeholder="Ex.: cliente confirmou por telefone que está tudo certo"
             className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-orange-400" />
         </label>
@@ -292,7 +336,8 @@ function Dinheiro({ fases, total }: { fases: Fase[]; total: number }) {
   const partes = [
     { nome: "Já repassado", valor: soma((x) => x.estado === "repassada" || x.estado === "repasse_andamento"), cor: "bg-emerald-600" },
     { nome: "Pronto para repassar", valor: soma((x) => x.estado === "pronta"), cor: "bg-emerald-300" },
-    { nome: "Guardado (pago, não liberado)", valor: soma((x) => ["nao_comecou", "em_andamento", "entregue", "recusada", "aprovada"].includes(x.estado)), cor: "bg-orange-400" },
+    { nome: "Guardado (pago, não liberado)", valor: soma((x) => ["nao_comecou", "em_andamento", "entregue", "recusada", "aprovada", "repasse_ajuste"].includes(x.estado)), cor: "bg-orange-400" },
+    { nome: "Devolvido ao cliente", valor: soma((x) => x.estado === "reembolsada"), cor: "bg-slate-500" },
     { nome: "Falta o cliente pagar", valor: soma((x) => x.estado === "a_pagar"), cor: "bg-slate-200" },
   ];
   const base = Math.max(1, partes.reduce((s, p) => s + p.valor, 0) || total);
@@ -301,7 +346,7 @@ function Dinheiro({ fases, total }: { fases: Fase[]; total: number }) {
       <div className="flex h-2.5 overflow-hidden rounded-full bg-slate-100" aria-hidden>
         {partes.map((p) => p.valor > 0 ? <span key={p.nome} className={p.cor} style={{ width: `${(p.valor / base) * 100}%` }} /> : null)}
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         {partes.map((p) => (
           <div key={p.nome} className="rounded-xl border border-slate-200 bg-white px-3 py-2">
             <p className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500"><span className={cn("h-2 w-2 rounded-full", p.cor)} />{p.nome}</p>
@@ -316,8 +361,14 @@ function Dinheiro({ fases, total }: { fases: Fase[]; total: number }) {
 /** A frase do topo: o que está acontecendo e o que falta. */
 const situacaoAgora = (t: AdminOperationalTicket, fases: Fase[], grupos: { nome: string; fases: Fase[] }[]): { texto: string; cor: string } => {
   const dias = prazoDe(t);
+  // reclamações primeiro: a que pede ação da ArqDoor, depois a que está correndo prazo
+  const reclamacoes = (t.reclamacoes ?? []).map((r) => ({ r, onde: ondeEsta(r), fase: fases.find((f) => f.id === r.step_id) }));
+  const pedeAcao = reclamacoes.find((x) => x.onde.acao);
+  if (pedeAcao) return { texto: `Reclamação de "${pedeAcao.fase?.title ?? "fase"}". ${pedeAcao.onde.texto}`, cor: "border-rose-200 bg-rose-50 text-rose-800" };
+  const correndo = reclamacoes.find((x) => x.r.situacao !== "resolvida");
+  if (correndo) return { texto: `Reclamação de "${correndo.fase?.title ?? "fase"}". ${correndo.onde.texto}`, cor: "border-amber-200 bg-amber-50 text-amber-900" };
   const recusada = fases.find((f) => f.estado === "recusada");
-  if (recusada) return { texto: `O cliente recusou "${recusada.title}". Decida: mandar refazer ou liberar com a concordância dos dois.`, cor: "border-rose-200 bg-rose-50 text-rose-800" };
+  if (recusada) return { texto: `"${recusada.title}" foi recusada antes da reclamação existir. Reabra para refazer ou libere com a concordância dos dois.`, cor: "border-rose-200 bg-rose-50 text-rose-800" };
   const entregue = fases.find((f) => f.estado === "entregue");
   if (entregue) {
     const v = venceEm(entregue, dias);
@@ -428,6 +479,7 @@ export function DetalheDoContrato({ t: inicial, donoId, aoMudar }: { t: AdminOpe
       <div className="space-y-2">
         <div className="flex flex-wrap gap-2" aria-label="Ações do contrato">
           {t.ready_payout_total > 0 ? botao(repassar, "contrato") : null}
+          {(t.reclamacoes ?? []).map((r) => acaoDeEncerrar(r, t)).filter(Boolean).map((a) => botao(a!, "contrato"))}
           {t.contractor ? botao(mensagem("cliente"), "contrato") : null}
           {t.provider ? botao(mensagem("profissional"), "contrato") : null}
           {t.latest_document ? (
@@ -476,6 +528,7 @@ export function DetalheDoContrato({ t: inicial, donoId, aoMudar }: { t: AdminOpe
                       </div>
                       <Trilha f={f} />
                     </div>
+                    {reclamacaoDaFase(t, f.id) ? <CartaoDaReclamacao r={reclamacaoDaFase(t, f.id)!} t={t} /> : null}
                     <div className="mt-2.5 flex flex-wrap items-center gap-1.5 md:pl-8">
                       {acoes.map((a) => botao(a, `fase:${f.id}`, f))}
                       {f.estado === "a_pagar" ? (

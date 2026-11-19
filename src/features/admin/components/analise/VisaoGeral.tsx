@@ -6,6 +6,8 @@ import {
   ACOES, Alternador, COR_TEMP, Carregando, Erro, EtiquetaPH, ICONE_GRUPO, ICONE_TEMP, Pilula, QUANDO, dia, nomeCategoria, pct, reais, useApi,
 } from "./comum";
 import type { Funil, PassoDoFunil, Temp, Visao } from "./tipos";
+import type { ConteudoJanela } from "./comum";
+import { Reclamacoes } from "./Reclamacoes";
 
 /* ---------- números do topo ---------- */
 function Linhazinha({ serie }: { serie: number[] }) {
@@ -266,13 +268,14 @@ function Tendencias({ v }: { v: Visao }) {
   );
 }
 
-export function AbaVisaoGeral({ dias, investigar, irParaPessoas, configurarPosthog }: { dias: number; investigar: (id: number) => void; irParaPessoas: () => void; configurarPosthog: () => void }) {
+export function AbaVisaoGeral({ dias, investigar, irParaPessoas, configurarPosthog, abrir }: { dias: number; investigar: (id: number) => void; irParaPessoas: () => void; configurarPosthog: () => void; abrir?: (c: ConteudoJanela) => void }) {
   const { dado: v, erro } = useApi<Visao>(`/admin/analise/visao?dias=${dias}`);
   if (erro) return <Erro msg={erro} />;
   return (
     <div className="space-y-4">
       {v ? <Numeros v={v} dias={dias} /> : <Carregando />}
       <CartaoDoFunil dias={dias} configurarPosthog={configurarPosthog} />
+      {abrir ? <Reclamacoes abrir={abrir} /> : null}
       {v ? <FilaDeAcao v={v} investigar={investigar} /> : null}
       {v ? <Temperatura v={v} investigar={investigar} irParaPessoas={irParaPessoas} /> : null}
       {v ? <Tendencias v={v} /> : null}

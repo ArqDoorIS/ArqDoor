@@ -124,7 +124,7 @@ export function AdminAnaliseSection() {
       </div>
       {comPeriodo ? <p className="-mt-2 text-right text-[11px] text-slate-400">Comparado com os {dias} dias anteriores</p> : null}
 
-      {aba === "visao" ? <AbaVisaoGeral dias={Number(dias)} investigar={investigar} irParaPessoas={() => setAba("pessoas")} configurarPosthog={configurarPosthog} /> : null}
+      {aba === "visao" ? <AbaVisaoGeral dias={Number(dias)} investigar={investigar} irParaPessoas={() => setAba("pessoas")} configurarPosthog={configurarPosthog} abrir={setJanela} /> : null}
       {aba === "caminhos" ? <AbaCaminhos dias={Number(dias)} abrir={setJanela} investigar={investigar} /> : null}
       {aba === "perfis" ? <AbaPerfis abrir={setJanela} investigar={investigar} /> : null}
       {aba === "pessoas" ? <AbaPessoas investigar={investigar} /> : null}

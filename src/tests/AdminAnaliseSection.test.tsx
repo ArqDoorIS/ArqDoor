@@ -57,6 +57,15 @@ const FICHA = {
     } },
 };
 const PARTICIPANTE = (id: number, name: string, type: "prestador" | "contratante") => ({ id, name, type, masked_email: null, is_admin: false, perfil_completo: true, city: null, state: null, perfil: null, banner: null });
+/** Cliente reclamou do piso; o profissional propôs R$ 300 de desconto e o cliente aceitou. */
+const RECLAMACAO = {
+  id: 31, step_id: 2, ticket_id: 700, cliente_id: 5, profissional_id: 50, texto: "O piso ficou desnivelado perto da porta",
+  aberta_por: "cliente" as const, situacao: "com_a_arqdoor" as const, prazo_ate: null, disputa: false, motivo_da_disputa: null,
+  resposta: "desconto" as const, resposta_valor: 300, resposta_texto: "Posso dar um desconto", respondida_em: "2026-11-18T10:00:00Z",
+  cliente_aceitou: true, cliente_respondeu_em: "2026-11-18T12:00:00Z", decisao: null, valor_reembolso: null, valor_ao_profissional: null,
+  decisao_motivo: null, decidida_em: null, reembolso_feito_em: null, repasse_feito_em: null, continuar: null, contrato_encerrado_em: null,
+  nota_cliente: null, comentario_cliente: null, nota_profissional: null, comentario_profissional: null, created_at: "2026-11-17T10:00:00Z",
+};
 const OPERACOES = { data: {
   user: PARTICIPANTE(5, "Ana Lima", "contratante"),
   summary: { conversations_count: 1, contracts_count: 1, active_contracts_count: 1, running_payments_count: 0, paid_payments_count: 1, financially_cleared_steps_count: 1, concluded_steps_count: 1, ready_payout_steps_count: 0, ready_payout_total: 0 },
@@ -76,6 +85,7 @@ const OPERACOES = { data: {
         { key: "b", label: "Banheiro", order: 2, steps_count: 1, financially_cleared_steps_count: 0, concluded_steps_count: 0, payout_ready_steps_count: 0, total_amount: 900, ready_payout_total: 0 },
         { key: "a", label: "Cozinha", order: 1, steps_count: 2, financially_cleared_steps_count: 2, concluded_steps_count: 1, payout_ready_steps_count: 0, total_amount: 2400, ready_payout_total: 0 },
       ],
+      reclamacoes: [RECLAMACAO],
       steps: [
         { id: 1, title: "Demolição", status: "Concluido", price: 1200, signature: true, confirm_freelancer: true, confirm_contractor: true, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", payout_status: "pago", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
         { id: 2, title: "Assentar piso", status: "Recusado", price: 1200, signature: false, confirm_freelancer: true, confirm_contractor: false, is_financially_cleared: true, payout_ready: false, payout_reason: "", payment_status_bucket: "paid", group_id: null, group_sequence: null, group_key: "a", group_label: "Grupo 1", group_order: 1, created_at: null, updated_at: null, start_date: null, end_date: null, started_at: null, latest_payment: null },
@@ -329,7 +339,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(grupos[0]).getByText("Pago")).toBeInTheDocument();
     expect(within(grupos[1]).getByText("Esperando pagamento")).toBeInTheDocument();
     expect(within(janela).getByText("parte das fases paga")).toBeInTheDocument();
-    expect(within(janela).getByTestId("situacao-agora")).toHaveTextContent('O cliente recusou "Assentar piso"');
+    expect(within(janela).getByTestId("situacao-agora")).toHaveTextContent('Reclamação de "Assentar piso". Os dois se acertaram');
 
     const [demolicao, piso, loucas] = within(janela).getAllByTestId("fase");
     // fase repassada: não muda mais, só os avisos de como o dinheiro foi liberado
@@ -337,16 +347,21 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(demolicao).getAllByRole("button").map((b) => b.textContent)).toEqual(["Avisar: liberado pelo prazo", "Avisar: liberado com acordo"]);
     expect(within(demolicao).getByText(/já saiu/)).toBeInTheDocument();
     // recusada: refazer ou liberar com acordo
-    expect(within(piso).getByText("Recusada pelo cliente")).toBeInTheDocument();
-    expect(within(piso).getByRole("button", { name: /Mandar refazer/ })).toBeInTheDocument();
-    expect(within(piso).getByRole("button", { name: /Liberar: os dois concordaram/ })).toBeInTheDocument();
+    // reclamação: o texto do cliente, a proposta do profissional e as decisões da ArqDoor
+    expect(within(piso).getByText("Reclamação aberta")).toBeInTheDocument();
+    expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("“O piso ficou desnivelado perto da porta”");
+    expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("Carlos Pinto propôs um desconto de R$ 300");
+    expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("Ana Lima aceitou a proposta");
+    expect(within(piso).getAllByRole("button").map((b) => b.textContent)).toEqual(["Reabrir para refazer", "Reembolso total", "Reembolso parcial", "Liberar sem reembolso"]);
+    // o desconto aceito é a decisão sugerida
+    expect(within(piso).getByRole("button", { name: /Reembolso parcial/ }).className).toContain("bg-orange-600");
     // grupo sem pagamento: a fase espera e o lembrete fica no grupo (pago de uma vez)
     expect(within(loucas).queryAllByRole("button")).toHaveLength(0);
     expect(within(loucas).getByText(/Começa quando o cliente pagar o grupo Banheiro/)).toBeInTheDocument();
     expect(within(grupos[1]).getByRole("button", { name: /Lembrar o cliente de pagar/ })).toBeInTheDocument();
   });
 
-  it("mandar refazer pede motivo, muda a fase, avisa os dois no chat e recarrega", async () => {
+  it("reembolso parcial decide pela reclamação com o valor aceito, avisa os dois e recarrega", async () => {
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
     fireEvent.click(await screen.findByText("Ana Lima"));
@@ -354,14 +369,16 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
     const janela = await screen.findByRole("dialog");
     const piso = within(janela).getAllByTestId("fase")[1];
-    fireEvent.click(within(piso).getByRole("button", { name: /Mandar refazer/ }));
-    const caixa = within(piso).getByRole("group", { name: /Confirmar: Mandar refazer/ });
+    fireEvent.click(within(piso).getByRole("button", { name: /Reembolso parcial/ }));
+    const caixa = within(piso).getByRole("group", { name: /Confirmar: Reembolso parcial/ });
     const confirmar = within(caixa).getByRole("button", { name: "Confirmar" });
+    expect(within(caixa).getByLabelText(/Quanto volta ao cliente/)).toHaveValue("300");
     expect(confirmar).toBeDisabled();
-    fireEvent.change(within(caixa).getByPlaceholderText(/cliente confirmou/), { target: { value: "Conversei com os dois" } });
-    expect(within(caixa).getByLabelText("Aviso para o cliente")).toHaveValue('ArqDoor: a fase "Assentar piso" do contrato 700 voltou para em andamento para ser refeita. Quando terminar, o profissional entrega de novo e o cliente confere.');
+    fireEvent.change(within(caixa).getByPlaceholderText(/cliente confirmou/), { target: { value: "Desconto aceito pelos dois" } });
+    expect(within(caixa).getByLabelText("Aviso para o cliente")).toHaveValue('ArqDoor: decidimos reembolsar R$ 300 da fase "Assentar piso" do contrato 700. Avisamos quando o reembolso for feito.');
     fireEvent.click(confirmar);
-    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/steps/2/status", { status: "Em Andamento", reason: "Mandar refazer: Conversei com os dois" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/reclamacoes/31/decidir", { decisao: "reembolso_parcial", motivo: "Desconto aceito pelos dois", valor_reembolso: 300 }));
+    expect(apiRequestMock).not.toHaveBeenCalledWith("POST", expect.stringContaining("/admin/steps/"), expect.anything());
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 5 })));
     expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", expect.objectContaining({ userId: 50 }));
     expect(await within(janela).findByRole("status")).toHaveTextContent("As duas pessoas foram avisadas");
@@ -402,6 +419,43 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(demolicao).getByRole("button", { name: /Voltar para em andamento/ })).toBeInTheDocument();
     fireEvent.click(within(demolicao).getByRole("button", { name: /Avisar: liberado pelo prazo/ }));
     expect((within(demolicao).getByLabelText("Aviso para o cliente") as HTMLTextAreaElement).value).toContain("o prazo de 3 dias para você conferir");
+  });
+
+  it("reclamação resolvida com reembolso: marcar reembolso feito; cliente sem querer continuar: encerrar", async () => {
+    const op = JSON.parse(JSON.stringify(OPERACOES));
+    const t = op.data.conversations[0].contracts[0];
+    Object.assign(t.reclamacoes[0], { situacao: "resolvida", decisao: "reembolso_total", valor_reembolso: 1200, valor_ao_profissional: 0, decisao_motivo: "Sem resposta" });
+    Object.assign(t.steps[1], { payout_status: "reembolsado" });
+    const padrao = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) => (rota === "/admin/users/5/operations" ? Promise.resolve(ok(op)) : padrao(m, rota, c)));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Conta" }));
+    fireEvent.click(await screen.findByText(/contrato 700 · com Carlos Pinto/));
+    const janela = await screen.findByRole("dialog");
+    const piso = within(janela).getAllByTestId("fase")[1];
+    expect(within(piso).getByText("Reembolsada ao cliente")).toBeInTheDocument();
+    expect(within(piso).getAllByRole("button").map((b) => b.textContent)).toEqual(["Marcar reembolso feito (R$ 1.200)"]);
+    fireEvent.click(within(piso).getByRole("button", { name: /Marcar reembolso feito/ }));
+    // marcar o que já foi feito não pede motivo
+    fireEvent.click(within(piso).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/reclamacoes/31/reembolso-feito", {}));
+    expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/message", { userId: 5, content: expect.stringContaining("Quer continuar o contrato") });
+  });
+
+  it("Visão geral lista as reclamações e abre o contrato da reclamação", async () => {
+    const padrao = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) => (rota === "/admin/reclamacoes?abertas=1"
+      ? Promise.resolve(ok({ data: [{ ...RECLAMACAO, fase: { id: 2, titulo: "Assentar piso", valor: 1200 }, cliente: { id: 5, nome: "Ana Lima" }, profissional: { id: 50, nome: "Carlos Pinto" } }] }))
+      : padrao(m, rota, c)));
+    render(<AdminAnaliseSection />);
+    const item = await screen.findByTestId("reclamacao-na-lista");
+    expect(item).toHaveTextContent("Assentar piso · R$ 1.200 · Ana Lima com Carlos Pinto");
+    expect(item).toHaveTextContent("Os dois se acertaram: falta a ArqDoor executar (reembolso parcial ao cliente)");
+    fireEvent.click(item);
+    const janela = await screen.findByRole("dialog");
+    expect(await within(janela).findByTestId("reclamacao")).toHaveTextContent("O piso ficou desnivelado");
   });
 
   it("lembrar de pagar só manda mensagem ao cliente, sem mexer na fase", async () => {

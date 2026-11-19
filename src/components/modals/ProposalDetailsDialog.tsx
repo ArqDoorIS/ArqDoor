@@ -66,7 +66,8 @@ type ProposalDetailsDialogProps = {
   onOpenSignature: (ticket: any) => void
   onRejectContract: (ticketId: number) => void
   onClientAccept: (step: Step) => Promise<void>
-  onClientRejectStep: (step: Step) => Promise<boolean>
+  /** `motivo`: o texto da reclamação (recusar é reclamar por escrito, 10 letras ou mais). */
+  onClientRejectStep: (step: Step, motivo?: string) => Promise<boolean>
   onFeedbackCreated?: (step: Step, comment: string, isProblem: boolean) => void
   onPaySteps?: (steps: Step[]) => void
   payingStepId?: number | null
@@ -382,7 +383,7 @@ export function ProposalDetailsDialog({
       setFeedbackModalInput("");
       setEditingFeedbackId(null);
       if (pendingRejectStep && pendingRejectStep.id === feedbackModalStep.id && isProblem) {
-        await onClientRejectStep(pendingRejectStep);
+        await onClientRejectStep(pendingRejectStep, feedbackModalInput.trim());
         setPendingRejectStep(null);
       }
     }
@@ -1277,7 +1278,7 @@ export function ProposalDetailsDialog({
                 <Button
                   size="sm"
                   onClick={handleSubmitFeedback}
-                  disabled={isCreatingFeedback || isUpdatingFeedback || !feedbackModalInput.trim()}
+                  disabled={isCreatingFeedback || isUpdatingFeedback || !feedbackModalInput.trim() || (!!pendingRejectStep && feedbackModalInput.trim().length < 10)}
                 >
                   {editingFeedbackId ? "Salvar alterações" : "Enviar"}
                 </Button>
@@ -1296,7 +1297,7 @@ export function ProposalDetailsDialog({
               </div>
               {pendingRejectStep && feedbackModalType === 'problem' && (
                 <p className="text-xs text-danger-dark">
-                  Ao enviar o problema a etapa será recusada automaticamente.
+                  Ao enviar, a etapa é recusada e a sua reclamação vai para o profissional responder. Explique o que precisa ser ajustado (pelo menos 10 letras).
                 </p>
               )}
             </div>
