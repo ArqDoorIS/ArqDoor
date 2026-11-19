@@ -4,6 +4,9 @@ import { cn } from "../../utils";
 import { Barras, Bloco, Carregando, Erro, dia, rotulo, useApi } from "./comum";
 import type { Kirios } from "./tipos";
 import { PerfisElegiveis } from "./PerfisElegiveis";
+import { RegrasDoAlgoritmo } from "./RegrasDoAlgoritmo";
+import { HistoricoDeListas } from "./HistoricoDeListas";
+import type { ConteudoJanela } from "./comum";
 
 /**
  * Aba Algoritmo (Kirios por dentro): o desempenho do algoritmo de match (o % de cada cartão). Separada da Precisão da IA,
@@ -31,7 +34,7 @@ function Numero({ rotulo: r, valor, ajuda }: { rotulo: string; valor: React.Reac
   return <div className="rounded-xl bg-slate-50 px-3 py-2"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{r}</p><p className="text-lg font-bold text-slate-950">{valor}</p>{ajuda ? <p className="text-[11px] text-slate-400">{ajuda}</p> : null}</div>;
 }
 
-export function AbaKirios() {
+export function AbaKirios({ abrir, investigar }: { abrir?: (c: ConteudoJanela) => void; investigar?: (id: number) => void } = {}) {
   const { dado: k, erro } = useApi<Kirios>("/admin/analise/kirios?dias=90", 120000);
   if (erro) return <Erro msg={erro} />;
   if (!k) return <Carregando />;
@@ -63,8 +66,10 @@ export function AbaKirios() {
         </div>
       </section>
 
-      {/* quem entra no match (19/11/2026) */}
+      {/* quem entra no match, as regras e o histórico das listas (19/11/2026) */}
       <PerfisElegiveis />
+      <RegrasDoAlgoritmo />
+      {abrir && investigar ? <HistoricoDeListas abrir={abrir} investigar={investigar} /> : null}
 
       {/* acerto */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">

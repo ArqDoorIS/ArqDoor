@@ -237,6 +237,110 @@ describe("Análise no painel", () => {
   });
 });
 
+describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => {
+  const PADRAO = {
+    palpite: { base: 0.03, esp1: 2.1758, esp2: 1, esp3: 0.3316, fora_area: 0.08, evita: 0.2, fora_raio: 0.3776, preco_alto: 0.4011, preco_limite: 1.4013, nota_k: 1.5, dist_k: 0.03, selo: 1.1429 },
+    intencao: { estagio0: 0.5, estagio1: 1, estagio2: 1.57, so_orcando: 0.4, cartao: 1.3, data_sim: 1.3, data_nao: 0.85, limite_ok: 1.0875, limite_baixo: 0.9, corte_fraco: 0.9064 },
+    regras: { raio_padrao_km: 30, max_sugestoes: 6, por_grupo: 3, limite_chamados: 3, max_chamadas_semana: 8, piso_cliente: 80, teto_cliente: 98, usar_sinais_na_chance: false },
+  };
+  const LIM = { palpite: Object.fromEntries(Object.keys(PADRAO.palpite).map((k) => [k, [0.001, 20]])), intencao: Object.fromEntries(Object.keys(PADRAO.intencao).map((k) => [k, [0.01, 10]])), regras: { raio_padrao_km: [1, 500], max_sugestoes: [1, 12], por_grupo: [1, 12], limite_chamados: [1, 12], max_chamadas_semana: [1, 200], piso_cliente: [1, 99], teto_cliente: [2, 100] } };
+  const V1 = { versao: 1, params: { ...PADRAO, palpite: { ...PADRAO.palpite, selo: 1.5 } }, motivo: "Selo vale mais", criado_por: "rafael@arqdoor.com", criado_em: "2026-11-19T20:00:00Z" };
+  const CONFIG = { ativa: V1, padrao: PADRAO, limites: LIM, versoes: [V1] };
+  const LISTAS = { total: 1, por_pagina: 30, listas: [{ demand_id: 90, titulo: "Reforma do banheiro", status: "pendente", cliente: { id: 5, nome: "Ana Lima" }, criada_em: "2026-11-19T18:00:00Z", config_versao: 1, candidatos: 7, elegiveis: 3, sugeridos: 2, chamados: 1, responderam: 1, fecharam: 0, primeiros: [{ nome: "Carlos Pinto", mostrado: 95 }, { nome: "Eva Rocha", mostrado: 93 }] }] };
+  const LISTA = {
+    pedido: { id: 90, titulo: "Reforma do banheiro", resumo: "Trocar piso", status: "pendente", profissoes: ["pedreiro", "azulejista"], cliente: { id: 5, nome: "Ana Lima" }, criado_em: "2026-11-19T18:00:00Z" },
+    config_versao: 1, candidatos: 7, elegiveis: 3, criada_em: "2026-11-19T18:00:00Z",
+    sugeridos: [
+      { posicao: 1, grupo: "principal", profissional: { id: 50, nome: "Carlos Pinto", profissao: "Pedreiro" }, real: 84, mostrado: 95, chance: 0.0746, porque: { fatores: [{ rotulo: "profissão principal do pedido", peso: 2.176 }, { rotulo: "selo de verificado", peso: 1.5 }], encaixe: 3.264 }, chamado_em: "2026-11-19T18:05:00Z", respondeu: true, oferta_compatibilidade: 95, fechou: false },
+      { posicao: 2, grupo: "principal", profissional: { id: 51, nome: "Eva Rocha", profissao: "Azulejista" }, real: 71, mostrado: 93, chance: 0.03, porque: { fatores: [{ rotulo: "outra profissão do pedido", peso: 1 }], encaixe: 1 }, chamado_em: null, respondeu: false, oferta_compatibilidade: null, fechou: false },
+    ],
+    excluidos: [{ user_id: 52, nome: "Gil Souza", motivo: "fora da seleção do admin" }, { user_id: 53, nome: "Davi Melo", motivo: "fora da região" }],
+    excluidos_por_motivo: { "fora da seleção do admin": 1, "fora da região": 1 },
+  };
+  const PESSOA = {
+    como_profissional: [{ demand_id: 90, titulo: "Reforma do banheiro", cliente: { id: 5, nome: "Ana Lima" }, posicao: 1, grupo: "principal", real: 84, mostrado: 95, config_versao: 1, quando: "2026-11-19T18:00:00Z", chamado_em: "2026-11-19T18:05:00Z", respondeu: true, fechou: false }],
+    ofertas: [{ demand_id: 90, titulo: "Reforma do banheiro", compatibilidade: 95, origem: "da sugestão", com_mensagem: true, quando: "2026-11-19T18:10:00Z" }],
+    como_cliente: [],
+  };
+  const comRotas = () => {
+    const padrao = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) => {
+      if (rota === "/admin/algoritmo/config" && m === "GET") return Promise.resolve(ok(CONFIG));
+      if (rota === "/admin/algoritmo/config" && m === "PUT") return Promise.resolve(ok({ success: true, versao: 2, params: c.params }));
+      if (rota === "/admin/algoritmo/config/restaurar") return Promise.resolve(ok({ success: true, versao: 2 }));
+      if (rota.startsWith("/admin/algoritmo/listas?")) return Promise.resolve(ok(LISTAS));
+      if (rota === "/admin/algoritmo/listas/90") return Promise.resolve(ok(LISTA));
+      if (rota === "/admin/algoritmo/pessoa/5") return Promise.resolve(ok(PESSOA));
+      return padrao(m, rota, c);
+    });
+  };
+
+  it("regras: mostra a versão em vigor, só salva com motivo e manda os números novos", async () => {
+    comRotas();
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    const caixa = await screen.findByTestId("regras-do-algoritmo");
+    expect(screen.getByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    expect(within(caixa).getByLabelText("Selo de verificado")).toHaveValue("1,5");
+    const salvar = within(caixa).getByRole("button", { name: /Salvar como versão 2/ });
+    expect(salvar).toBeDisabled();
+    fireEvent.change(within(caixa).getByLabelText("Profissionais na lista"), { target: { value: "4" } });
+    expect(within(caixa).getByText(/Mudanças: /)).toHaveTextContent("regras.max_sugestoes");
+    expect(salvar).toBeDisabled();
+    fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "Lista menor para testar" } });
+    fireEvent.click(salvar);
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PUT", "/admin/algoritmo/config", expect.objectContaining({ motivo: "Lista menor para testar", params: expect.objectContaining({ regras: expect.objectContaining({ max_sugestoes: 4 }), palpite: expect.objectContaining({ selo: 1.5 }) }) })));
+    expect(await within(caixa).findByRole("status")).toHaveTextContent("Salvo como versão 2");
+  });
+
+  it("regras: número fora do limite trava o salvar; versões voltam para a de fábrica", async () => {
+    comRotas();
+    const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    const caixa = await screen.findByTestId("regras-do-algoritmo");
+    fireEvent.change(within(caixa).getByLabelText("Raio padrão (km)"), { target: { value: "900" } });
+    fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "teste" } });
+    expect(within(caixa).getByText(/Precisa ficar entre 1 e 500/)).toBeInTheDocument();
+    expect(within(caixa).getByRole("button", { name: /Salvar como versão/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: /Versões \(1\)/ }));
+    expect(within(caixa).getByTestId("versao-do-algoritmo")).toHaveTextContent("mudou: palpite.selo");
+    fireEvent.click(within(caixa).getByRole("button", { name: /Voltar às de fábrica/ }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/algoritmo/config/restaurar", { versao: 0 }));
+    confirmar.mockRestore();
+  });
+
+  it("histórico: lista os pedidos e abre a lista com o porquê e quem ficou de fora", async () => {
+    comRotas();
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    const item = await screen.findByTestId("lista-do-historico");
+    expect(item).toHaveTextContent("olhou 7, passaram 3, sugeriu 2");
+    expect(item).toHaveTextContent("Carlos Pinto 95%");
+    fireEvent.click(item);
+    const janela = await screen.findByRole("dialog");
+    const sugeridos = await within(janela).findAllByTestId("sugerido-da-lista");
+    expect(sugeridos[0]).toHaveTextContent("profissão principal do pedido ×2,18");
+    expect(sugeridos[0]).toHaveTextContent("chamado");
+    expect(sugeridos[0]).toHaveTextContent("respondeu");
+    expect(within(janela).getAllByTestId("excluido-da-lista").map((x) => x.textContent)).toEqual(expect.arrayContaining([expect.stringContaining("fora da seleção do admin")]));
+  });
+
+  it("Investigar › Matchs: onde a pessoa apareceu e as ofertas com percentual", async () => {
+    comRotas();
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: "Matchs" }));
+    const linha = await screen.findByTestId("match-como-profissional");
+    expect(linha).toHaveTextContent("Reforma do banheiro");
+    expect(linha).toHaveTextContent("95%");
+    expect(screen.getByText("da sugestão")).toBeInTheDocument();
+    fireEvent.click(linha);
+    expect(await within(await screen.findByRole("dialog")).findAllByTestId("sugerido-da-lista")).toHaveLength(2);
+  });
+});
+
 describe("Pergunte à IA, planilha e conversa inteira", () => {
   it("o Pergunte à IA mostra o custo e só chama a IA depois de confirmar", async () => {
     const confirmar = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
