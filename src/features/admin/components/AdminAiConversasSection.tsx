@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, Loader2, Search } from "lucide-react";
+import { ChevronLeft, Download, Loader2, Search } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { SectionCard, StatusBadge } from "./AdminPrimitives";
 import { SinaisConsolidados, SinaisDoTurno, type Sinal } from "./SinaisDaIA";
+import { baixarConversa } from "./conversaParaBaixar";
+import { BotaoBaixarConversa } from "./analise/ConversaCompleta";
 
 /**
  * Cópia das conversas com a IA (15/11/2026): quem usou, qual IA, por qual botão entrou e a
@@ -81,7 +83,17 @@ function DetalheDaConversa({ id, aoVoltar }: { id: number; aoVoltar: () => void 
     <SectionCard
       title={c ? `${TIPOS[c.tipo] ?? c.tipo} · ${quem(c.pessoa, c.publica)}` : "Conversa"}
       subtitle={c ? `Entrou por: ${ORIGENS[c.origem] ?? c.origem} · ${turnos(c.turnos)} · última ${quando(c.ultima_em)}` : undefined}
-      action={<button type="button" onClick={aoVoltar} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-slate-900"><ChevronLeft className="h-4 w-4" /> Voltar</button>}
+      action={
+        <div className="flex items-center gap-3">
+          {c ? (
+            <>
+              <button type="button" onClick={() => baixarConversa(c, "txt")} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-slate-900"><Download className="h-4 w-4" /> Baixar .txt</button>
+              <button type="button" onClick={() => baixarConversa(c, "json")} className="text-sm font-semibold text-slate-500 hover:text-slate-900">.json</button>
+            </>
+          ) : null}
+          <button type="button" onClick={aoVoltar} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-slate-900"><ChevronLeft className="h-4 w-4" /> Voltar</button>
+        </div>
+      }
     >
       {erro ? <p className="text-sm text-red-700">{erro}</p> : !c ? <Loader2 className="h-4 w-4 animate-spin text-slate-400" /> : (
         <div className="space-y-2">
@@ -155,18 +167,21 @@ export function AdminAiConversasSection({ soComErro = false }: { soComErro?: boo
         ) : (
           <div className="divide-y divide-slate-100">
             {linhas.map((l) => (
-              <button key={l.id} type="button" onClick={() => setAberta(l.id)} className="flex w-full items-start justify-between gap-3 py-2 text-left hover:bg-slate-50">
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold text-slate-800">{quem(l.pessoa, l.publica)}</div>
-                  <div className="text-xs text-slate-500">{TIPOS[l.tipo] ?? l.tipo} · {ORIGENS[l.origem] ?? l.origem}</div>
-                  {l.primeira_mensagem ? <div className="truncate text-xs text-slate-600">“{l.primeira_mensagem}”</div> : null}
-                </div>
-                <div className="shrink-0 text-right text-xs text-slate-500">
-                  <div>{quando(l.ultima_em)}</div>
-                  <div>{turnos(l.turnos)}</div>
-                  {l.erros ? <StatusBadge label={`${l.erros} erro(s)`} tone="amber" /> : null}
-                </div>
-              </button>
+              <div key={l.id} className="flex items-start gap-2 hover:bg-slate-50">
+                <button type="button" onClick={() => setAberta(l.id)} className="flex min-w-0 flex-1 items-start justify-between gap-3 py-2 text-left">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-slate-800">{quem(l.pessoa, l.publica)}</div>
+                    <div className="text-xs text-slate-500">{TIPOS[l.tipo] ?? l.tipo} · {ORIGENS[l.origem] ?? l.origem}</div>
+                    {l.primeira_mensagem ? <div className="truncate text-xs text-slate-600">“{l.primeira_mensagem}”</div> : null}
+                  </div>
+                  <div className="shrink-0 text-right text-xs text-slate-500">
+                    <div>{quando(l.ultima_em)}</div>
+                    <div>{turnos(l.turnos)}</div>
+                    {l.erros ? <StatusBadge label={`${l.erros} erro(s)`} tone="amber" /> : null}
+                  </div>
+                </button>
+                <BotaoBaixarConversa id={l.id} className="mt-2 shrink-0" />
+              </div>
             ))}
           </div>
         )}

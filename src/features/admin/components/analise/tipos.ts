@@ -91,6 +91,8 @@ export type Dossie = {
   fatos: Fato[]; novos_desde_a_ultima: number; temperatura_por_codigo: { nivel: Temp; motivos: string[] }; faltou: string[];
 };
 export type ItemDaFicha = { titulo: string; sub: string; campos: Record<string, string> };
+/** Rascunho ou arquivado da conta (Investigar › Conta). `conversa_id` = a conversa com a IA do rascunho. */
+export type GuardadoDaConta = ItemDaFicha & { conversa_id?: number };
 export type PassoDaTrajetoria = { em: string | null; titulo: string; detalhe: string | null; tipo: "marco" | "ruim" | null } | { pausa: string };
 export type Ficha = {
   papel: Papel; cidade: string | null; uf: string | null; profissao: string | null; criado_em: string | null; ultimo_acesso: string | null;
@@ -102,6 +104,7 @@ export type Ficha = {
   conversas_ia: { id: number; tipo: string; quando: string; mensagens: number; custo_usd: number | null; sinais: number; trecho: { de: "pessoa" | "ia"; texto: string }[] }[];
   caminho: { principal: string[]; pos: string[] };
   trajetoria: PassoDaTrajetoria[];
+  guardados?: { arquivados: GuardadoDaConta[]; rascunhos: GuardadoDaConta[]; aviso_rascunhos: string | null } | null;
 };
 export type RespostaDaFicha = {
   nome: string | null; dossie: Dossie; suficiencia: { ok: boolean; motivo: string | null }; custo_estimado_usd: number;

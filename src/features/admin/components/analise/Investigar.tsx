@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Banknote, Calendar, Clock3, Copy, Database, ExternalLink, FileText, Flag, Lightbulb, Loader2, Map as Mapa, MapPin, Megaphone, MessageCircle,
+  Archive, Banknote, Calendar, Clock3, Copy, Database, ExternalLink, FileText, Flag, Lightbulb, Loader2, Map as Mapa, MapPin, Megaphone, MessageCircle,
   Search, Smartphone, Sparkles, Target, TrendingUp, User, AlertTriangle,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -11,11 +11,12 @@ import {
   nomeCategoria, pct, quando, rotulo, urlPosthog, useApi, usd, type ConteudoJanela,
 } from "./comum";
 import { Sankey } from "./Sankey";
+import { ContaDaPessoa, ConversasDaPessoa } from "./ContaDaPessoa";
 import { janelaDaFaixa, janelaDoBloco, Legenda } from "./Caminhos";
 import type { Caminhos, Ficha, ItemDaFicha, RespostaDaFicha } from "./tipos";
 
-type Sub = "resumo" | "mapa" | "dados" | "conversas" | "previsoes";
-const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conversas", "Conversas com a IA", MessageCircle], ["previsoes", "Previsões", TrendingUp]];
+type Sub = "resumo" | "mapa" | "dados" | "conversas" | "previsoes" | "conta";
+const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conversas", "Conversas", MessageCircle], ["previsoes", "Previsões", TrendingUp], ["conta", "Conta", Archive]];
 
 function Itens({ itens, nome, rotuloDoTipo, abrir }: { itens: ItemDaFicha[]; nome: string; rotuloDoTipo: string; abrir: (c: ConteudoJanela) => void }) {
   if (!itens.length) return <p className="text-xs text-slate-400">Nenhum.</p>;
@@ -200,21 +201,7 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
       ) : null}
       {sub === "dados" && !f ? <p className="text-sm text-slate-500">Os dados detalhados ainda não chegaram do servidor.</p> : null}
 
-      {sub === "conversas" ? (
-        !f?.conversas_ia.length ? <p className="text-sm text-slate-500">Nenhuma conversa com a IA ainda.</p> : (
-          <SectionCard title="Conversas com a IA" subtitle="A conversa inteira fica em IA › Conversas">
-            <table className="w-full text-left text-sm">
-              <thead className="text-[11px] uppercase tracking-wide text-slate-400"><tr><th className="py-1">Conversa</th><th>Quando</th><th>Mensagens</th><th>Custo</th><th>Sinais</th><th /></tr></thead>
-              <tbody>{f.conversas_ia.map((c) => (
-                <tr key={c.id} className="border-t border-slate-100">
-                  <td className="py-1.5 font-semibold">{rotulo(c.tipo)}</td><td>{quando(c.quando)}</td><td>{c.mensagens}</td><td>{c.custo_usd == null ? "—" : usd(c.custo_usd)}</td><td>{c.sinais}</td>
-                  <td className="text-right"><button type="button" className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold" onClick={() => abrir({ titulo: `Conversa: ${rotulo(c.tipo)}`, sub: `${nome} · ${quando(c.quando)}`, corpo: <div className="space-y-1.5">{c.trecho.map((m, i) => <p key={i} className={cn("max-w-[85%] rounded-xl px-3 py-1.5", m.de === "ia" ? "bg-slate-100" : "ml-auto bg-orange-50")}><b className="text-xs text-slate-500">{m.de === "ia" ? "IA" : nome.split(" ")[0]}:</b> {m.texto}</p>)}</div> })}>ver</button></td>
-                </tr>
-              ))}</tbody>
-            </table>
-          </SectionCard>
-        )
-      ) : null}
+      {sub === "conversas" ? <ConversasDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
 
       {sub === "previsoes" ? (
         !a?.previsoes.length ? <p className="text-sm text-slate-500">Ainda sem análise da IA para esta pessoa.</p> : (
@@ -230,6 +217,8 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
           </SectionCard>
         )
       ) : null}
+
+      {sub === "conta" ? <ContaDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
     </div>
   );
 }

@@ -347,6 +347,13 @@ export type AdminOperationalStep = {
   payout_ready: boolean;
   payout_reason: string;
   payment_status_bucket: PaymentBucket;
+  /** Repasse: null (a repassar), "processando", "pago" ou "manual". Servidor de 19/11/2026 em diante. */
+  payout_status?: string | null;
+  payout_paid_at?: string | null;
+  /** Quando o profissional declarou a entrega (conta o prazo de conferência). */
+  delivered_at?: string | null;
+  auto_approved_at?: string | null;
+  rework_count?: number;
   group_id: number | null;
   group_sequence: number | null;
   group_key: string;
@@ -382,6 +389,8 @@ export type AdminOperationalTicket = {
   total_date: number;
   payment_preference: "per_step" | "at_end" | "custom" | null;
   payment_status: string | null;
+  /** Dias que o cliente tem para conferir a entrega (3, 5 ou 7). */
+  prazo_conferencia_dias?: number;
   allow_grouped_payment: boolean;
   provider_receiving_method: "escrow" | "standard";
   provider_receiving_account_label: string | null;
@@ -397,6 +406,44 @@ export type AdminOperationalTicket = {
   latest_document: ContractDocument | null;
   groups: AdminOperationalGroup[];
   steps: AdminOperationalStep[];
+  /** Reclamações de fase do contrato (servidor de 19/11/2026 em diante). */
+  reclamacoes?: ReclamacaoDeFase[];
+};
+
+/** Reclamação de uma fase recusada: o cliente escreve, o profissional responde, a ArqDoor decide. */
+export type ReclamacaoDeFase = {
+  id: number;
+  step_id: number;
+  ticket_id: number;
+  cliente_id: number | null;
+  profissional_id: number | null;
+  texto: string;
+  aberta_por: "cliente" | "arqdoor";
+  situacao: "com_o_profissional" | "com_o_cliente" | "com_a_arqdoor" | "resolvida";
+  prazo_ate: string | null;
+  disputa: boolean;
+  motivo_da_disputa: "sem_resposta" | "discordo" | "cliente_recusou" | "cliente_sem_resposta" | null;
+  resposta: "reembolso_total" | "desconto" | "refazer" | "discordo" | null;
+  resposta_valor: number | null;
+  resposta_texto: string | null;
+  respondida_em: string | null;
+  cliente_aceitou: boolean | null;
+  cliente_respondeu_em: string | null;
+  decisao: "refazer" | "reembolso_total" | "reembolso_parcial" | "sem_reembolso" | null;
+  valor_reembolso: number | null;
+  valor_ao_profissional: number | null;
+  decisao_motivo: string | null;
+  decidida_em: string | null;
+  reembolso_feito_em: string | null;
+  repasse_feito_em: string | null;
+  continuar: boolean | null;
+  contrato_encerrado_em: string | null;
+  nota_cliente: number | null;
+  comentario_cliente: string | null;
+  nota_profissional: number | null;
+  comentario_profissional: string | null;
+  created_at?: string;
+  createdAt?: string;
 };
 
 export type AdminOperationalConversation = {

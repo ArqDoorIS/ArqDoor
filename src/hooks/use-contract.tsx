@@ -917,10 +917,15 @@ export function useContract(conversationId?: number) {
   /** =================== PDF/CONTRATO =================== */
 
   // --- Cliente recusa etapa ---
+  // Recusar é reclamar por escrito: o texto vai junto e o servidor recusa sem ele (19/11/2026).
   const rejectStep = useCallback(
-    async (stepId: number, ticketId: number, indexInTicket: number) => {
+    async (stepId: number, ticketId: number, indexInTicket: number, motivo?: string) => {
       try {
-        await updateStep(stepId, { status: "Recusado" } as any);
+        const res = await apiRequest("PATCH", `/step/${stepId}`, { status: "Recusado", motivo });
+        if (!res.ok) {
+          const corpo = await res.json().catch(() => ({}));
+          throw new Error((corpo as { message?: string }).message || "Não foi possível recusar a etapa.");
+        }
 
         queryClient.invalidateQueries({ queryKey: ["tickets", conversationId] });
         return true;

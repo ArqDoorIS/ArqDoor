@@ -6,6 +6,8 @@ import {
   ACOES, Alternador, COR_TEMP, Carregando, Erro, EtiquetaPH, ICONE_GRUPO, ICONE_TEMP, Pilula, QUANDO, dia, nomeCategoria, pct, reais, useApi,
 } from "./comum";
 import type { Funil, PassoDoFunil, Temp, Visao } from "./tipos";
+import type { ConteudoJanela } from "./comum";
+import { Reclamacoes } from "./Reclamacoes";
 
 /* ---------- números do topo ---------- */
 function Linhazinha({ serie }: { serie: number[] }) {
@@ -158,7 +160,8 @@ function FilaDeAcao({ v, investigar }: { v: Visao; investigar: (id: number) => v
   const conta = (t: ItemDaFila["tipo"]) => itens.filter((i) => i.tipo === t).length;
   const lista = itens.filter((i) => filtro === "todos" || i.tipo === filtro);
   return (
-    <SectionCard title="Fila de ação" subtitle="O que fazer agora. A cor mostra há quanto tempo está parado.">
+    <SectionCard title="Fila de ação" subtitle="O que fazer agora. A cor mostra há quanto tempo está parado."
+      dica="Pessoas e negócios que pedem contato: proposta sem decisão do cliente, pedido sem oferta, convite sem resposta e as sugestões da IA. Verde: parado há pouco; amarelo: alguns dias; vermelho: muito tempo.">
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Pilula ativo={filtro === "todos"} onClick={() => setFiltro("todos")}>Tudo <span className="opacity-60">{itens.length}</span></Pilula>
         {(Object.keys(TIPO_FILA) as ItemDaFila["tipo"][]).map((t) => <Pilula key={t} ativo={filtro === t} onClick={() => setFiltro(t)}>{TIPO_FILA[t][0]} <span className="opacity-60">{conta(t)}</span></Pilula>)}
@@ -225,17 +228,25 @@ function Temperatura({ v, investigar, irParaPessoas }: { v: Visao; investigar: (
 function Tendencias({ v }: { v: Visao }) {
   const t = v.tendencias;
   if (!t) return null;
-  const max = Math.max(1, ...(t.semanas ?? []).map((s) => s.pedidos));
+  const max = Math.max(1, ...(t.semanas ?? []).flatMap((s) => [s.pedidos, s.contratos]));
   const tot = (t.tempo_ate_1a_oferta ?? []).reduce((s, x) => s + x[1], 0);
+  // Duas barras lado a lado por semana, cada uma com o número em cima (antes a de contratos
+  // ficava por cima da de pedidos e não dava para ler nenhum valor).
+  const Barra = ({ n, cor, rotulo }: { n: number; cor: string; rotulo: string }) => (
+    <div className="flex h-full flex-1 flex-col items-center justify-end">
+      <span className={cn("text-[11px] font-bold leading-4", n ? "text-slate-700" : "text-slate-300")} aria-label={`${n} ${rotulo}`}>{n}</span>
+      <i className={cn("block w-full rounded-t-md", cor)} style={{ height: `${(n / max) * 100}%`, minHeight: n ? 3 : 0 }} />
+    </div>
+  );
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <SectionCard title="Pedidos e contratos por semana" subtitle="Últimas 8 semanas">
         <div className="flex items-end gap-2">
           {(t.semanas ?? []).map((s) => (
-            <div key={s.inicio} className="flex flex-1 flex-col items-center gap-1" title={`Semana de ${dia(s.inicio)}: ${s.pedidos} pedidos, ${s.contratos} contratos`}>
-              <div className="relative flex h-28 w-full items-end justify-center">
-                <i className="block w-full rounded-t-md bg-orange-200" style={{ height: `${(s.pedidos / max) * 100}%` }} />
-                <i className="absolute bottom-0 block w-1/2 rounded-t-md bg-orange-600" style={{ height: `${(s.contratos / max) * 100}%` }} />
+            <div key={s.inicio} data-testid="semana" className="flex flex-1 flex-col items-center gap-1" title={`Semana de ${dia(s.inicio)}: ${s.pedidos} pedidos, ${s.contratos} contratos`}>
+              <div className="flex h-32 w-full items-end gap-0.5 pt-4">
+                <Barra n={s.pedidos} cor="bg-orange-200" rotulo="pedidos" />
+                <Barra n={s.contratos} cor="bg-orange-600" rotulo="contratos" />
               </div>
               <span className="text-[10px] text-slate-400">{dia(s.inicio)}</span>
             </div>
@@ -258,13 +269,14 @@ function Tendencias({ v }: { v: Visao }) {
   );
 }
 
-export function AbaVisaoGeral({ dias, investigar, irParaPessoas, configurarPosthog }: { dias: number; investigar: (id: number) => void; irParaPessoas: () => void; configurarPosthog: () => void }) {
+export function AbaVisaoGeral({ dias, investigar, irParaPessoas, configurarPosthog, abrir }: { dias: number; investigar: (id: number) => void; irParaPessoas: () => void; configurarPosthog: () => void; abrir?: (c: ConteudoJanela) => void }) {
   const { dado: v, erro } = useApi<Visao>(`/admin/analise/visao?dias=${dias}`);
   if (erro) return <Erro msg={erro} />;
   return (
     <div className="space-y-4">
       {v ? <Numeros v={v} dias={dias} /> : <Carregando />}
       <CartaoDoFunil dias={dias} configurarPosthog={configurarPosthog} />
+      {abrir ? <Reclamacoes abrir={abrir} /> : null}
       {v ? <FilaDeAcao v={v} investigar={investigar} /> : null}
       {v ? <Temperatura v={v} investigar={investigar} irParaPessoas={irParaPessoas} /> : null}
       {v ? <Tendencias v={v} /> : null}

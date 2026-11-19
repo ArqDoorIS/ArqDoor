@@ -1237,9 +1237,9 @@ export default function Messages() {
   };
 
   // Cliente REJEITA um step especifico
-  const handleRejectStep = async (step: any) => {
+  const handleRejectStep = async (step: any, motivo?: string) => {
     try {
-      const ok = await rejectStep(step.id, step.ticket_id, step.indexInTicket);
+      const ok = await rejectStep(step.id, step.ticket_id, step.indexInTicket, motivo);
       if (ok) {
         const updated = await getStepsForTicket(step.ticket_id);
         setSelectedTicketSteps(updated);
@@ -2458,7 +2458,7 @@ export default function Messages() {
           openClientStepSignature(step);
         }}
 
-        onClientRejectStep={(step) => handleRejectStep(step)}
+        onClientRejectStep={(step, motivo) => handleRejectStep(step, motivo)}
         onFeedbackCreated={handleFeedbackCreated}
         onPaySteps={handlePaySteps}
         onConfirmStepPayment={handleConfirmStepPayment}

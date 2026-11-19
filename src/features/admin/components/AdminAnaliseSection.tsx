@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Cpu, LayoutDashboard, Layers, Loader2, Route, Search, Target, Users } from "lucide-react";
+import { Cpu, FileSpreadsheet, LayoutDashboard, Layers, Loader2, Route, Search, Target, Users } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "../utils";
 import { Alternador, Janela, ler, type ConteudoJanela } from "./analise/comum";
@@ -10,6 +10,8 @@ import { AbaPessoas } from "./analise/Pessoas";
 import { AbaInvestigar } from "./analise/Investigar";
 import { AbaPrecisao } from "./analise/Precisao";
 import { AbaKirios } from "./analise/Kirios";
+import { montarXlsx, nomeDaPlanilha, TIPO_XLSX, type Planilhas } from "./analise/planilha";
+import { baixarArquivo } from "./baixarArquivo";
 
 /**
  * Painel > Análise (v2, 19/11/2026). Sete abas:
@@ -22,6 +24,10 @@ import { AbaKirios } from "./analise/Kirios";
  *   Investigar      a ficha de uma pessoa: resumo da IA, mapa do caminho dela, dados, conversas e previsões
  *   Algoritmo       o desempenho do algoritmo de match (Kirios): o % de cada cartão acerta quem fecha?
  *   Precisão da IA  as previsões da IA analista conferidas pelo código quando vencem
+ *
+ * No topo, "Baixar planilha" baixa um .xlsx com uma aba por assunto (GET /admin/analise/exportar;
+ * o arquivo é escrito aqui no navegador, em analise/planilha.ts). Na Precisão da IA fica o
+ * "Pergunte à IA" (POST /admin/analise/perguntar), sempre com o custo confirmado antes.
  *
  * O código PH #id é o mesmo da pessoa no PostHog (o app manda o id do usuário como distinct_id).
  * O log de cada clique fica no PostHog; aqui entra só o resumo. A IA analista só roda por botão.
@@ -65,6 +71,33 @@ function AjustesDoPosthog({ fechar }: { fechar: () => void }) {
   );
 }
 
+/** Baixa tudo da Análise num .xlsx (uma aba por assunto). */
+function BaixarPlanilha() {
+  const [baixando, setBaixando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const baixar = async () => {
+    setBaixando(true); setErro(null);
+    try {
+      const b = await apiRequest("GET", "/admin/analise/exportar", undefined, undefined, 180000).then(ler);
+      const planilhas = (b?.planilhas ?? {}) as Planilhas;
+      baixarArquivo(montarXlsx(planilhas), nomeDaPlanilha(), TIPO_XLSX);
+    } catch (e: any) {
+      setErro(e.message);
+    } finally {
+      setBaixando(false);
+    }
+  };
+  return (
+    <span className="inline-flex items-center gap-2">
+      {erro ? <span className="text-xs text-rose-700">{erro}</span> : null}
+      <button type="button" disabled={baixando} onClick={() => void baixar()} title="Pessoas, análises, previsões, funis, caminhos, perfis, algoritmo, KPIs e uso da IA"
+        className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:border-slate-500 disabled:opacity-60">
+        {baixando ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4" />}{baixando ? "Montando a planilha…" : "Baixar planilha"}
+      </button>
+    </span>
+  );
+}
+
 export function AdminAnaliseSection() {
   const [aba, setAba] = useState<Aba>("visao");
   const [dias, setDias] = useState<"7" | "30" | "90">("30");
@@ -84,17 +117,20 @@ export function AdminAnaliseSection() {
             </button>
           ))}
         </div>
-        {comPeriodo ? <div className="ml-auto"><Alternador valor={dias} mudar={setDias} opcoes={[["7", "7 dias"], ["30", "30 dias"], ["90", "90 dias"]]} /></div> : null}
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {comPeriodo ? <Alternador valor={dias} mudar={setDias} opcoes={[["7", "7 dias"], ["30", "30 dias"], ["90", "90 dias"]]} /> : null}
+          <BaixarPlanilha />
+        </div>
       </div>
       {comPeriodo ? <p className="-mt-2 text-right text-[11px] text-slate-400">Comparado com os {dias} dias anteriores</p> : null}
 
-      {aba === "visao" ? <AbaVisaoGeral dias={Number(dias)} investigar={investigar} irParaPessoas={() => setAba("pessoas")} configurarPosthog={configurarPosthog} /> : null}
+      {aba === "visao" ? <AbaVisaoGeral dias={Number(dias)} investigar={investigar} irParaPessoas={() => setAba("pessoas")} configurarPosthog={configurarPosthog} abrir={setJanela} /> : null}
       {aba === "caminhos" ? <AbaCaminhos dias={Number(dias)} abrir={setJanela} investigar={investigar} /> : null}
       {aba === "perfis" ? <AbaPerfis abrir={setJanela} investigar={investigar} /> : null}
       {aba === "pessoas" ? <AbaPessoas investigar={investigar} /> : null}
       {aba === "investigar" ? <AbaInvestigar id={pessoa} abrir={setJanela} investigar={investigar} irParaPerfis={() => { setJanela(null); setAba("perfis"); }} /> : null}
       {aba === "kirios" ? <AbaKirios /> : null}
-      {aba === "precisao" ? <AbaPrecisao /> : null}
+      {aba === "precisao" ? <AbaPrecisao investigar={investigar} /> : null}
 
       <Janela conteudo={janela} fechar={() => setJanela(null)} />
     </div>
