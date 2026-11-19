@@ -11,6 +11,7 @@ import {
   nomeCategoria, pct, quando, rotulo, urlPosthog, useApi, usd, type ConteudoJanela,
 } from "./comum";
 import { Sankey } from "./Sankey";
+import { BotaoBaixarConversa, ConversaCompleta } from "./ConversaCompleta";
 import { janelaDaFaixa, janelaDoBloco, Legenda } from "./Caminhos";
 import type { Caminhos, Ficha, ItemDaFicha, RespostaDaFicha } from "./tipos";
 
@@ -202,13 +203,16 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
 
       {sub === "conversas" ? (
         !f?.conversas_ia.length ? <p className="text-sm text-slate-500">Nenhuma conversa com a IA ainda.</p> : (
-          <SectionCard title="Conversas com a IA" subtitle="A conversa inteira fica em IA › Conversas">
+          <SectionCard title="Conversas com a IA" subtitle="Ver abre a conversa inteira; Baixar salva em .txt">
             <table className="w-full text-left text-sm">
               <thead className="text-[11px] uppercase tracking-wide text-slate-400"><tr><th className="py-1">Conversa</th><th>Quando</th><th>Mensagens</th><th>Custo</th><th>Sinais</th><th /></tr></thead>
               <tbody>{f.conversas_ia.map((c) => (
                 <tr key={c.id} className="border-t border-slate-100">
                   <td className="py-1.5 font-semibold">{rotulo(c.tipo)}</td><td>{quando(c.quando)}</td><td>{c.mensagens}</td><td>{c.custo_usd == null ? "—" : usd(c.custo_usd)}</td><td>{c.sinais}</td>
-                  <td className="text-right"><button type="button" className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold" onClick={() => abrir({ titulo: `Conversa: ${rotulo(c.tipo)}`, sub: `${nome} · ${quando(c.quando)}`, corpo: <div className="space-y-1.5">{c.trecho.map((m, i) => <p key={i} className={cn("max-w-[85%] rounded-xl px-3 py-1.5", m.de === "ia" ? "bg-slate-100" : "ml-auto bg-orange-50")}><b className="text-xs text-slate-500">{m.de === "ia" ? "IA" : nome.split(" ")[0]}:</b> {m.texto}</p>)}</div> })}>ver</button></td>
+                  <td className="whitespace-nowrap text-right">
+                    <button type="button" className="mr-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold" onClick={() => abrir({ titulo: `Conversa: ${rotulo(c.tipo)}`, sub: `${nome} · ${quando(c.quando)}`, corpo: <ConversaCompleta id={c.id} nome={nome} /> })}>ver</button>
+                    <BotaoBaixarConversa id={c.id} />
+                  </td>
                 </tr>
               ))}</tbody>
             </table>
