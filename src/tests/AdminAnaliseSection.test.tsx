@@ -8,8 +8,9 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { AdminAnaliseSection } from "@/features/admin/components/AdminAnaliseSection";
 
-const { apiRequestMock } = vi.hoisted(() => ({ apiRequestMock: vi.fn() }));
+const { apiRequestMock, baixarMock } = vi.hoisted(() => ({ apiRequestMock: vi.fn(), baixarMock: vi.fn() }));
 vi.mock("@/lib/queryClient", () => ({ apiRequest: apiRequestMock, API_BASE_URL: "https://api.test" }));
+vi.mock("@/features/admin/components/baixarArquivo", () => ({ baixarArquivo: baixarMock }));
 
 const ok = (body: unknown) => ({ ok: true, json: async () => body });
 const VISAO = {
@@ -48,7 +49,7 @@ const FICHA = {
     previsoes: [{ pergunta: "fecha_contrato", probabilidade: 0.35, vence_em: "2026-12-18T10:00:00Z", aconteceu: null }],
     resultado: { resumo: "Cliente com pressa e pedido claro.", categoria_de_perfil: "decidido_com_pressa", temperatura: { nivel: "quente", motivo: "disse urgente", diverge_das_regras: true, provas: ["E1"] }, tracos: [{ traco: "urgencia_real", nivel: "alto", confianca: "alta", provas: ["E1"] }], chance_de_fechar_90_dias: 0.4, previsoes: [], follow_up: { acao: "ligar", quando: "hoje", por_que: "Está quente.", mensagem_sugerida: "" }, alertas: [], lacunas: [], o_que_mudaria_a_leitura: "", fatos_citados: { E1: { em: "2026-11-15T10:00:00Z", tipo: "pedido", texto: "pedido 11 Piso" } } } }],
   ficha: { papel: "cliente", cidade: "Campinas", uf: "SP", profissao: null, criado_em: "2026-11-12T10:00:00Z", ultimo_acesso: "2026-11-18T10:00:00Z", origem: "Sem indicação", etapa: "Pediu ajuste na proposta", posthog_url: "https://us.posthog.com/project/715328/person/5",
-    conta: [["Conta criada", "12/11"]], uso_do_app: null, pedidos: [{ titulo: "Piso da sala", sub: "publicado", campos: { "Onde no imóvel": "Sala" } }], propostas: [], pagamentos: [], sinais: [], conversas_ia: [], caminho: { principal: ["ia"], pos: [] }, trajetoria: [] },
+    conta: [["Conta criada", "12/11"]], uso_do_app: null, pedidos: [{ titulo: "Piso da sala", sub: "publicado", campos: { "Onde no imóvel": "Sala" } }], propostas: [], pagamentos: [], sinais: [], conversas_ia: [{ id: 77, tipo: "pedido", quando: "2026-11-19T02:40:00Z", mensagens: 10, custo_usd: 0.01, sinais: 0, trecho: [{ de: "ia", texto: "trecho curto" }] }], caminho: { principal: ["ia"], pos: [] }, trajetoria: [] },
 };
 
 const KIRIOS = {
@@ -62,9 +63,20 @@ const KIRIOS = {
   sinais: [{ sinal: "data_confirmada", pedidos_com: 58, pct: 40 }], semanas: [], registro: [],
 };
 
+const TEXTO_LONGO = `Entendi: piso da sala de 20 m², ${"com rodapé novo e nivelamento do contrapiso, ".repeat(10)}fim da mensagem longa.`;
+const CONVERSA = {
+  id: 77, tipo: "pedido", origem: "inicio_busca", publica: false, turnos: 5, pessoa: { id: 5, nome: "Ana Lima", email: "ana@x.com" },
+  mensagens: Array.from({ length: 10 }, (_, i) => ({ de: i % 2 ? "ia" : "eu", texto: i === 9 ? TEXTO_LONGO : `mensagem ${i + 1}`, em: `2026-11-19T02:${String(26 + i).padStart(2, "0")}:00Z` })),
+};
+
 beforeEach(() => {
   apiRequestMock.mockReset();
-  apiRequestMock.mockImplementation((_metodo: string, rota: string) => {
+  baixarMock.mockReset();
+  apiRequestMock.mockImplementation((_metodo: string, rota: string, corpo?: { confirmar?: boolean }) => {
+    if (rota === "/admin/analise/perguntar") return Promise.resolve(ok(corpo?.confirmar ? { success: true, resposta: "Ligue hoje para PH #5: está quente, chance de 40%.", sabe: true, fontes: ["Últimas análises"], custo_usd: 0.05 } : { success: true, previa: true, custo_estimado_usd: 0.072 }));
+    if (rota.startsWith("/admin/analise/previsoes")) return Promise.resolve(ok({ pendentes: 0, conferidas_agora: 0, geral: null }));
+    if (rota === "/admin/ai-conversas/77") return Promise.resolve(ok({ conversa: CONVERSA }));
+    if (rota === "/admin/analise/exportar") return Promise.resolve(ok({ planilhas: { Pessoas: { colunas: ["id", "nome"], linhas: [[5, "Ana Lima"]] } } }));
     if (rota.startsWith("/admin/analise/visao")) return Promise.resolve(ok(VISAO));
     if (rota.startsWith("/admin/analise/funil")) return Promise.resolve(ok(FUNIL));
     if (rota.startsWith("/admin/analise/caminhos")) return Promise.resolve(ok(CAMINHOS));
@@ -139,5 +151,78 @@ describe("Análise no painel", () => {
     expect(screen.getByText(/entre 0,66 e 0,76/)).toBeInTheDocument();
     expect(screen.getByText("1º cartão")).toBeInTheDocument();
     expect(apiRequestMock).not.toHaveBeenCalledWith("GET", expect.stringContaining("/previsoes"), undefined, undefined, 120000);
+  });
+});
+
+describe("Pergunte à IA, planilha e conversa inteira", () => {
+  it("o Pergunte à IA mostra o custo e só chama a IA depois de confirmar", async () => {
+    const confirmar = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Precisão da IA/ }));
+    expect(await screen.findByText("Pergunte à IA")).toBeInTheDocument();
+    // o custo aparece no botão antes de enviar
+    expect(await screen.findByRole("button", { name: /Perguntar · ≈ US\$ 0,072/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Quem devo ligar hoje?" }));
+    expect(screen.getByDisplayValue("Quem devo ligar hoje?")).toBeInTheDocument();
+
+    // 1ª vez: cancela na confirmação, a IA não é chamada
+    fireEvent.click(screen.getByRole("button", { name: /Perguntar/ }));
+    await waitFor(() => expect(confirmar).toHaveBeenCalledTimes(1));
+    expect(confirmar.mock.calls[0][0]).toContain("US$ 0,072");
+    expect(apiRequestMock).not.toHaveBeenCalledWith("POST", "/admin/analise/perguntar", expect.objectContaining({ confirmar: true }), undefined, 180000);
+
+    // 2ª vez: confirma e a resposta aparece, com o código PH clicável e o nome ao lado
+    await waitFor(() => expect(screen.getByRole("button", { name: /Perguntar/ })).not.toBeDisabled());
+    fireEvent.click(screen.getByRole("button", { name: /Perguntar/ }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/analise/perguntar", { pergunta: "Quem devo ligar hoje?", historico: [], confirmar: true }, undefined, 180000));
+    expect(await screen.findByText(/está quente, chance de 40%/)).toBeInTheDocument();
+    expect(screen.getByText("Últimas análises")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /PH #5\s*Ana Lima/ })).toBeInTheDocument();
+    confirmar.mockRestore();
+  });
+
+  it("Baixar planilha busca as abas e baixa um .xlsx", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("button", { name: /Baixar planilha/ }));
+    await waitFor(() => expect(baixarMock).toHaveBeenCalledTimes(1));
+    expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/analise/exportar", undefined, undefined, 180000);
+    const [bytes, nome, tipo] = baixarMock.mock.calls[0];
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(nome).toMatch(/^analise-arqdoor-\d{4}-\d{2}-\d{2}\.xlsx$/);
+    expect(tipo).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  });
+
+  it("ver abre a conversa inteira e Baixar monta o .txt", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: /Conversas com a IA/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "ver" }));
+    const janela = await screen.findByRole("dialog");
+    await waitFor(() => expect(within(janela).getAllByTestId("mensagem-da-conversa")).toHaveLength(10));
+    // nada cortado: a mensagem longa aparece inteira
+    expect(within(janela).getByText(TEXTO_LONGO)).toBeInTheDocument();
+    expect(within(janela).queryByText("trecho curto")).not.toBeInTheDocument();
+    expect(within(janela).getAllByText(/18\/11 23:26/).length).toBeGreaterThan(0);
+    fireEvent.click(within(janela).getByRole("button", { name: /Baixar \.txt/ }));
+    expect(baixarMock).toHaveBeenCalledTimes(1);
+    const [conteudo, nome, tipo] = baixarMock.mock.calls[0];
+    expect(nome).toBe("conversa-ia-77-pedido.txt");
+    expect(tipo).toContain("text/plain");
+    expect(conteudo).toContain("[18/11 23:26] Pessoa: mensagem 1");
+    expect(conteudo).toContain("[18/11 23:27] IA: mensagem 2");
+    expect(conteudo).toContain(TEXTO_LONGO);
+    expect(conteudo).not.toContain("ana@x.com");
+  });
+
+  it("Baixar na linha da conversa busca a conversa inteira", async () => {
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Pessoas/ }));
+    fireEvent.click(await screen.findByText("Ana Lima"));
+    fireEvent.click(await screen.findByRole("button", { name: /Conversas com a IA/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Baixar" }));
+    await waitFor(() => expect(baixarMock).toHaveBeenCalledTimes(1));
+    expect(apiRequestMock).toHaveBeenCalledWith("GET", "/admin/ai-conversas/77");
+    expect(baixarMock.mock.calls[0][0]).toContain("Mensagens: 10");
   });
 });
