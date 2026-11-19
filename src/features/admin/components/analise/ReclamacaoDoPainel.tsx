@@ -2,6 +2,7 @@ import { Banknote, CheckCircle2, MessageSquareWarning, RotateCcw, ShieldCheck, S
 import type { AdminOperationalStep, AdminOperationalTicket, ReclamacaoDeFase } from "../../types";
 import { cn } from "../../utils";
 import { quando, reais } from "./comum";
+import { Dica } from "../AdminPrimitives";
 import type { Acao } from "./DetalheDoContrato";
 
 /**
@@ -179,6 +180,7 @@ export function CartaoDaReclamacao({ r, t }: { r: ReclamacaoDeFase; t: AdminOper
     <div className="mt-2.5 space-y-2 rounded-xl border border-rose-200 bg-rose-50/40 p-3 text-sm md:ml-8" data-testid="reclamacao">
       <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-rose-700">
         <MessageSquareWarning className="h-3.5 w-3.5" />Reclamação {r.aberta_por === "arqdoor" ? "registrada pela ArqDoor" : `de ${cliente}`} · {quando(r.created_at ?? r.createdAt ?? null)}
+        <Dica className="text-rose-400" texto="Enquanto a reclamação está aberta, o dinheiro da fase fica guardado e o profissional não pode refazer sozinho. O botão em laranja é a decisão que bate com o que os dois fizeram. Depois do reembolso marcado como feito, o cliente responde no app se quer continuar, e os dois dão uma nota à ArqDoor." />
       </p>
       <blockquote className="whitespace-pre-wrap rounded-lg bg-white px-3 py-2 text-slate-800 ring-1 ring-rose-100">“{r.texto}”</blockquote>
       {r.resposta ? (

@@ -1,5 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info } from "lucide-react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn, formatCompact } from "../utils";
 
 type Tone = "emerald" | "amber" | "rose" | "slate" | "sky";
@@ -9,8 +10,35 @@ type StatusBadgeProps = {
   tone: Tone;
 };
 
+/**
+ * Ícone "i" com a explicação ao passar o mouse (ou ao focar com o teclado). Usar só nos
+ * pontos que pedem explicação, não em cada pedaço da tela (pedido do Rafael, 19/11/2026).
+ */
+export function Dica({ texto, className }: { texto: ReactNode; className?: string }) {
+  return (
+    <TooltipPrimitive.Provider delayDuration={150}>
+      <TooltipPrimitive.Root>
+        <TooltipPrimitive.Trigger asChild>
+          <button type="button" aria-label="O que é isto?" className={cn("inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full align-middle text-slate-400 hover:text-orange-600 focus:text-orange-600 focus:outline-none", className)}>
+            <Info className="h-3.5 w-3.5" />
+          </button>
+        </TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content side="top" sideOffset={6} collisionPadding={12}
+            className="z-[60] max-w-xs rounded-lg bg-slate-900 px-3 py-2 text-xs font-normal normal-case leading-relaxed tracking-normal text-white shadow-lg data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0">
+            {texto}
+            <TooltipPrimitive.Arrow className="fill-slate-900" />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
+  );
+}
+
 type SectionCardProps = {
   title: string;
+  /** explicação no ícone "i" ao lado do título */
+  dica?: ReactNode;
   subtitle?: string;
   action?: ReactNode;
   children: ReactNode;
@@ -76,6 +104,7 @@ export function StatusBadge({ label, tone }: StatusBadgeProps) {
 
 export function SectionCard({
   title,
+  dica,
   subtitle,
   action,
   children,
@@ -85,7 +114,7 @@ export function SectionCard({
     <section className={cn("rounded-2xl border border-slate-200 bg-white", className)}>
       <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-3 py-2">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-700">{title}</h2>
+          <h2 className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{title}{dica ? <Dica texto={dica} /> : null}</h2>
           {subtitle ? <p className="mt-0.5 text-[11px] text-slate-500">{subtitle}</p> : null}
         </div>
         {action}

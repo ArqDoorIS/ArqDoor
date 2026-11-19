@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { AlertTriangle, Banknote, Check, CheckCircle2, Clock, FileText, Loader2, MessageSquare, Undo2, Play, RotateCcw, ShieldCheck, Lock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { cn, openSecureFile } from "../../utils";
+import { Dica } from "../AdminPrimitives";
 import type { AdminOperationalStep, AdminOperationalTicket, AdminUserOperationsOverview, Participant } from "../../types";
 import { EtiquetaPH, ler, quando, reais } from "./comum";
 import { acaoDeEncerrar, acoesDaReclamacao, CartaoDaReclamacao, ondeEsta, reclamacaoDaFase } from "./ReclamacaoDoPainel";
@@ -465,10 +466,13 @@ export function DetalheDoContrato({ t: inicial, donoId, aoMudar }: { t: AdminOpe
         <span><b className="text-slate-800">{STATUS_CONTRATO[t.status] ?? t.status}</b></span>
         <span>Pagamento: <b className="text-slate-800">{t.payment_status ? STATUS_PAGAMENTO[t.payment_status] ?? t.payment_status : "—"}</b></span>
         <span>Criado {quando(t.created_at)}</span>
-        <span>Prazo de conferência: <b className="text-slate-800">{prazoDe(t)} dias</b></span>
+        <span className="inline-flex items-center gap-1">Prazo de conferência: <b className="text-slate-800">{prazoDe(t)} dias</b>
+          <Dica texto="Dias que o cliente tem para conferir cada entrega, combinados na proposta. Passou o prazo sem resposta, o servidor aprova a fase sozinho e avisa os dois por notificação e e-mail." /></span>
         <span>{t.latest_document ? (t.latest_document.signed ? `Assinado ${quando(t.latest_document.date)}` : "Contrato gerado, sem assinatura") : "Sem documento"}</span>
       </div>
 
+      <p className="-mb-2 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Dinheiro do contrato
+        <Dica texto="Tudo passa pelo escrow. O cliente paga cada grupo inteiro de uma vez e o dinheiro fica guardado. Ele sai para o profissional fase a fase, depois da entrega e da aprovação, pelo botão Repassar. Fase com reclamação fica guardada até a ArqDoor decidir." /></p>
       <Dinheiro fases={fases} total={t.total_price} />
 
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -499,7 +503,8 @@ export function DetalheDoContrato({ t: inicial, donoId, aoMudar }: { t: AdminOpe
         return (
           <section key={g.key} aria-label={`Grupo de pagamento: ${g.nome}`} className="overflow-hidden rounded-2xl border border-slate-200">
             <header className="flex flex-wrap items-center gap-2 border-b border-slate-100 bg-slate-50 px-3 py-2">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Grupo {gi + 1}</span>
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">Grupo {gi + 1}
+                {gi === 0 ? <Dica texto="Grupo de pagamento: o cliente paga todas as fases do grupo numa cobrança só, antes de começar. A trilha de cada fase mostra se ela está paga, entregue pelo profissional, aprovada pelo cliente e repassada." /> : null}</span>
               <b className="text-slate-900">{g.nome}</b>
               <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-bold", chip[1])}>{chip[0]}</span>
               <span className="ml-auto text-xs text-slate-500">{concluidas} de {g.fases.length} fases concluídas · <b className="text-slate-800">{reais(total)}</b></span>

@@ -120,6 +120,9 @@ const CONVERSA = {
   mensagens: Array.from({ length: 10 }, (_, i) => ({ de: i % 2 ? "ia" : "eu", texto: i === 9 ? TEXTO_LONGO : `mensagem ${i + 1}`, em: `2026-11-19T02:${String(26 + i).padStart(2, "0")}:00Z` })),
 };
 
+/** Os botões de ação de um pedaço da tela (sem o ícone "i" de explicação). */
+const botoes = (el: HTMLElement) => within(el).getAllByRole("button").filter((b) => b.getAttribute("aria-label") !== "O que é isto?").map((b) => b.textContent);
+
 /** A linha da conversa com a IA na aba Conta (a única com custo em US$). */
 const linhaDaIA = async () => {
   await screen.findByText(/US\$ 0,01/);
@@ -352,7 +355,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("“O piso ficou desnivelado perto da porta”");
     expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("Carlos Pinto propôs um desconto de R$ 300");
     expect(within(piso).getByTestId("reclamacao")).toHaveTextContent("Ana Lima aceitou a proposta");
-    expect(within(piso).getAllByRole("button").map((b) => b.textContent)).toEqual(["Reabrir para refazer", "Reembolso total", "Reembolso parcial", "Liberar sem reembolso"]);
+    expect(botoes(piso)).toEqual(["Reabrir para refazer", "Reembolso total", "Reembolso parcial", "Liberar sem reembolso"]);
     // o desconto aceito é a decisão sugerida
     expect(within(piso).getByRole("button", { name: /Reembolso parcial/ }).className).toContain("bg-orange-600");
     // grupo sem pagamento: a fase espera e o lembrete fica no grupo (pago de uma vez)
@@ -436,7 +439,7 @@ describe("Pergunte à IA, planilha e conversa inteira", () => {
     const janela = await screen.findByRole("dialog");
     const piso = within(janela).getAllByTestId("fase")[1];
     expect(within(piso).getByText("Reembolsada ao cliente")).toBeInTheDocument();
-    expect(within(piso).getAllByRole("button").map((b) => b.textContent)).toEqual(["Marcar reembolso feito (R$ 1.200)"]);
+    expect(botoes(piso)).toEqual(["Marcar reembolso feito (R$ 1.200)"]);
     fireEvent.click(within(piso).getByRole("button", { name: /Marcar reembolso feito/ }));
     // marcar o que já foi feito não pede motivo
     fireEvent.click(within(piso).getByRole("button", { name: "Confirmar" }));

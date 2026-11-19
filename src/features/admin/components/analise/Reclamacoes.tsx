@@ -31,7 +31,8 @@ export function Reclamacoes({ abrir }: { abrir: (c: ConteudoJanela) => void }) {
   const { dado, erro, deNovo } = useApi<{ data: Item[] }>("/admin/reclamacoes?abertas=1");
   const lista = [...(dado?.data ?? [])].sort((a, b) => Number(ondeEsta(b).acao) - Number(ondeEsta(a).acao));
   return (
-    <SectionCard title="Reclamações" subtitle="Fases recusadas pelo cliente. Em cima, as que esperam a ArqDoor.">
+    <SectionCard title="Reclamações" subtitle="Fases recusadas pelo cliente. Em cima, as que esperam a ArqDoor."
+      dica="O cliente recusa uma fase escrevendo o que está errado. O profissional tem 3 dias para responder: devolver o valor, propor desconto, pedir para refazer ou discordar. Sem resposta, vira disputa e, pelos termos de uso, o valor volta ao cliente. A ArqDoor decide no contrato; o estorno e o repasse parcial são feitos na Pagar.me e marcados aqui.">
       {erro ? <Erro msg={erro} /> : !dado ? <Carregando /> : !lista.length ? <p className="text-sm text-slate-500">Nenhuma reclamação aberta.</p> : (
         <div className="space-y-1.5">
           {lista.map((r) => {

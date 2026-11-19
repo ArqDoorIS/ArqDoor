@@ -160,7 +160,8 @@ function FilaDeAcao({ v, investigar }: { v: Visao; investigar: (id: number) => v
   const conta = (t: ItemDaFila["tipo"]) => itens.filter((i) => i.tipo === t).length;
   const lista = itens.filter((i) => filtro === "todos" || i.tipo === filtro);
   return (
-    <SectionCard title="Fila de ação" subtitle="O que fazer agora. A cor mostra há quanto tempo está parado.">
+    <SectionCard title="Fila de ação" subtitle="O que fazer agora. A cor mostra há quanto tempo está parado."
+      dica="Pessoas e negócios que pedem contato: proposta sem decisão do cliente, pedido sem oferta, convite sem resposta e as sugestões da IA. Verde: parado há pouco; amarelo: alguns dias; vermelho: muito tempo.">
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Pilula ativo={filtro === "todos"} onClick={() => setFiltro("todos")}>Tudo <span className="opacity-60">{itens.length}</span></Pilula>
         {(Object.keys(TIPO_FILA) as ItemDaFila["tipo"][]).map((t) => <Pilula key={t} ativo={filtro === t} onClick={() => setFiltro(t)}>{TIPO_FILA[t][0]} <span className="opacity-60">{conta(t)}</span></Pilula>)}
