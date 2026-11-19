@@ -52,7 +52,7 @@ function AjustesDoPosthog({ fechar }: { fechar: () => void }) {
   };
   return (
     <div className="space-y-3">
-      <p>Os passos antes do login (baixou, abriu, boas-vindas, escolheu o papel, teste com a IA) e o uso do app de cada pessoa vêm do PostHog. Para o painel ler, ponha uma <b>chave pessoal</b> do PostHog com permissão só de leitura (Settings › Personal API keys › escopo <i>query: read</i>).</p>
+      <p>Os passos antes do login (baixou, abriu, boas-vindas, escolheu o papel, teste com a IA) e o uso do app de cada pessoa vêm do PostHog. Para o painel ler, ponha uma <b>chave pessoal</b> do PostHog com permissão só de leitura (Settings › Personal API keys › escopo <i>query: read</i>). Ela começa com <b>phx_</b>.</p>
       {atual ? <p className="text-xs text-slate-500">Situação: <b>{atual.ligado ? `ligado (chave …${atual.chave_final ?? ""})` : "desligado"}</b></p> : null}
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="text-xs font-semibold text-slate-600">Projeto<input value={projeto} onChange={(e) => setProjeto(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm font-normal" /></label>
