@@ -177,8 +177,9 @@ describe("aba Impulsionamento", () => {
     expect(await screen.findByTestId("soma-da-conta")).toHaveTextContent(
       "Começa em 50 · Fases: 4 fases = 3,5 pts × 1,5 × 1 = 5,3 · Lançamento: 3 clientes = 6 · Bônus +2 · Punições −4 · Total 59,3%",
     );
-    expect(screen.getByLabelText("Multiplicador")).toHaveValue("1,5");
-    expect(screen.getByLabelText("Multiplicador vale até")).toHaveValue("2026-12-31");
+    // o formulário é preenchido logo depois da conta (efeito): no CI, mais lento, espera
+    await waitFor(() => expect(screen.getByLabelText("Multiplicador")).toHaveValue("1,5"));
+    await waitFor(() => expect(screen.getByLabelText("Multiplicador vale até")).toHaveValue("2026-12-31"));
     const ajustes = screen.getAllByTestId("ajuste-do-profissional");
     expect(ajustes[1]).toHaveTextContent("revogado em");
     expect(within(ajustes[1]).queryByRole("button", { name: "Revogar" })).toBeNull();
