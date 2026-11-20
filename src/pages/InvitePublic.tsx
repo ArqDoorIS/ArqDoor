@@ -660,7 +660,7 @@ function FolhaAprovar({ fase, nome, fechar, pronto }: { fase: FaseVista; nome: s
       if (!rs.ok) { setEnviando(false); setErro((await json(rs))?.message || "Não foi possível criar a senha de assinatura."); return; }
       updateUserLocal?.({ signature_password_configured: true });
     }
-    const r = await apiRequest("PATCH", `/step/signature/${fase.id}`, { password: senha });
+    const r = await apiRequest("PATCH", `/step/signature/${fase.id}`, { signature: true, password: senha });
     const b = await json(r);
     setEnviando(false);
     if (!r.ok || b?.success === false) { setErro(b?.message || "Não foi possível aprovar. Confira a senha."); return; }

@@ -179,7 +179,7 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
         email: email.trim().toLowerCase(),
         cpf: cpfDigits,
         birth: nascimento,
-        gender: "Outro",
+        gender: "Prefiro não dizer",
         type: "contratante",
         password,
         confirmPassword,
@@ -415,7 +415,7 @@ export function StepConta({ user, onSuccess }: Props) {
         } else if (result?.status === "registered") {
           toast({
             title: "Conta criada",
-            description: "Faca login com Google para continuar.",
+            description: "Faça login com Google para continuar.",
           });
         }
       } finally {
@@ -451,7 +451,7 @@ export function StepConta({ user, onSuccess }: Props) {
       <div>
         <h2 className="text-xl font-bold text-ink-strong">Entre para assinar</h2>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Faca login ou crie sua conta para assinar o contrato.
+          Faça login ou crie sua conta para assinar o contrato.
         </p>
       </div>
 
