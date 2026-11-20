@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Filter, Loader2, LogOut, Menu, RefreshCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TABS } from "@/features/admin/constants";
@@ -15,6 +15,8 @@ import { AdminErrosSection } from "@/features/admin/components/AdminErrosSection
 import { AdminAppSection } from "@/features/admin/components/AdminAppSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
+import { AdminImpulsionamentoSection } from "@/features/admin/components/AdminImpulsionamentoSection";
+import { AdminPunicoesSection, type PessoaEscolhida } from "@/features/admin/components/AdminPunicoesSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
 import { AdminLoginView } from "@/features/admin/components/AdminLoginView";
 import { AdminDashboardView } from "@/features/admin/components/AdminOverviewSection";
@@ -34,6 +36,10 @@ export default function Admin() {
   useAdminPageMeta();
 
   const [navigationOpen, setNavigationOpen] = useState(false);
+  // pessoa que o botão "Punições" da aba Usuários manda para a aba Punições
+  const [pessoaDaPunicao, setPessoaDaPunicao] = useState<PessoaEscolhida | null>(null);
+  // a aba Punições avisa quando já usou a pessoa: voltar pela barra lateral não reabre a antiga
+  const limparPessoaDaPunicao = useCallback(() => setPessoaDaPunicao(null), []);
   const session = useAdminSession();
   const admin = useAdminDashboard({
     isAuthenticated: session.isAuthenticated,
@@ -83,7 +89,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "erros", "app", "auditoria"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "app", "auditoria", "impulsionamento", "punicoes"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -144,6 +150,10 @@ export default function Admin() {
             onDeleteEarlyUser={admin.deleteEarlyUser}
             deletingUserId={admin.deletingUserId}
             deleteUserError={admin.deleteUserError}
+            onOpenPunicoes={(u) => {
+              setPessoaDaPunicao({ id: u.id, nome: u.name, papel: u.type === "prestador" ? "profissional" : "cliente" });
+              selectTab("punicoes");
+            }}
           />
         );
       case "contratos":
@@ -197,6 +207,10 @@ export default function Admin() {
         );
       case "auditoria":
         return <AdminAuditLogSection />;
+      case "impulsionamento":
+        return <AdminImpulsionamentoSection />;
+      case "punicoes":
+        return <AdminPunicoesSection pessoaInicial={pessoaDaPunicao} aoUsarPessoaInicial={limparPessoaDaPunicao} />;
       default:
         return (
           <AdminDashboardView

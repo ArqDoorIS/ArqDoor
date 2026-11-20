@@ -18,7 +18,9 @@ export type AdminTab =
   | "indicacoes"
   | "publicacoes"
   | "conversas"
-  | "auditoria";
+  | "auditoria"
+  | "impulsionamento"
+  | "punicoes";
 
 export type DashboardSection =
   | "all"
