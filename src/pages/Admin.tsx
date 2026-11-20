@@ -18,6 +18,7 @@ import { AdminReferralsSection } from "@/features/admin/components/AdminReferral
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminImpulsionamentoSection } from "@/features/admin/components/AdminImpulsionamentoSection";
 import { AdminPunicoesSection, type PessoaEscolhida } from "@/features/admin/components/AdminPunicoesSection";
+import { AdminNotificacoesSection } from "@/features/admin/components/AdminNotificacoesSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
 import { AdminLoginView } from "@/features/admin/components/AdminLoginView";
 import { AdminDashboardView } from "@/features/admin/components/AdminOverviewSection";
@@ -90,7 +91,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes", "notificacoes"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -214,6 +215,8 @@ export default function Admin() {
         return <AdminImpulsionamentoSection />;
       case "punicoes":
         return <AdminPunicoesSection pessoaInicial={pessoaDaPunicao} aoUsarPessoaInicial={limparPessoaDaPunicao} />;
+      case "notificacoes":
+        return <AdminNotificacoesSection />;
       default:
         return (
           <AdminDashboardView
