@@ -21,7 +21,8 @@ export type AdminTab =
   | "conversas"
   | "auditoria"
   | "impulsionamento"
-  | "punicoes";
+  | "punicoes"
+  | "notificacoes";
 
 export type DashboardSection =
   | "all"

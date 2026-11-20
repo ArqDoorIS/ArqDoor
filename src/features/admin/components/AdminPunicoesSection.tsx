@@ -50,7 +50,7 @@ function SeloDoNivel({ nivel }: { nivel: Nivel }) {
   return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold ring-1", n?.cor ?? "bg-slate-100 text-slate-600 ring-slate-200")}>{n?.nome ?? nivel}</span>;
 }
 
-function PapelIcone({ papel }: { papel: PapelDaPessoa | null }) {
+export function PapelIcone({ papel }: { papel: PapelDaPessoa | null }) {
   if (!papel) return null;
   const I = papel === "profissional" ? Hammer : User;
   return <span className="inline-flex items-center gap-1 text-xs text-slate-500"><I className="h-3.5 w-3.5" />{papel === "profissional" ? "Profissional" : "Cliente"}</span>;
@@ -112,7 +112,7 @@ function EmVigor({ vez, aoMudar, abrir }: { vez: number; aoMudar: () => void; ab
   );
 }
 
-function BuscaDePessoa({ escolher }: { escolher: (p: PessoaEscolhida) => void }) {
+export function BuscaDePessoa({ escolher }: { escolher: (p: PessoaEscolhida) => void }) {
   const [busca, setBusca] = useState("");
   const [feita, setFeita] = useState("");
   useEffect(() => { const t = setTimeout(() => setFeita(busca.trim().replace(/^#/, "")), 350); return () => clearTimeout(t); }, [busca]);

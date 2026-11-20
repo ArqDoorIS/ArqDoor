@@ -1,6 +1,7 @@
 import type { AdminTabConfig, AdminTab, FilterState } from "./types";
 import {
   BadgeDollarSign,
+  Bell,
   ChartNoAxesCombined,
   BriefcaseBusiness,
   FileSignature,
@@ -48,6 +49,8 @@ export const TABS: AdminTabConfig[] = [
   { key: "impulsionamento", label: "Impulsionamento", icon: Rocket, papeis: ["owner"] },
   // Aviso, fora do algoritmo, congelar ou banir uma conta (profissional ou cliente)
   { key: "punicoes", label: "Punições", icon: Gavel, papeis: ["owner"] },
+  // Eventos automáticos (sino, push, e-mail), comunicados avulsos e modelos de e-mail (20/11/2026)
+  { key: "notificacoes", label: "Notificações", icon: Bell, papeis: ["owner"] },
   // Espaço só dos erros: os do app e da API (sozinhos, com log e contexto para investigar e
   // reproduzir) e as conversas com a IA que deram erro
   { key: "erros", label: "Auditoria de erros", icon: Bug, papeis: ["owner"] },
@@ -97,6 +100,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   auditoria: 1,
   impulsionamento: 1,
   punicoes: 1,
+  notificacoes: 1,
   equipe: 1,
 };
 
@@ -121,6 +125,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   auditoria: 50,
   impulsionamento: 25,
   punicoes: 25,
+  notificacoes: 20,
   equipe: 25,
 };
 

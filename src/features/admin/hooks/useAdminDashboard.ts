@@ -413,6 +413,7 @@ export function useAdminDashboard({
    * `ia` le `/admin/ai-settings`; `erros` le `/admin/erros`; `analise` le `/admin/analise/*`;
    * `termos` le `/admin/termos`.
    * `impulsionamento` le `/admin/impulsionamento/*`; `punicoes` le `/admin/punicoes`.
+   * `notificacoes` le `/admin/notificacoes/*`.
      */
     const requestedSection: DashboardSection =
       activeTab === "dashboard" ||
@@ -426,6 +427,7 @@ export function useAdminDashboard({
       activeTab === "equipe" ||
       activeTab === "impulsionamento" ||
       activeTab === "punicoes" ||
+      activeTab === "notificacoes" ||
       activeTab === "ia"
         ? "all"
         : activeTab;
