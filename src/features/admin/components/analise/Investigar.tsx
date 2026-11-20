@@ -1,8 +1,7 @@
 import { useState } from "react";
 import {
   Archive, Banknote, Calendar, Clock3, Copy, Database, ExternalLink, FileText, Flag, Lightbulb, Loader2, Map as Mapa, MapPin, Megaphone, MessageCircle,
-  Search, Smartphone, Sparkles, Target, TrendingUp, User, AlertTriangle,
-} from "lucide-react";
+  Search, Smartphone, Sparkles, Target, TrendingUp, User, AlertTriangle, Shuffle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
@@ -12,11 +11,12 @@ import {
 } from "./comum";
 import { Sankey } from "./Sankey";
 import { ContaDaPessoa, ConversasDaPessoa } from "./ContaDaPessoa";
+import { MatchsDaPessoa } from "./MatchsDaPessoa";
 import { janelaDaFaixa, janelaDoBloco, Legenda } from "./Caminhos";
 import type { Caminhos, Ficha, ItemDaFicha, RespostaDaFicha } from "./tipos";
 
-type Sub = "resumo" | "mapa" | "dados" | "conversas" | "previsoes" | "conta";
-const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conversas", "Conversas", MessageCircle], ["previsoes", "Previsões", TrendingUp], ["conta", "Conta", Archive]];
+type Sub = "resumo" | "mapa" | "dados" | "conversas" | "previsoes" | "conta" | "matchs";
+const SUBS: [Sub, string, typeof User][] = [["resumo", "Resumo", Sparkles], ["mapa", "Mapa do cliente", Mapa], ["dados", "Dados", Database], ["conversas", "Conversas", MessageCircle], ["previsoes", "Previsões", TrendingUp], ["conta", "Conta", Archive], ["matchs", "Matchs", Shuffle]];
 
 function Itens({ itens, nome, rotuloDoTipo, abrir }: { itens: ItemDaFicha[]; nome: string; rotuloDoTipo: string; abrir: (c: ConteudoJanela) => void }) {
   if (!itens.length) return <p className="text-xs text-slate-400">Nenhum.</p>;
@@ -219,6 +219,7 @@ function FichaDaPessoa({ id, abrir, irParaPerfis, investigar }: { id: number; ab
       ) : null}
 
       {sub === "conta" ? <ContaDaPessoa id={id} nome={nome} f={f} abrir={abrir} investigar={investigar} /> : null}
+      {sub === "matchs" ? <MatchsDaPessoa id={id} abrir={abrir} investigar={investigar} /> : null}
     </div>
   );
 }

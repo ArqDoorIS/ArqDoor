@@ -129,7 +129,7 @@ export function AdminAnaliseSection() {
       {aba === "perfis" ? <AbaPerfis abrir={setJanela} investigar={investigar} /> : null}
       {aba === "pessoas" ? <AbaPessoas investigar={investigar} /> : null}
       {aba === "investigar" ? <AbaInvestigar id={pessoa} abrir={setJanela} investigar={investigar} irParaPerfis={() => { setJanela(null); setAba("perfis"); }} /> : null}
-      {aba === "kirios" ? <AbaKirios /> : null}
+      {aba === "kirios" ? <AbaKirios abrir={setJanela} investigar={investigar} /> : null}
       {aba === "precisao" ? <AbaPrecisao investigar={investigar} /> : null}
 
       <Janela conteudo={janela} fechar={() => setJanela(null)} />
