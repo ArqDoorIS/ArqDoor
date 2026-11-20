@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, Search, Trash2 } from "lucide-react";
+import { Clock, Eye, EyeOff, Loader2, Power, RotateCcw, Search, ShieldOff, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ADMIN_TOKENS } from "../tokens";
 import { cn, formatCurrency, formatDateTime, getFileUrl } from "../utils";
@@ -14,7 +14,29 @@ import { AdminDemandOffersPanel } from "./AdminDemandOffersPanel";
  * Duas acoes, de proposito separadas:
  *  - Ocultar: reversivel. Some das listagens publicas; o dono continua vendo.
  *  - Apagar:  definitivo. Remove do banco (fica um retrato no log de auditoria).
+ *
+ * Pedido de cliente (19/11/2026): Inativar tira o pedido da busca por profissionais e guarda
+ * o motivo, com ícone: relógio = inatividade, escudo = administração (o padrão quando não se
+ * escolhe). Reativar volta a procurar.
  */
+
+type MotivoDeInativacao = "inatividade" | "administracao";
+
+/** Selo do pedido inativo com o ícone do motivo. */
+export function SeloDeInativo({ motivo, em, nota }: { motivo: string | null; em?: string | null; nota?: string | null }) {
+  const inatividade = motivo === "inatividade";
+  const Icone = inatividade ? Clock : ShieldOff;
+  return (
+    <span
+      data-testid="selo-inativo"
+      title={`${inatividade ? "Inativado por inatividade" : "Inativado pela administração"}${em ? ` em ${formatDateTime(em)}` : ""}${nota ? `: ${nota}` : ""}`}
+      className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold", inatividade ? "bg-slate-200 text-slate-700" : "bg-violet-100 text-violet-800")}
+    >
+      <Icone className="h-3 w-3" />
+      {inatividade ? "Inativo · inatividade" : "Inativo · administração"}
+    </span>
+  );
+}
 
 type ListingType = "demands" | "offers";
 type Visibility = "all" | "visible" | "hidden";
@@ -48,6 +70,9 @@ type ListingRow = {
   admin_hidden: boolean;
   admin_hidden_at: string | null;
   admin_hidden_reason: string | null;
+  inativado_em?: string | null;
+  inativado_motivo?: MotivoDeInativacao | null;
+  inativado_nota?: string | null;
 };
 
 type Counts = { demands: { total: number; hidden: number }; offers: { total: number; hidden: number } };
@@ -90,6 +115,8 @@ export function AdminListingsSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyKey, setBusyKey] = useState<string | null>(null);
+  // pedido em que o admin está escolhendo o motivo da inativação
+  const [inativando, setInativando] = useState<{ id: number; motivo: MotivoDeInativacao; nota: string } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -157,6 +184,42 @@ export function AdminListingsSection() {
       await load();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "Erro ao alterar visibilidade.");
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  const inativar = async (row: ListingRow) => {
+    if (!inativando || inativando.id !== row.id) return;
+    const key = `inativar-${row.id}`;
+    setBusyKey(key);
+    setError(null);
+    try {
+      const response = await apiRequest("POST", `/admin/listings/demands/${row.id}/inativar`, {
+        motivo: inativando.motivo,
+        nota: inativando.nota.trim() || undefined,
+      });
+      if (!response.ok) throw new Error(await readError(response, "Erro ao inativar o pedido."));
+      setInativando(null);
+      await load();
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : "Erro ao inativar o pedido.");
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  const reativar = async (row: ListingRow) => {
+    if (!window.confirm(`Reativar "${row.title}"?\n\nO pedido volta a procurar profissionais e o cliente é avisado.`)) return;
+    const key = `reativar-${row.id}`;
+    setBusyKey(key);
+    setError(null);
+    try {
+      const response = await apiRequest("POST", `/admin/listings/demands/${row.id}/reativar`, {});
+      if (!response.ok) throw new Error(await readError(response, "Erro ao reativar o pedido."));
+      await load();
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : "Erro ao reativar o pedido.");
     } finally {
       setBusyKey(null);
     }
@@ -312,8 +375,10 @@ export function AdminListingsSection() {
                           <span className="text-xs text-slate-400">versão {row.versao}</span>
                         ) : null}
                         {row.admin_hidden ? <StatusBadge label="Oculta" tone="amber" /> : null}
-                        {row.type === "demand" && row.status ? (
-                          <StatusBadge label={row.status} tone={demandStatusTone(row.status)} />
+                        {row.type === "demand" && row.inativado_em ? (
+                          <SeloDeInativo motivo={row.inativado_motivo ?? null} em={row.inativado_em} nota={row.inativado_nota} />
+                        ) : row.type === "demand" && row.status ? (
+                          <StatusBadge label={row.status === "pendente" ? "procurando" : row.status} tone={demandStatusTone(row.status)} />
                         ) : null}
                         {row.profession ? <StatusBadge label={row.profession} tone="sky" /> : null}
                       </div>
@@ -402,6 +467,28 @@ export function AdminListingsSection() {
                       ) : null}
                     </div>
                     <div className="flex shrink-0 gap-2 sm:flex-col">
+                      {row.type === "demand" && row.status === "pendente" ? (
+                        <button
+                          type="button"
+                          onClick={() => setInativando(inativando?.id === row.id ? null : { id: row.id, motivo: "administracao", nota: "" })}
+                          disabled={Boolean(busyKey)}
+                          className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-xs font-semibold text-violet-800 hover:bg-violet-100 disabled:opacity-60"
+                        >
+                          <Power className="h-3.5 w-3.5" />
+                          Inativar
+                        </button>
+                      ) : null}
+                      {row.type === "demand" && row.inativado_em ? (
+                        <button
+                          type="button"
+                          onClick={() => void reativar(row)}
+                          disabled={Boolean(busyKey)}
+                          className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-60"
+                        >
+                          {busyKey === `reativar-${row.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+                          Reativar
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => void toggleHidden(row)}
@@ -433,6 +520,37 @@ export function AdminListingsSection() {
                       </button>
                     </div>
                   </div>
+                  {row.type === "demand" && inativando?.id === row.id ? (
+                    <div role="group" aria-label={`Inativar ${row.title}`} className="mt-3 space-y-2 rounded-xl border border-violet-200 bg-violet-50/50 p-3 text-sm">
+                      <p className="font-semibold text-slate-900">Inativar este pedido</p>
+                      <p className="text-xs text-slate-600">Ele para de procurar profissionais: sai do feed, das sugestões e dos convites. O cliente é avisado no app. Dá para reativar depois.</p>
+                      <div className="flex flex-wrap gap-2">
+                        {([["administracao", "Pela administração", ShieldOff], ["inatividade", "Por inatividade", Clock]] as const).map(([valor, rotulo, Icone]) => (
+                          <label key={valor} className={cn("inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold", inativando.motivo === valor ? "border-violet-400 bg-white text-violet-800" : "border-slate-200 bg-white text-slate-600")}>
+                            <input type="radio" name={`motivo-${row.id}`} className="sr-only" checked={inativando.motivo === valor} onChange={() => setInativando({ ...inativando, motivo: valor })} />
+                            <Icone className="h-3.5 w-3.5" />{rotulo}
+                          </label>
+                        ))}
+                      </div>
+                      <input value={inativando.nota} onChange={(e) => setInativando({ ...inativando, nota: e.target.value })} maxLength={255}
+                        placeholder="Nota interna (opcional)" aria-label="Nota da inativação"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-violet-400" />
+                      <p className="text-[11px] text-slate-500">Sem escolher, fica como "pela administração".</p>
+                      <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => setInativando(null)} className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                        <button type="button" onClick={() => void inativar(row)} disabled={Boolean(busyKey)}
+                          className="inline-flex items-center gap-1 rounded-full bg-violet-700 px-3.5 py-1.5 text-xs font-bold text-white disabled:opacity-50">
+                          {busyKey === `inativar-${row.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Power className="h-3.5 w-3.5" />}Inativar
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                  {row.inativado_em ? (
+                    <p className="mt-2 text-xs text-slate-600">
+                      Inativado {formatDateTime(row.inativado_em)} {row.inativado_motivo === "inatividade" ? "por inatividade" : "pela administração"}
+                      {row.inativado_nota ? `: ${row.inativado_nota}` : ""}
+                    </p>
+                  ) : null}
                   {row.type === "demand" ? <AdminDemandOffersPanel demandId={row.id} versaoAtual={row.versao} /> : null}
                 </li>
               );
