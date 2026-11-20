@@ -36,7 +36,7 @@ const PLAY = "https://play.google.com/store/apps/details?id=com.arqdoor.app";
 
 type Prestador = ProviderData & { id?: number | null; foto?: string | null; sobre?: string | null; verificado?: boolean };
 type Folha = null | "conta" | "assinar" | "pagar" | "aprovar" | "ajuste";
-type Momento = "carregando" | "falha" | "outra_conta" | "entrar" | "proposta" | "assinar" | "pagar" | "obra" | "concluido";
+type Momento = "carregando" | "erro" | "falha" | "outra_conta" | "entrar" | "proposta" | "assinar" | "pagar" | "obra" | "concluido";
 
 const json = async (res: Response) => res.json().catch(() => ({}));
 const urlDaFoto = (p?: string | null) => (!p ? null : p.startsWith("http") ? p : `${API_BASE_URL}/${p.replace(/^\/+/, "")}`);
@@ -58,6 +58,8 @@ export default function InvitePublic() {
   const [pagamentoAgora, setPagamentoAgora] = useState<PagamentoAgora | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [outraPessoa, setOutraPessoa] = useState(false);
+  // rede caiu ou resposta estranha: tela com "Tentar de novo" em vez de girar para sempre
+  const [erroDeRede, setErroDeRede] = useState(false);
 
   // ── carregar ──────────────────────────────────────────────────────────────
   const carregar = useCallback(async () => {
@@ -84,6 +86,9 @@ export default function InvitePublic() {
       // preços com as taxas (antes de assinar; depois, só para as partes)
       const rp = await apiRequest("GET", `/invites/public/${token}/precos`);
       setPrecos(rp.ok ? (await json(rp))?.data ?? null : null);
+      setErroDeRede(false);
+    } catch {
+      setErroDeRede(true);
     } finally {
       setCarregando(false);
     }
@@ -94,26 +99,36 @@ export default function InvitePublic() {
   // contrato assinado: só para a conta que assinou
   const carregarContrato = useCallback(async () => {
     if (!token || invite?.status !== "accepted" || !isLoggedIn) { setContrato(undefined); return; }
-    const rm = await apiRequest("GET", `/invites/public/${token}/meu-contrato`);
-    if (!rm.ok) { setContrato(null); return; }
-    const meu = (await json(rm))?.data;
-    const rg = await apiRequest("GET", `/ticket/${meu.ticket_id}/payment-groups`);
-    let grupos = gruposDoContrato((await json(rg))?.data);
-    // preço de cada pagamento em aberto pela mesma conta da cobrança
-    grupos = await Promise.all(grupos.map(async (g) => {
-      if (g.pago) return comPartes(g);
-      const ids = g.stepId ? [g.stepId] : g.fases.map((f) => f.id).filter(Boolean);
-      const ro = await apiRequest("GET", `/payments/options?step_ids=${ids.join(",")}`).catch(() => null);
-      const op = ro && ro.ok ? (await json(ro))?.data?.options : null;
-      return comPartes({ ...g, ...(op ? precoDasOpcoes(op) : { cartao: g.base ?? null }) });
-    }));
-    setContrato({ ticketId: Number(meu.ticket_id), prestadorUserId: meu.provider_user_id ?? null, grupos });
+    try {
+      const rm = await apiRequest("GET", `/invites/public/${token}/meu-contrato`);
+      if (rm.status === 404) { setContrato(null); return; }
+      const meu = (await json(rm))?.data;
+      if (!rm.ok || !meu?.ticket_id) throw new Error("contrato");
+      const rg = await apiRequest("GET", `/ticket/${meu.ticket_id}/payment-groups`);
+      if (!rg.ok) throw new Error("pagamentos");
+      let grupos = gruposDoContrato((await json(rg))?.data);
+      // preço de cada pagamento em aberto pela mesma conta da cobrança
+      grupos = await Promise.all(grupos.map(async (g) => {
+        if (g.pago) return comPartes(g);
+        const ids = g.stepId ? [g.stepId] : g.fases.map((f) => f.id).filter(Boolean);
+        const ro = await apiRequest("GET", `/payments/options?step_ids=${ids.join(",")}`).catch(() => null);
+        const op = ro && ro.ok ? (await json(ro))?.data?.options : null;
+        // sem a conta da cobrança não mostramos número: o valor base (sem taxa) seria menor
+        // do que o cobrado
+        return comPartes({ ...g, ...(op ? precoDasOpcoes(op) : {}) });
+      }));
+      setContrato({ ticketId: Number(meu.ticket_id), prestadorUserId: meu.provider_user_id ?? null, grupos });
+      setErroDeRede(false);
+    } catch {
+      setErroDeRede(true);
+    }
   }, [token, invite?.status, isLoggedIn]);
 
   useEffect(() => { void carregarContrato(); }, [carregarContrato]);
 
   // ── momento da página ───────────────────────────────────────────────────────
   const momento: Momento = useMemo(() => {
+    if (erroDeRede && !(invite && invite.status !== "accepted")) return "erro";
     if (carregando && !invite && !falha && !outraConta) return "carregando";
     if (falha) return "falha";
     if (outraConta) return "outra_conta";
@@ -128,7 +143,7 @@ export default function InvitePublic() {
     }
     if (isLoggedIn && invite.vinculado_a_mim) return "assinar";
     return "proposta";
-  }, [carregando, invite, falha, outraConta, isLoggedIn, contrato]);
+  }, [carregando, invite, falha, outraConta, isLoggedIn, contrato, erroDeRede]);
 
   const grupos: GrupoVista[] = useMemo(() => {
     if (contrato?.grupos) return contrato.grupos;
@@ -178,7 +193,9 @@ export default function InvitePublic() {
         etapas: g.fases.map((f) => ({ id: f.id!, title: f.titulo, price: f.peso })),
         precoPix: g.pix,
         precoCartao: g.cartao,
-        maxParcelas: g.parcelas?.vezes ?? 1,
+        // sem as opções da cobrança, o limite fica com o servidor (não travamos em 1×)
+        maxParcelas: g.parcelas?.vezes ?? (g.opcoesCartao ? 1 : null),
+        opcoesCartao: g.opcoesCartao ?? null,
       },
     });
     setFolha("pagar");
@@ -205,6 +222,13 @@ export default function InvitePublic() {
     return <div className="cv"><Topo logado={isLoggedIn} user={user} /><div className="vazio"><Loader2 className="ico" style={{ margin: "40px auto", animation: "spin 1s linear infinite" }} /></div></div>;
   }
   if (momento === "falha" && falha) return <Indisponivel falha={falha} />;
+  if (momento === "erro") {
+    return (
+      <Vazio titulo="Não foi possível abrir agora" icone={<Clock className="ico" style={{ width: 30, height: 30 }} />}
+        texto="Confira a internet e tente de novo. A proposta continua salva."
+        acao={<button className="btn cheio largo" onClick={() => { setErroDeRede(false); void carregar(); void carregarContrato(); }}>Tentar de novo</button>} />
+    );
+  }
   if (outraPessoa && momento !== "falha") {
     const final = (invite as any)?.destinatario?.cpf_final;
     return (
@@ -230,7 +254,9 @@ export default function InvitePublic() {
           <div className="bola"><Lock className="ico" style={{ width: 30, height: 30 }} /></div>
           <h1>{invite?.title || "Contrato"}</h1>
           <p>{contrato === null ? "Este contrato foi assinado com outra conta. Entre com a conta que assinou para acompanhar." : "Este contrato já foi assinado. Entre com a conta que assinou para acompanhar a obra, aprovar as fases e pagar."}</p>
-          <div style={{ textAlign: "left" }}><StepConta user={user} onSuccess={() => void carregarContrato()} /></div>
+          {contrato === null && isLoggedIn
+            ? <button className="btn cheio largo" onClick={() => { void logout(); setContrato(undefined); }}>Sair e entrar com a conta que assinou</button>
+            : <div style={{ textAlign: "left" }}><StepConta user={user} onSuccess={() => void carregarContrato()} /></div>}
           <AvisoDoApp />
         </div>
       </div>
@@ -307,7 +333,7 @@ export default function InvitePublic() {
           <Combinado escopo={escopo} />
           <ComoFunciona nome={nome} prazo={prazo} />
           <div className="so-celular" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Documentos token={token} nome={nome} temContrato={!!invite.has_contract_pdf} />
+            <Documentos token={token} nome={nome} temContrato={!!invite.has_contract_pdf || invite.status === "accepted"} />
             {contrato && <Conversa nome={nome} ir={() => navigate(`/messages/${contrato.prestadorUserId}?ticket=${contrato.ticketId}`)} />}
           </div>
           <div className="rodape-site">ArqDoor · <a href="/termos-de-uso">Termos de Uso</a> · <a href="mailto:suporte@arqdoor.com">Ajuda</a></div>
@@ -321,7 +347,7 @@ export default function InvitePublic() {
             ))}
             <div style={{ borderTop: "1px solid var(--linha)", paddingTop: 10, display: "flex", justifyContent: "space-between", fontWeight: 800 }}><span>Total</span><span style={{ color: "var(--acentoTexto)" }}>{brl(total.cartao)}</span></div>
           </div>
-          <Documentos token={token} nome={nome} temContrato={!!invite.has_contract_pdf} />
+          <Documentos token={token} nome={nome} temContrato={!!invite.has_contract_pdf || invite.status === "accepted"} />
           {contrato && <Conversa nome={nome} ir={() => navigate(`/messages/${contrato.prestadorUserId}?ticket=${contrato.ticketId}`)} />}
         </aside>
       </main>

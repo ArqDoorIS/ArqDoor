@@ -401,23 +401,6 @@ export function StepConta({ user, onSuccess }: Props) {
 
   const googleEnabled = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  // Caso especial: usuario logado sem CPF
-  const cpfDigits = (user?.cpf || "").replace(/\D/g, "");
-  const needsCpf = !!user && cpfDigits.length !== 11;
-  if (needsCpf) {
-    return (
-      <div className="space-y-5" data-testid="step-conta">
-        <div>
-          <h2 className="text-xl font-bold text-ink-strong">Confirmar CPF</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Para assinar você precisa ter CPF cadastrado.
-          </p>
-        </div>
-        <FormCpf user={user} onSuccess={onSuccess} />
-      </div>
-    );
-  }
-
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setGoogleLoading(true);
@@ -444,6 +427,24 @@ export function StepConta({ user, onSuccess }: Props) {
       setGoogleLoading(false);
     },
   });
+
+  // Caso especial: usuario logado sem CPF (depois dos hooks: o usuario muda com a folha aberta)
+  const cpfDigits = (user?.cpf || "").replace(/\D/g, "");
+  const needsCpf = !!user && cpfDigits.length !== 11;
+  if (needsCpf) {
+    return (
+      <div className="space-y-5" data-testid="step-conta">
+        <div>
+          <h2 className="text-xl font-bold text-ink-strong">Confirmar CPF</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Para assinar você precisa ter CPF cadastrado.
+          </p>
+        </div>
+        <FormCpf user={user} onSuccess={onSuccess} />
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-5" data-testid="step-conta">

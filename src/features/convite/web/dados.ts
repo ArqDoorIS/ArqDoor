@@ -35,6 +35,8 @@ export type GrupoVista = {
   pagoValor?: number | null;
   /** soma dos preços das fases (base da cobrança), para a folha de pagamento */
   base?: number;
+  /** parcelas do cartão com o total final de cada uma (de /payments/options) */
+  opcoesCartao?: { installment_count: number; installment_value: number; total_amount: number }[] | null;
 };
 
 export type Total = { cartao: number; pix: number; pagamentos: number };
@@ -125,6 +127,9 @@ export function gruposDoContrato(resp: any): GrupoVista[] {
     grupos.push({
       stepId: Number(s.id), nome: s.title || "", fases: [faseDoStep(s)],
       cartao: null, pix: null, parcelas: null, pago: Boolean(s.is_financially_cleared), base: Number(s.price) || 0,
+      pagoEm: s.paid_at ?? null,
+      pagoMeio: s.paid_method ?? null,
+      pagoValor: s.paid_amount != null ? Number(s.paid_amount) : null,
     });
   }
   const inicio = (g: GrupoVista) => g.fases.map((f) => f.inicio || "").filter(Boolean).sort()[0] || "9999";
@@ -145,7 +150,7 @@ function faseDoStep(s: any): FaseVista {
 }
 
 /** Preço do cartão à vista, Pix e maior parcela a partir de /payments/options. */
-export function precoDasOpcoes(opcoes: any[]): Pick<GrupoVista, "cartao" | "pix" | "parcelas"> {
+export function precoDasOpcoes(opcoes: any[]): Pick<GrupoVista, "cartao" | "pix" | "parcelas" | "opcoesCartao"> {
   const cartoes = (opcoes || []).filter((o) => String(o.method).startsWith("credit_card_")).sort((a, b) => a.installments - b.installments);
   const pix = (opcoes || []).find((o) => o.method === "pix");
   const maior = cartoes[cartoes.length - 1];
@@ -154,6 +159,13 @@ export function precoDasOpcoes(opcoes: any[]): Pick<GrupoVista, "cartao" | "pix"
     pix: pix?.total ?? null,
     parcelas: maior && maior.installments > 1
       ? { vezes: maior.installments, valor: Math.ceil((maior.total / maior.installments) * 100 - 1e-9) / 100 }
+      : null,
+    opcoesCartao: cartoes.length
+      ? cartoes.map((o) => ({
+          installment_count: Number(o.installments),
+          installment_value: Math.ceil((o.total / o.installments) * 100 - 1e-9) / 100,
+          total_amount: Number(o.total),
+        }))
       : null,
   };
 }
@@ -165,11 +177,14 @@ export function comPartes(g: GrupoVista): GrupoVista {
   return { ...g, fases: g.fases.map((f, i) => ({ ...f, parte: partes[i] })) };
 }
 
+/** Pago e sem o valor guardado: fica com o preço da fase, para não sumir do total. */
+const valorPago = (g: GrupoVista) => g.pagoValor ?? g.base ?? null;
+
 export function totalDe(grupos: GrupoVista[]): Total {
   const r2 = (v: number) => Math.round(v * 100) / 100;
   return {
-    cartao: r2(grupos.reduce((a, g) => a + ((g.pago ? g.pagoValor : g.cartao) || 0), 0)),
-    pix: r2(grupos.reduce((a, g) => a + ((g.pago ? g.pagoValor : g.pix) || 0), 0)),
+    cartao: r2(grupos.reduce((a, g) => a + ((g.pago ? valorPago(g) : g.cartao) || 0), 0)),
+    pix: r2(grupos.reduce((a, g) => a + ((g.pago ? valorPago(g) : g.pix) || 0), 0)),
     pagamentos: grupos.length,
   };
 }

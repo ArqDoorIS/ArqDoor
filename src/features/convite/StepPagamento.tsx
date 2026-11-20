@@ -182,10 +182,12 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
     setVerificando(true);
     try {
       const primeiraEtapa = devido.etapas?.[0]?.id;
-      const endpoint =
-        devido.tipo === "grupo" && primeiraEtapa
-          ? `/payments/steps/${primeiraEtapa}/refresh`
-          : `/payments/tickets/${ticketId}/refresh`;
+      // pagamento por fase: a própria fase (o refresh do ticket diria "pago" se qualquer
+      // outra fase já estivesse paga)
+      const etapaDoPagamento = devido.tipo === "etapa" ? devido.step_id : devido.tipo === "grupo" ? primeiraEtapa : null;
+      const endpoint = etapaDoPagamento
+        ? `/payments/steps/${etapaDoPagamento}/refresh`
+        : `/payments/tickets/${ticketId}/refresh`;
       const res = await apiRequest("GET", endpoint);
       const body = await res.json().catch(() => ({}));
       if (!res.ok || body?.success === false) {
@@ -304,6 +306,7 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
           <CreditCardInstallmentPicker
             amount={devido.valor}
             maxParcelas={devido.maxParcelas}
+            opcoesProntas={devido.opcoesCartao}
             onChange={escolherParcela}
           />
         )}

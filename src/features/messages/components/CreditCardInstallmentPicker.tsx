@@ -21,12 +21,15 @@ type CreditCardInstallmentPickerProps = {
   onChange: (installmentCount: number | null, option: InstallmentOption | null) => void;
   /** limite de parcelas do pagamento (o profissional pode pôr 6× num e 12× noutro) */
   maxParcelas?: number | null;
+  /** parcelas já calculadas (mesma conta da cobrança): usa estas em vez de simular */
+  opcoesProntas?: InstallmentOption[] | null;
 };
 
 export function CreditCardInstallmentPicker({
   amount,
   onChange,
   maxParcelas,
+  opcoesProntas,
 }: CreditCardInstallmentPickerProps) {
   const [options, setOptions] = useState<InstallmentOption[]>([]);
   const [selectedCount, setSelectedCount] = useState<number | null>(null);
@@ -47,6 +50,12 @@ export function CreditCardInstallmentPicker({
       setFailed(false);
       setSelectedCount(null);
       onChange(null, null);
+      if (opcoesProntas?.length) {
+        const prontas = maxParcelas && maxParcelas > 0 ? opcoesProntas.filter((o) => o.installment_count <= maxParcelas) : opcoesProntas;
+        setOptions(prontas);
+        setLoading(false);
+        return;
+      }
       try {
         const response = await apiRequest("POST", "/payments/credit-card-installments", { amount });
         const payload = await response.json().catch(() => ({}));
@@ -81,7 +90,7 @@ export function CreditCardInstallmentPicker({
     return () => {
       cancelled = true;
     };
-  }, [amount, onChange, maxParcelas]);
+  }, [amount, onChange, maxParcelas, opcoesProntas]);
 
   return (
     <div className="rounded-md border border-brand-soft bg-brand-tint/40 p-3">

@@ -55,6 +55,8 @@ export type PagamentoDevido = {
   precoCartao?: number | null;
   /** limite de parcelas que o profissional pôs neste pagamento */
   maxParcelas?: number | null;
+  /** parcelas com o total final, da mesma conta da cobrança (/payments/options) */
+  opcoesCartao?: { installment_count: number; installment_value: number; total_amount: number }[] | null;
 };
 
 export type PagamentoAgora = {

@@ -259,3 +259,33 @@ describe("assinatura só com senha", () => {
     expect(ordem.indexOf("/users/me/signature-password")).toBeLessThan(ordem.indexOf("/invites/public/tok/accept-and-sign"));
   });
 });
+
+describe("correções da revisão", () => {
+  it("a folha de conta não quebra quando a pessoa entra sem CPF com ela aberta", async () => {
+    const { StepConta } = await import("@/features/convite/StepConta");
+    const { rerender } = render(<StepConta user={null} onSuccess={vi.fn()} />);
+    rerender(<StepConta user={{ id: 5, name: "Ana", cpf: null } as any} onSuccess={vi.fn()} />);
+    expect(await screen.findByTestId("step-conta")).toBeInTheDocument();
+  });
+
+  it("rede caiu: mostra tentar de novo em vez de carregar para sempre", async () => {
+    vi.spyOn(queryClientLib, "apiRequest").mockRejectedValue(new Error("rede"));
+    render(<InvitePublic />);
+    expect(await screen.findByText("Não foi possível abrir agora")).toBeInTheDocument();
+  });
+
+  it("pagamento por fase confere a própria fase no Já paguei", async () => {
+    const { StepPagamento } = await import("@/features/convite/StepPagamento");
+    rotas["POST /payments/steps/31"] = { body: { success: true, data: { status: "PENDING", pix: { qr_code: "000201", copia_e_cola: "000201" } } } };
+    rotas["GET /payments/steps/31/refresh"] = { body: { success: true, data: { paid: false } } };
+    const onSuccess = vi.fn();
+    render(<StepPagamento ticketId={90} onSuccess={onSuccess} onSkip={vi.fn()}
+      pagamento={{ modo: "protegido", assinado: true, motivo: "", devido: { tipo: "etapa", step_id: 31, nome: "Pintura", valor: 500, etapas: [{ id: 31, title: "Pintura", price: 500 }] } }} />);
+    fireEvent.click(screen.getByText("Gerar cobrança"));
+    await waitFor(() => expect(chamadas.some((c) => c.metodo === "POST" && c.caminho === "/payments/steps/31")).toBe(true));
+    fireEvent.click(await screen.findByTestId("ja-paguei"));
+    await waitFor(() => expect(chamadas.some((c) => c.caminho === "/payments/steps/31/refresh")).toBe(true));
+    expect(chamadas.some((c) => c.caminho.startsWith("/payments/tickets/"))).toBe(false);
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+});
