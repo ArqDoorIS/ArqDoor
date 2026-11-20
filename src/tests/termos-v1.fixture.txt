@@ -1,0 +1,140 @@
+# Termos de Uso e Política de Privacidade
+> Plataforma ArqDoor — operada por ZAMEED INOVA SIMPLES (I.S.), CNPJ 57.795.075/0001-23.
+> Última atualização: 29 de julho de 2026.
+
+## Termos de Uso — ArqDoor {#termos}
+
+### 1. Disposições Iniciais {#t1}
+
+1.1. O presente documento se refere aos Termos de Uso e Política de privacidade, que estabelece as normas necessárias para o uso da plataforma ArqDoor, acessada através do domínio "arqdoor.com", de propriedade da ZAMEED INOVA SIMPLES (I.S.), sociedade sob o regime Inova Simples (I.S.), estabelecida no Brasil, com sede na Cidade de Salvador, Estado da Bahia, na Rua Doutor Filinto Borja, 166, Brotas, CEP 40.285-850, inscrita no CNPJ sob o nº 57.795.075/0001-23, doravante simplesmente denominada "Zameed".
+
+1.2. Para utilização da plataforma ArqDoor é necessário aceitar os termos de uso abaixo descritos, os quais devem ser lidos com atenção antes de utilizar e acessar os nossos serviços.
+
+1.3. A conclusão do cadastro no website ArqDoor está condicionada à aceitação integral destes Termos de Uso e Política de Privacidade. Não sendo possível em qualquer hipótese a criação de conta para Usuário na plataforma ArqDoor sem o devido aceite, regularmente formalizado por método estabelecido neste documento.
+
+1.4. Os Termos de Uso e Política de Privacidade são formalizados através de ato positivo e inequívoco, consubstanciado na seleção obrigatória da caixa de seleção (checkbox) com o texto "Declaro que li e concordo com os Termos de Uso e Política de Privacidade".
+
+1.5. O acesso à plataforma é restrito a pessoas físicas maiores de 18 (dezoito) anos ou emancipadas, em pleno exercício de capacidade civil, e a pessoas jurídicas devidamente constituídas.
+
+1.6. Ao aceitar os Termos de Uso e Política de Privacidade, concede-se ao usuário licença limitada, intransferível, revogável, sem possibilidade de sublicenciamento, e não exclusiva para acessar e usar os Serviços, submetido ao cumprimento do presente documento.
+
+1.7. A Zameed reserva-se o direito de atualizar e modificar estes Termos de Uso periodicamente. A alteração dos termos de uso serão notificadas a todos usuários por e-mail ou aviso de destaque na plataforma, e o uso contínuo da plataforma após tais alterações constitui aceitação dos novos termos.
+
+1.7.1. Em caso de rejeição à atualização dos Termos de Uso e Política de Privacidade pelo Usuário, este poderá entrar em contato com a administração através dos canais disponíveis para solicitar a exclusão da conta e das informações relacionadas a este. A escolha de não aceitar os novos termos de uso implicará na resolução do presente documento, e também na perda imediata do direito de uso da plataforma ArqDoor.
+
+### 2. Definições Gerais {#t2}
+
+2.1. Considerar-se-á como "Usuário(a)" todas as pessoas físicas ou jurídicas, que detenham conta associada ao seu Nome e CPF ou CNPJ no website ArqDoor, e tenham aceitado os Termos de Uso e privacidade da plataforma. Essa categoria exclui as contas criadas para fins de administração da plataforma, as quais não integram a relação jurídica estabelecida nestes termos.
+
+2.1.1. A categoria "Usuário(a)" é subdividida em "Cliente" e "Parceiro(a) ArqDoor", com a última sendo uma categoria para fins de exercício profissional através da plataforma, e provida a partir de aprovação da administração, mediante envio de documentos demandados pela Zameed.
+
+2.1.2. Os Parceiros(as) ArqDoor são independentes, não representam a ArqDoor ou a Zameed, nem são empregados(as) da Zameed.
+
+2.2. Chama-se "Proposta" toda Oferta realizada na plataforma, contendo arquivo de contrato (PDF), valor do contrato, e outras informações requisitadas no momento de criação da proposta. Após a assinatura eletrônica do cliente, esta "Proposta" converte-se em "Contrato Digital", que por sua vez vincula as partes às obrigações e termos definidos pelo Parceiro ArqDoor, sendo este o único responsável pelo conteúdo legal do arquivo PDF anexado.
+
+2.2.1. Toda Proposta e Contrato Digital criado na plataforma é subdividido em "Fases", estabelecidas pelo parceiro ArqDoor. Cada Fase tem um valor em dinheiro associado a ela, também estabelecida pelo Parceiro ArqDoor, que representa uma fração do total do valor financeiro do contrato.
+
+2.3. No Presente documento, a chamada "Técnica de Pagamento" se refere às modalidades de escrow disponíveis na plataforma ArqDoor, não se confundindo com a "Forma de Pagamento".
+
+### 3. Dos Serviços {#t3}
+
+3.1. Os serviços providos pela ArqDoor contemplam todos os serviços disponíveis na plataforma providos pela administração, com a finalidade de facilitar a segurança dos negócios jurídicos firmados por intermédio da plataforma. A Zameed não atua prestando serviços de arquitetura e engenharia, sendo estes serviços prestados pelos Parceiros(as) ArqDoor de forma independente.
+
+3.2. Os serviços disponíveis na ArqDoor pertencem as seguintes categorias:
+
+3.2.1. **Oferecimento do serviço de intermediação de pagamentos através do pagamento em garantia** (para fins deste documento, chama-se simplesmente de "escrow"): A intermediação de pagamentos utilizando o nosso sistema de pagamento em garantia contempla a utilização de ferramentas, sistemas da plataforma, e o serviço de escrow, todos orientados a incrementar segurança às relações estabelecidas. Para a prestação destes serviços, os usuários concordam em eleger a ZAMEED INOVA SIMPLES (I.S.) como intermediadora de pagamentos e mandatária para fins de gestão financeira, custódia e repasse de valores de todas as relações jurídicas estabelecidas nos sistemas da plataforma.
+
+3.2.2. **Disponibilização de espaço para publicação de Conteúdo dos Usuários:** Entende-se como "Conteúdo do Usuário" toda publicação realizada na plataforma por ação de Usuário, este conteúdo é de Direito dos Usuários, e estes são os únicos responsáveis pelo conteúdo publicado na ArqDoor. Todo Conteúdo do Usuário está sujeito às diretrizes deste documento, a não conformidade do conteúdo com o estabelecido nos Termos de Uso e Política de Privacidade resultará na exclusão do conteúdo.
+
+3.2.2.1. Ao publicar conteúdo na plataforma (textos, imagens, projetos), o Usuário concede à Zameed uma licença não exclusiva, gratuita, mundial e por prazo indeterminado apenas para armazenar, processar, exibir e reproduzir esse conteúdo dentro da plataforma, estritamente para os fins de execução dos serviços contratados e funcionamento do marketplace.
+
+3.2.3. **Conectar os Clientes aos Parceiros ArqDoor:** A ArqDoor, através das ferramentas e sistemas estabelecidos na plataforma, facilita o contato entre Clientes e Parceiros ArqDoor, disponibilizando chat para negociação.
+
+3.2.4. **Geração de convites para ainda não Clientes da ArqDoor:** Este serviço permite o Parceiro ArqDoor convidar pessoas a se converterem em Clientes da ArqDoor, a partir do envio de uma Proposta com contrato anexado, através de um link gerado pela conta do convidante. Para a continuidade da relação jurídica com a utilização dos Serviços da ArqDoor, é necessário que o convidado aceite os Termos de Uso e Política de Privacidade, e gere a própria conta antes do ato da assinatura digital.
+
+3.2.5. **Assinatura Eletrônica de Documentos:** O serviço de assinatura eletrônica de documentos tem a finalidade de facilitar a continuidade do negócio jurídico estabelecido por intermédio da ArqDoor.
+
+3.2.5.1. Em conformidade com o Art. 10, § 2º, da Medida Provisória nº 2.200-2/2001, as partes reconhecem e aceitam expressamente a validade jurídica, a autoria e a integridade dos documentos assinados eletronicamente na plataforma, considerando-os aptos a produzir todos os efeitos legais e probatórios.
+
+3.2.5.2. As partes concordam que os contratos firmados eletronicamente na ArqDoor, acompanhados dos respectivos logs de acesso e IP, constituem título executivo extrajudicial (Art. 784, III, do CPC), dispensando a necessidade de assinatura física ou reconhecimento de firma em cartório.
+
+3.2.5.3. O Usuário renuncia ao direito de questionar a validade das assinaturas realizadas mediante uso de suas credenciais de acesso (login e senha), assumindo integral responsabilidade pelo sigilo das mesmas.
+
+3.3. É vedada a utilização dos serviços da ArqDoor para prática de fins ilícitos. Estando sujeito a banimento da plataforma àquele que a utilizar para tais atividades.
+
+### 4. Do Serviço de Escrow e Pagamento {#t4}
+
+4.1. Serviços, bens ou produtos recebidos por meio de um(a) Parceiro(a) serão cobrados obrigatoriamente antes da prestação do serviço pelo Parceiro(a), a Zameed atua em cada Contrato Digital como facilitadora e intermediadora de pagamentos, utilizando do pagamento em garantia (escrow) para incrementar segurança aos negócios estabelecidos na plataforma.
+
+4.2. Os serviços prestados correspondentes a qualquer Fase, quando entregues na plataforma e aprovados pelo Cliente (expressa ou tacitamente), consideram-se plenamente cumpridos para todos os fins de direito. A aprovação da Fase constitui quitação da obrigação técnica daquela etapa, não cabendo ao Cliente alegar insatisfação subjetiva posterior para reter pagamentos já liberados.
+
+4.3. O Escrow consiste na intermediação de pagamentos através do pagamento em garantia. A intermediação de pagamentos é realizada pela ZAMEED INOVA SIMPLES (I.S.), ao qual poderá manter o valor sob custódia, até o cumprimento das condições estabelecidas entre os Clientes e os Parceiros ArqDoor envolvidos na relação contratual firmada na plataforma.
+
+4.4. O Serviço de Escrow será acessível para todos os Contratos Digitais. A utilização desse serviço poderá ser escolhida pelo(a) Parceiro(a) durante a criação da proposta, que estará disponível nas opções "Personalizado" e "Pagamento em Garantia". Após a proposta ser aceita pelo Cliente com a técnica de pagamento estabelecida, ela não mais poderá ser alterada, e será a técnica de pagamento até a resolução do Contrato contido no Contrato Digital.
+
+4.5. A Zameed cobra uma taxa de 5% por Contrato Digital firmado na ArqDoor, com um teto no valor de R$ 1.350,00 (mil trezentos e cinquenta reais), o qual não pode ser ultrapassado. A Zameed se reserva o direito de decidir quais Contratos Digitais podem não pagar taxa em situações determinadas por ela.
+
+4.5.1. No caso da técnica de pagamento "Personalizada", com mais de um grupo de fases estabelecido, ou na técnica de pagamento "Depósito em garantia", a taxa só será debitada do valor em garantia no ato do recebimento do pagamento pelo Parceiro ArqDoor pela fase concluída.
+
+4.6. O Contrato Digital (PDF) anexado pelo Parceiro(a) deve observar estritamente estes Termos de Uso. Em caso de divergência, contradição ou conflito entre as cláusulas do PDF particular e as regras operacionais da ArqDoor (especialmente quanto a prazos, formas de pagamento, taxas e sistema de Escrow), prevalecerão as disposições destes Termos de Uso.
+
+4.6.1. Consideram-se não escritas ou ineficazes quaisquer cláusulas inseridas no Contrato Digital que visem burlar o sistema de Escrow, isentar o pagamento de taxas à Zameed ou que violem as políticas de segurança da plataforma.
+
+4.7. Após o Parceiro(a) ArqDoor notificar a finalização da fase, o cliente terá um prazo de 7 (sete) dias úteis para confirmar o recebimento ou reportar fundamentadamente, via plataforma, qualquer divergência técnica em relação ao escopo contratado. Decorrido o prazo sem manifestação (Aceite Tácito), o valor depositado em escrow será considerado aprovado e transferido automaticamente ao Parceiro(a) ArqDoor. Após a liberação dos valores, a ArqDoor encerra sua custódia e responsabilidade, devendo qualquer questão superveniente ser resolvida diretamente entre Cliente e Parceiro(a).
+
+### 5. Das Situações de Controvérsia {#t5}
+
+5.1. A ArqDoor disponibiliza ferramentas e canais de atendimento para o recebimento de reclamações, com objetivo de evitar a judicialização nos Contratos firmados na plataforma.
+
+5.2. Os Usuários se comprometem a utilizar primeiramente dos canais de atendimento e das ferramentas fornecidas pela ArqDoor para resolução de conflitos na plataforma.
+
+### 6. Disposições Finais {#t6}
+
+6.1. Os Usuários reconhecem que os dados, prints e conteúdo de conversas privadas na ArqDoor conferem força probatória plena, consentindo no uso delas como meio de prova válido para todos os fins, de acordo com a disposição do Art. 190 do Código de Processo Civil, e Inciso I do Art. 18 da Lei 13.874/2019.
+
+6.2. As partes elegem o Foro da Comarca de Salvador, Estado da Bahia (sede da Zameed), como o único competente para dirimir quaisquer questões oriundas destes Termos, com renúncia expressa a qualquer outro, por mais privilegiado que seja.
+
+6.3. A plataforma ArqDoor é fornecida "no estado em que se encontra", sem garantias de disponibilidade ininterrupta ou livre de erros. A Zameed não se responsabiliza por eventuais falhas técnicas, instabilidades de servidores, ou interrupções temporárias do serviço para manutenção ou atualizações, não sendo cabível qualquer indenização por lucros cessantes ou perda de chance decorrente dessas indisponibilidades.
+
+## Política de Privacidade {#privacidade}
+
+A Zameed respeita a privacidade dos seus Usuários, os dados tratados na plataforma dizem respeito exclusivamente à função de prestar melhores serviços. A Política de privacidade da plataforma ArqDoor tem como finalidade descrever a obtenção de dados e armazenamento dos dados dos seus Usuários.
+
+### 1. Dados Coletados {#p1}
+
+1.1. **Dados do Perfil:** São dados essenciais para a operação da plataforma e garantir a segurança jurídica dos contratos firmados na plataforma. Tais dados compreendem o Nome do Usuário, CPF, e-mail, número de telefone e endereço (quando necessário).
+
+1.2. **Dados de Comunicação:** Estes dados compreendem a comunicação entre os Usuários, e são somente acessíveis para a equipe da ArqDoor quando identificado tentativa de burlar o sistema escrow estabelecido nos Termos de Uso, ou sob ordem judicial.
+
+1.3. **Dados Referentes aos Contratos Digitais:** São dados associados aos Contratos Digitais gerados na plataforma, incluindo os documentos em PDF dos contratos, as partes envolvidas, o valor do Contrato Digital, as Fases incluídas e em qual Fase o Contrato Digital se encontra. Estes dados são coletados para garantia da conformidade dos contratos em PDF submetidos com os Termos de Uso, e facilitar a atuação da equipe ArqDoor em caso de erros no sistema, e para resolver controvérsias entre as partes quando solicitado.
+
+1.4. **Dados de Qualificação Profissional (Exclusivo para Parceiros):** Para garantir a segurança da plataforma e a validade técnica dos serviços ofertados, coletamos cópia digitalizada da Carteira de Identidade Profissional (CIP/CAU/CREA) ou certidão de regularidade emitida pelo Conselho de Arquitetura e Urbanismo (CAU) ou pelo Conselho Regional de Engenharia e Agronomia (CREA). Tem como finalidade a verificação de identidade, prevenção à fraude (evitar o exercício ilegal da profissão), validação da capacidade técnica para assinatura de projetos, e confirmação da regularidade técnica para assinatura de projetos e responsabilidade técnica (RRT/ART).
+
+1.5. **Dados não-pessoais:** São dados que não permitem a associação com pessoas individualmente, são coletados meramente para pesquisas de mercado.
+
+1.6. Utilizamos cookies essenciais estritamente para o funcionamento técnico da plataforma e manutenção de sessão.
+
+### 2. Como os Dados são utilizados {#p2}
+
+2.1. **Prover os Serviços da ArqDoor:** A coleta de dados poderá ser realizada para prover serviços de melhor qualidade e manter o bom funcionamento dos nossos sistemas, garantindo para os Usuários uma experiência dinâmica e de qualidade. Esses dados são utilizados para a criação e alteração da sua conta, para criar os Contratos Digitais, e realizar operações internas necessárias.
+
+2.2. **Suporte e resolução de desentendimentos:** A ArqDoor pode coletar dados necessários para prestação de suporte e para resolução de conflitos quando necessário. O Contato com a conta "ArqDoor ADM" estará disponível na plataforma para quaisquer solicitação de suporte referente ao funcionamento da ArqDoor, e para resolução de desentendimentos.
+
+2.3. **Garantir Segurança e evitar fraudes:** A ArqDoor poderá coletar dados para garantir a segurança das operações realizadas, e evitar fraudes na utilização de nossos serviços.
+
+### 3. Como os Dados são Armazenados {#p3}
+
+3.1. Os dados coletados pela ArqDoor são armazenados em serviços de nuvem confiáveis, providos por parceiros de infraestrutura de classe mundial (como Amazon Web Services - AWS, Google Cloud ou similares), que podem estar localizados no Brasil ou no exterior, sempre em conformidade com os padrões de segurança exigidos pela legislação aplicável.
+
+3.2. A ArqDoor mantém os dados armazenados pelo período necessário para manter os serviços descritos nos Termos de Uso. Em caso de solicitação para deletar conta na plataforma, os dados do Usuário, referentes ao período em que utilizou os serviços, serão deletados, salvo para finalidades permitidas pela legislação. Os dados poderão ainda ser mantidos em caso de guarda obrigatória de registros, quando houver pendências relacionadas a conta, quanto para exercício regular de direitos da Zameed, para prevenção de fraudes e para aumentar a segurança dos usuários.
+
+### 4. Da Mudança das Políticas de Privacidade {#p4}
+
+4.1. A ArqDoor poderá a qualquer momento atualizar as Políticas de Privacidade, mediante aviso prévio aos usuários através de e-mail e aviso através da plataforma. Em caso de discordância com a alteração das políticas de privacidade, o Usuário poderá solicitar o encerramento da sua conta e a exclusão de seus dados dos sistemas da ArqDoor.
+
+---
+
+ZAMEED INOVA SIMPLES (I.S.) — CNPJ 57.795.075/0001-23
+Rua Doutor Filinto Borja, 166, Brotas, Salvador — BA, CEP 40.285-850
+
+[arqdoor.com](/)

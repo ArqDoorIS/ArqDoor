@@ -102,7 +102,7 @@ export default function DeleteAccount() {
           </a>
           . Consulte também a nossa{" "}
           <a
-            href="/docs/usetermsprivacitypolices.html"
+            href="/termos-de-uso#privacidade"
             className="font-semibold text-brand underline"
             target="_blank"
             rel="noopener noreferrer"

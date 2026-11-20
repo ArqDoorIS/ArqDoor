@@ -734,11 +734,11 @@ export const AuthForms: React.FC<{
                         <div className="space-y-1">
                           <p className="text-sm font-medium leading-none">
                             Declaro que li e aceito os {" "}
-                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-brand underline">
+                            <a href="/termos-de-uso" target="_blank" rel="noopener noreferrer" className="text-brand underline">
                               Termos de uso
                             </a>
                             {" e "}
-                            <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noopener noreferrer" className="text-brand underline">
+                            <a href="/termos-de-uso#privacidade" target="_blank" rel="noopener noreferrer" className="text-brand underline">
                               Política de privacidade
                             </a>
                           </p>

@@ -4,6 +4,7 @@ import {
   ChartNoAxesCombined,
   BriefcaseBusiness,
   FileSignature,
+  FileCheck,
   Landmark,
   Megaphone,
   MessageSquareText,
@@ -52,6 +53,8 @@ export const TABS: AdminTabConfig[] = [
   { key: "erros", label: "Auditoria de erros", icon: Bug, papeis: ["owner"] },
   // textos do app editáveis (ex.: a página do foguete) e as estrelas que o app pede
   { key: "app", label: "Textos e avaliações", icon: Star, papeis: ["owner"] },
+  // Termos de Uso versionados: editar, publicar versão nova e ver quem já aceitou (20/11/2026)
+  { key: "termos", label: "Termos de uso", icon: FileCheck, papeis: ["owner"] },
   // Gestao do proprio time administrativo. So owner, porque e onde se concede e
   // revoga acesso ao painel.
   { key: "equipe", label: "Equipe", icon: UserCog, papeis: ["owner"] },
@@ -87,6 +90,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   analise: 1,
   erros: 1,
   app: 1,
+  termos: 1,
   indicacoes: 1,
   publicacoes: 1,
   conversas: 1,
@@ -110,6 +114,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   analise: 25,
   erros: 30,
   app: 30,
+  termos: 30,
   indicacoes: 10,
   publicacoes: 20,
   conversas: 10,

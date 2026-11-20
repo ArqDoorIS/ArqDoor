@@ -26,7 +26,7 @@ export default function LandingFooter() {
               </p>
               <ul className="mt-1 space-y-1">
                 <li>
-                  <a href="/docs/usetermsprivacitypolices.html" className={`inline-flex min-h-[44px] items-center underline-offset-2 hover:underline ${landingType.small}`}>
+                  <a href="/termos-de-uso" className={`inline-flex min-h-[44px] items-center underline-offset-2 hover:underline ${landingType.small}`}>
                     Termos de Uso e Política de Privacidade
                   </a>
                 </li>

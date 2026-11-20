@@ -309,11 +309,11 @@ function FormCadastro({ onSuccess }: { onSuccess: () => void }) {
         />
         <Label htmlFor="cad-termos" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
           Li e aceito os{" "}
-          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">
+          <a href="/termos-de-uso" target="_blank" rel="noreferrer" className="underline text-brand-dark">
             Termos de uso
           </a>{" "}
           e a{" "}
-          <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">
+          <a href="/termos-de-uso#privacidade" target="_blank" rel="noreferrer" className="underline text-brand-dark">
             Política de privacidade
           </a>
           .
@@ -578,9 +578,9 @@ function AvisoTermosGoogle() {
   return (
     <p className="text-xs leading-relaxed text-muted-foreground text-center" data-testid="aviso-termos-google">
       Continuando com o Google, você aceita os{" "}
-      <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">Termos de uso</a>{" "}
+      <a href="/termos-de-uso" target="_blank" rel="noreferrer" className="underline text-brand-dark">Termos de uso</a>{" "}
       e a{" "}
-      <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">Política de privacidade</a>.
+      <a href="/termos-de-uso#privacidade" target="_blank" rel="noreferrer" className="underline text-brand-dark">Política de privacidade</a>.
     </p>
   );
 }
