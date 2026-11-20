@@ -97,7 +97,6 @@ describe('status', () => {
       'src/pages/Invites.tsx',
       'src/components/DemandsManager.tsx',
       'src/features/messages/components/ProposalCard.tsx',
-      'src/features/convite/acompanhamento/ContratoAcompanhamento.tsx',
     ]) {
       expect({ arquivo, usa: ler(arquivo).includes('statusTone') }).toEqual({ arquivo, usa: true });
     }

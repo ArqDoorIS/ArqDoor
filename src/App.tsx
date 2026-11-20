@@ -110,9 +110,8 @@ function AppContent() {
   const isAdminRoute =
     ADMIN_ROUTES.includes(location) || (ehHostDoPainel() && location === "/");
   const isPublic = LANDING_ROUTES.includes(location) || isInvitePublic || isAdminRoute;
-  const Layout = isInvitePublic
-    ? (ApplicationLayout as any)
-    : isAdminRoute
+  // A página do convite tem o próprio topo, na estética do app (sem a navbar do site).
+  const Layout = isInvitePublic || isAdminRoute
       ? (PlainLayout as any)
     : isPublic
       ? (LandingLayout as any)

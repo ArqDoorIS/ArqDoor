@@ -142,6 +142,9 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
       if (devido.tipo === "grupo" && devido.group_id) {
         endpoint = `/payments/groups/${devido.group_id}`;
         description = `Pagamento do grupo ${devido.nome || devido.group_id}`;
+      } else if (devido.tipo === "etapa" && devido.step_id) {
+        endpoint = `/payments/steps/${devido.step_id}`;
+        description = `Pagamento da fase ${devido.nome || devido.step_id}`;
       } else {
         endpoint = `/payments/tickets/${ticketId}`;
         description = `Depósito em garantia`;
@@ -179,10 +182,12 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
     setVerificando(true);
     try {
       const primeiraEtapa = devido.etapas?.[0]?.id;
-      const endpoint =
-        devido.tipo === "grupo" && primeiraEtapa
-          ? `/payments/steps/${primeiraEtapa}/refresh`
-          : `/payments/tickets/${ticketId}/refresh`;
+      // pagamento por fase: a própria fase (o refresh do ticket diria "pago" se qualquer
+      // outra fase já estivesse paga)
+      const etapaDoPagamento = devido.tipo === "etapa" ? devido.step_id : devido.tipo === "grupo" ? primeiraEtapa : null;
+      const endpoint = etapaDoPagamento
+        ? `/payments/steps/${etapaDoPagamento}/refresh`
+        : `/payments/tickets/${ticketId}/refresh`;
       const res = await apiRequest("GET", endpoint);
       const body = await res.json().catch(() => ({}));
       if (!res.ok || body?.success === false) {
@@ -220,8 +225,23 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
 
   const paymentOptions = [
     { value: "PIX" as const, title: "PIX", description: "QR Code e copia e cola", icon: QrCode },
-    { value: "CREDIT_CARD" as const, title: "Crédito", description: "Em até 12x", icon: CreditCard },
+    {
+      value: "CREDIT_CARD" as const,
+      title: "Crédito",
+      description: (devido.maxParcelas ?? 12) > 1 ? `Em até ${devido.maxParcelas ?? 12}×` : "Só à vista",
+      icon: CreditCard,
+    },
   ];
+
+  // Com o preço de cada meio em mãos, a folha mostra o mesmo número da página; sem ele,
+  // fica o valor base de antes.
+  const valorDoMeio = (isCreditCard ? devido.precoCartao : devido.precoPix) ?? devido.valor;
+  const somaBase = (devido.etapas ?? []).reduce((a, e) => a + (Number(e.price) || 0), 0);
+  const parteDa = (preco: number, i: number, n: number) => {
+    if (valorDoMeio === devido.valor || somaBase <= 0) return preco;
+    const antes = (devido.etapas ?? []).slice(0, i).reduce((a, e) => a + Math.floor(((valorDoMeio * e.price) / somaBase) * 100) / 100, 0);
+    return i === n - 1 ? Math.round((valorDoMeio - antes) * 100) / 100 : Math.floor(((valorDoMeio * preco) / somaBase) * 100) / 100;
+  };
 
   return (
     <div className="space-y-5" data-testid="step-pagamento">
@@ -237,13 +257,16 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
         <p className="text-sm font-semibold text-brand-dark">
           {devido.nome || (devido.tipo === "deposito" ? "Depósito em garantia" : "Grupo")}
         </p>
-        <p className="text-2xl font-bold text-ink-strong">{formatPrice(devido.valor)}</p>
+        <p className="text-2xl font-bold text-ink-strong">{formatPrice(valorDoMeio)}</p>
+        {valorDoMeio !== devido.valor && (
+          <p className="text-xs text-muted-foreground">{isCreditCard ? "No cartão à vista" : "No Pix"}</p>
+        )}
         {devido.etapas && devido.etapas.length > 0 && (
           <div className="pt-1 space-y-0.5">
-            {devido.etapas.map((etapa) => (
+            {devido.etapas.map((etapa, i, todas) => (
               <div key={etapa.id} className="flex justify-between gap-2 text-xs text-muted-foreground">
                 <span>{etapa.title}</span>
-                <span>{formatPrice(etapa.price)}</span>
+                <span>{formatPrice(parteDa(etapa.price, i, todas.length))}</span>
               </div>
             ))}
           </div>
@@ -282,6 +305,8 @@ export function StepPagamento({ pagamento, ticketId, onSuccess, onSkip }: Props)
         {isCreditCard && (
           <CreditCardInstallmentPicker
             amount={devido.valor}
+            maxParcelas={devido.maxParcelas}
+            opcoesProntas={devido.opcoesCartao}
             onChange={escolherParcela}
           />
         )}

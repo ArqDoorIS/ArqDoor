@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
@@ -26,16 +25,17 @@ type Props = {
   onBloqueado?: () => void;
 };
 
-type SignMethod = "password" | "google";
 
 function PasswordInput({
   id,
   value,
   onChange,
+  autoComplete = "current-password",
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
+  autoComplete?: string;
 }) {
   const [visible, setVisible] = useState(false);
   return (
@@ -46,7 +46,7 @@ function PasswordInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Sua senha"
-        autoComplete="current-password"
+        autoComplete={autoComplete}
         className="pr-10"
       />
       <button
@@ -63,16 +63,17 @@ function PasswordInput({
 }
 
 export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess, onCpfRequired, onOwnerError, onCpfDiferente, onBloqueado }: Props) {
-  const { user } = useAuth();
+  const { user, updateUserLocal } = useAuth();
   const { toast } = useToast();
 
-  // Conta Google nao tem senha de login utilizavel: so pode assinar pela sessao Google
-  const isGoogleAccount = !user?.signature_password_set && !user?.signature_password_configured;
+  // Assinatura só com senha (decisão do Rafael, 20/11/2026: conta Google não assina).
+  // Conta que entrou pelo Google não tem senha de login utilizável: cria a de assinatura aqui.
+  const precisaCriarSenha =
+    !user?.signature_password_configured && ((user as any)?.provider === "google" || !user?.signature_password_set);
 
   const [concordo, setConcordo] = useState(false);
-  // Para conta Google, pre-seleciona o metodo Google
-  const [signMethod, setSignMethod] = useState<SignMethod>(isGoogleAccount ? "google" : "password");
   const [password, setPassword] = useState("");
+  const [confirmacao, setConfirmacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [assinadoFalhou, setAssinadoFalhou] = useState(false);
@@ -85,19 +86,35 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
       toast({ title: "Confirme que leu o contrato antes de assinar.", variant: "destructive" });
       return;
     }
-    if (signMethod === "password" && !password) {
-      toast({ title: "Digite sua senha para assinar.", variant: "destructive" });
+    if (!password) {
+      toast({ title: precisaCriarSenha ? "Crie a sua senha de assinatura." : "Digite sua senha para assinar.", variant: "destructive" });
       return;
+    }
+    if (precisaCriarSenha) {
+      if (password.length < 6 || password.length > 50) {
+        setErrorMsg("A senha de assinatura precisa ter de 6 a 50 caracteres.");
+        return;
+      }
+      if (password !== confirmacao) {
+        setErrorMsg("As duas senhas não são iguais.");
+        return;
+      }
     }
 
     setLoading(true);
     setErrorMsg(null);
 
     try {
-      const body =
-        signMethod === "google"
-          ? { li_e_concordo: true, signature_method: "google" }
-          : { li_e_concordo: true, password };
+      if (precisaCriarSenha) {
+        const rs = await apiRequest("PUT", "/users/me/signature-password", { password });
+        const ds = await rs.json().catch(() => null);
+        if (!rs.ok) {
+          setErrorMsg(ds?.message || "Não foi possível criar a senha de assinatura.");
+          return;
+        }
+        updateUserLocal?.({ signature_password_configured: true });
+      }
+      const body = { li_e_concordo: true, password };
 
       const res = await apiRequest("POST", `/invites/public/${token}/accept-and-sign`, body);
       const data = await res.json().catch(() => null);
@@ -238,45 +255,29 @@ export function StepRevisar({ invite, provider, token, pdfUrl, total, onSuccess,
         </Label>
       </div>
 
-      {/* Metodo de confirmacao */}
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-ink">Confirmar com:</p>
-        <RadioGroup
-          value={signMethod}
-          onValueChange={(v) => setSignMethod(v as SignMethod)}
-          className="space-y-2"
-        >
-          {!isGoogleAccount && (
-            <label
-              htmlFor="method-password"
-              className="flex items-start gap-3 rounded-xl border border-line p-4 cursor-pointer hover:border-brand-disabled transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand-tint"
-            >
-              <RadioGroupItem value="password" id="method-password" className="mt-0.5" />
-              <div>
-                <p className="font-medium text-sm text-ink">Minha senha</p>
-                <p className="text-xs text-muted-foreground">A de assinatura, se você criou uma. Se não, a do login.</p>
-              </div>
-            </label>
-          )}
-          <label
-            htmlFor="method-google"
-            className="flex items-start gap-3 rounded-xl border border-line p-4 cursor-pointer hover:border-brand-disabled transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand-tint"
-          >
-            <RadioGroupItem value="google" id="method-google" className="mt-0.5" />
-            <div>
-              <p className="font-medium text-sm text-ink">Minha conta Google</p>
-              <p className="text-xs text-muted-foreground">Válida pela sua sessão ativa</p>
-            </div>
-          </label>
-        </RadioGroup>
-
-        {signMethod === "password" && !isGoogleAccount && (
-          <div className="space-y-1.5 pt-1">
-            <Label htmlFor="sign-password">Senha</Label>
-            <PasswordInput id="sign-password" value={password} onChange={setPassword} />
+      {/* Confirmação com senha */}
+      {precisaCriarSenha ? (
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium text-ink">Crie a sua senha de assinatura</p>
+            <p className="text-xs text-muted-foreground">Você entrou pelo Google, então a assinatura usa uma senha só dela. É ela que você vai usar para aprovar as fases.</p>
           </div>
-        )}
-      </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sign-password">Senha de assinatura</Label>
+            <PasswordInput id="sign-password" value={password} onChange={setPassword} autoComplete="new-password" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sign-password-2">Repita a senha</Label>
+            <PasswordInput id="sign-password-2" value={confirmacao} onChange={setConfirmacao} autoComplete="new-password" />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-1.5">
+          <Label htmlFor="sign-password">Confirme com a sua senha</Label>
+          <p className="text-xs text-muted-foreground">A de assinatura, se você criou uma. Se não, a do login.</p>
+          <PasswordInput id="sign-password" value={password} onChange={setPassword} />
+        </div>
+      )}
 
       {/* Erro */}
       {errorMsg && (

@@ -9,6 +9,19 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Link do convite: declara o app da Play para o Chrome do Android, que então mostra a
+         recomendação de instalar do próprio navegador (quando ele achar que deve). Só nas
+         páginas /convite/; o pedido fica guardado para o botão "Baixar" da página abrir a
+         mesma janela da Play. O domínio já está ligado ao app em /.well-known/assetlinks.json. -->
+    <script>
+      if (location.pathname.indexOf("/convite/") === 0) {
+        var m = document.createElement("link");
+        m.rel = "manifest";
+        m.href = "/convite.webmanifest";
+        document.head.appendChild(m);
+        window.addEventListener("beforeinstallprompt", function (e) { window.__pedidoDoApp = e; });
+      }
+    </script>
     <meta name="description"
       content="ArqDoor: encontre profissionais de arquitetura e design para o seu projeto, combine por etapas e pague com segurança." />
   <title>ArqDoor</title>

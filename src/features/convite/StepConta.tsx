@@ -401,23 +401,6 @@ export function StepConta({ user, onSuccess }: Props) {
 
   const googleEnabled = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  // Caso especial: usuario logado sem CPF
-  const cpfDigits = (user?.cpf || "").replace(/\D/g, "");
-  const needsCpf = !!user && cpfDigits.length !== 11;
-  if (needsCpf) {
-    return (
-      <div className="space-y-5" data-testid="step-conta">
-        <div>
-          <h2 className="text-xl font-bold text-ink-strong">Confirmar CPF</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Para assinar você precisa ter CPF cadastrado.
-          </p>
-        </div>
-        <FormCpf user={user} onSuccess={onSuccess} />
-      </div>
-    );
-  }
-
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setGoogleLoading(true);
@@ -444,6 +427,24 @@ export function StepConta({ user, onSuccess }: Props) {
       setGoogleLoading(false);
     },
   });
+
+  // Caso especial: usuario logado sem CPF (depois dos hooks: o usuario muda com a folha aberta)
+  const cpfDigits = (user?.cpf || "").replace(/\D/g, "");
+  const needsCpf = !!user && cpfDigits.length !== 11;
+  if (needsCpf) {
+    return (
+      <div className="space-y-5" data-testid="step-conta">
+        <div>
+          <h2 className="text-xl font-bold text-ink-strong">Confirmar CPF</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Para assinar você precisa ter CPF cadastrado.
+          </p>
+        </div>
+        <FormCpf user={user} onSuccess={onSuccess} />
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-5" data-testid="step-conta">
@@ -472,12 +473,15 @@ export function StepConta({ user, onSuccess }: Props) {
               Entrar com Google
             </Button>
           )}
+          {googleEnabled && <AvisoTermosGoogle />}
 
-          <div className="relative flex items-center gap-3 py-1">
-            <div className="flex-1 h-px bg-surface-cream" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">ou</span>
-            <div className="flex-1 h-px bg-surface-cream" />
-          </div>
+          {googleEnabled && (
+            <div className="relative flex items-center gap-3 py-1">
+              <div className="flex-1 h-px bg-surface-cream" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">ou</span>
+              <div className="flex-1 h-px bg-surface-cream" />
+            </div>
+          )}
 
           <Button
             variant="outline"
@@ -544,6 +548,7 @@ export function StepConta({ user, onSuccess }: Props) {
                 )}
                 Cadastrar com Google
               </Button>
+              <AvisoTermosGoogle />
               <div className="relative flex items-center gap-3 py-1">
                 <div className="flex-1 h-px bg-surface-cream" />
                 <span className="text-xs text-muted-foreground uppercase tracking-wider">ou</span>
@@ -565,5 +570,17 @@ export function StepConta({ user, onSuccess }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Conta criada pelo Google também aceita os termos: o servidor grava o aceite, então o cliente precisa ver antes. */
+function AvisoTermosGoogle() {
+  return (
+    <p className="text-xs leading-relaxed text-muted-foreground text-center" data-testid="aviso-termos-google">
+      Continuando com o Google, você aceita os{" "}
+      <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">Termos de uso</a>{" "}
+      e a{" "}
+      <a href="/docs/usetermsprivacitypolices.html" target="_blank" rel="noreferrer" className="underline text-brand-dark">Política de privacidade</a>.
+    </p>
   );
 }
