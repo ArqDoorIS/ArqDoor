@@ -209,7 +209,7 @@ describe("depois de assinado", () => {
     const senha = await screen.findByLabelText("Confirme com a sua senha");
     fireEvent.change(senha, { target: { value: "segredo" } });
     fireEvent.click(screen.getByText("Aprovar e liberar"));
-    await waitFor(() => expect(chamadas.find((c) => c.metodo === "PATCH")?.corpo).toEqual({ password: "segredo" }));
+    await waitFor(() => expect(chamadas.find((c) => c.metodo === "PATCH")?.corpo).toEqual({ signature: true, password: "segredo" }));
   });
 
   it("pedir ajuste manda a fase de volta com o motivo", async () => {
@@ -287,5 +287,26 @@ describe("correções da revisão", () => {
     await waitFor(() => expect(chamadas.some((c) => c.caminho === "/payments/steps/31/refresh")).toBe(true));
     expect(chamadas.some((c) => c.caminho.startsWith("/payments/tickets/"))).toBe(false);
     expect(onSuccess).not.toHaveBeenCalled();
+  });
+});
+
+describe("cadastro pelo link (teste de rotas, 20/11/2026)", () => {
+  it("manda um gênero que o servidor aceita e o aceite dos termos", async () => {
+    const { StepConta } = await import("@/features/convite/StepConta");
+    rotas["POST /users"] = { status: 201, body: { success: true } };
+    render(<StepConta user={null} onSuccess={vi.fn()} />);
+    fireEvent.click(screen.getByText("Criar uma conta nova"));
+    fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "Julia Rotas" } });
+    fireEvent.change(screen.getByLabelText("E-mail"), { target: { value: "julia@example.com" } });
+    fireEvent.change(document.querySelector("#cad-cpf")!, { target: { value: "529.982.247-25" } });
+    fireEvent.change(document.querySelector("#cad-nascimento")!, { target: { value: "1990-05-10" } });
+    fireEvent.change(document.querySelector("#cad-password")!, { target: { value: "segredo1" } });
+    fireEvent.change(document.querySelector("#cad-confirm")!, { target: { value: "segredo1" } });
+    fireEvent.click(document.querySelector("#cad-termos")!);
+    fireEvent.click(screen.getByText("Criar conta e continuar"));
+    await waitFor(() => expect(chamadas.find((c) => c.caminho === "/users")).toBeTruthy());
+    const corpo = chamadas.find((c) => c.caminho === "/users")!.corpo;
+    expect(["Masculino", "Feminino", "Prefiro não dizer"]).toContain(corpo.gender);
+    expect(corpo.termos_aceitos).toBe(true);
   });
 });

@@ -166,7 +166,7 @@ export function RegrasDoAlgoritmo() {
                 );
               })}
               <li className="flex items-center gap-2 px-3 py-2">
-                <span className="flex-1 text-xs text-slate-500"><b className="text-slate-900">Regras de fábrica</b> · as do lançamento (Kirios Alpha 1.1)</span>
+                <span className="flex-1 text-xs text-slate-500"><b className="text-slate-900">Regras de fábrica</b> · as do lançamento</span>
                 {ativa.versao !== 0 ? <button type="button" disabled={salvando} onClick={() => void restaurar(0)} className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-800 ring-1 ring-slate-200 hover:ring-orange-300"><RotateCcw className="h-3 w-3" />Voltar às de fábrica</button> : null}
               </li>
             </ul>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "wouter";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,10 @@ export default function CompleteProfileModal() {
   const [signaturePassword, setSignaturePassword] = useState("");
   const [signaturePasswordConfirm, setSignaturePasswordConfirm] = useState("");
 
-  const shouldOpen = isLoggedIn && needsOnboarding && !!user?.id;
+  // No link do convite a pessoa só quer assinar: a janela espera ela sair dali (abria por
+  // cima da folha de assinatura e a senha não chegava ao campo, teste de rotas de 20/11/2026).
+  const [local] = useLocation();
+  const shouldOpen = isLoggedIn && needsOnboarding && !!user?.id && !local.startsWith("/convite/");
   const canSkip = onboardingOptional;
 
   const cleanedCpf = useMemo(() => digitsOnly(cpf), [cpf]);
