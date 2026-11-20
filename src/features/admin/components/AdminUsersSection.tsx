@@ -27,7 +27,7 @@ import {
 } from "../utils";
 import { EmptyState, PaginationControls, SectionCard, StatusBadge } from "./AdminPrimitives";
 import { AdminUserEditorPanel } from "./AdminUserEditorPanel";
-import { BadgeCheck, Check, Loader2, Mail, MessageCircle, Pencil, Phone, SendHorizontal, ShieldOff, Trash2 } from "lucide-react";
+import { BadgeCheck, Check, Gavel, Loader2, Mail, MessageCircle, Pencil, Phone, SendHorizontal, ShieldOff, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -88,6 +88,8 @@ type AdminUsersSectionProps = {
   onDeleteEarlyUser: (userId: number) => Promise<boolean | void> | boolean | void;
   deletingUserId: number | null;
   deleteUserError: string | null;
+  /** Abre a aba Punições já com esta pessoa escolhida. */
+  onOpenPunicoes?: (user: { id: number; name: string; type: "prestador" | "contratante" }) => void;
 };
 
 const USER_DETAIL_TABS: Array<{ key: UserDetailTab; label: string }> = [
@@ -151,6 +153,7 @@ export function AdminUsersSection({
   onDeleteEarlyUser,
   deletingUserId,
   deleteUserError,
+  onOpenPunicoes,
 }: AdminUsersSectionProps) {
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -330,6 +333,16 @@ export function AdminUsersSection({
                   ) : null}
                   {selectedUser.suspended ? "Reativar conta" : "Suspender conta"}
                 </Button>
+                {onOpenPunicoes ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onOpenPunicoes({ id: selectedUser.id, name: selectedUser.name, type: selectedUser.type })}
+                  >
+                    <Gavel className="mr-1 h-3 w-3" />
+                    Punições
+                  </Button>
+                ) : null}
                 {selectedUser.deletion_eligible ? (
                   <Button
                     size="sm"

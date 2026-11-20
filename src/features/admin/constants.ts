@@ -10,6 +10,8 @@ import {
   MessageSquareText,
   Percent,
   Gift,
+  Gavel,
+  Rocket,
   Bot,
   Bug,
   Star,
@@ -42,6 +44,10 @@ export const TABS: AdminTabConfig[] = [
   { key: "publicacoes", label: "Publicações", icon: Megaphone, papeis: ["owner"] },
   { key: "conversas", label: "Conversas", icon: MessageSquareText, papeis: ["owner"] },
   { key: "auditoria", label: "Auditoria", icon: ScrollText, papeis: ["owner"] },
+  // O número de cada profissional: regras gerais em versões e o ajuste de cada um (20/11/2026)
+  { key: "impulsionamento", label: "Impulsionamento", icon: Rocket, papeis: ["owner"] },
+  // Aviso, fora do algoritmo, congelar ou banir uma conta (profissional ou cliente)
+  { key: "punicoes", label: "Punições", icon: Gavel, papeis: ["owner"] },
   // Espaço só dos erros: os do app e da API (sozinhos, com log e contexto para investigar e
   // reproduzir) e as conversas com a IA que deram erro
   { key: "erros", label: "Auditoria de erros", icon: Bug, papeis: ["owner"] },
@@ -89,6 +95,8 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   publicacoes: 1,
   conversas: 1,
   auditoria: 1,
+  impulsionamento: 1,
+  punicoes: 1,
   equipe: 1,
 };
 
@@ -111,6 +119,8 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   publicacoes: 20,
   conversas: 10,
   auditoria: 50,
+  impulsionamento: 25,
+  punicoes: 25,
   equipe: 25,
 };
 
