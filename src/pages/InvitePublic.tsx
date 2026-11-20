@@ -416,6 +416,18 @@ function Topo({ logado, user }: { logado: boolean; user: any }) {
   );
 }
 
+/**
+ * Se o Chrome já ofereceu o app (beforeinstallprompt, guardado no index.html), o botão abre
+ * a janela de instalação da Play do próprio navegador; senão segue o link da loja.
+ */
+function abrirJanelaDaPlay(e: { preventDefault: () => void }) {
+  const pedido = (window as any).__pedidoDoApp;
+  if (!pedido?.prompt) return;
+  e.preventDefault();
+  (window as any).__pedidoDoApp = null;
+  pedido.prompt().catch(() => window.open(PLAY, "_blank", "noopener"));
+}
+
 function AvisoDoApp() {
   return (
     <div className="app" data-testid="aviso-do-app">
@@ -424,7 +436,7 @@ function AvisoDoApp() {
         <b>Acompanhe pelo app ArqDoor</b>
         <span>Avisos de cada fase, fotos e chat no celular. Ou volte a este link quando quiser.</span>
       </div>
-      <a href={PLAY} target="_blank" rel="noreferrer">Baixar</a>
+      <a href={PLAY} target="_blank" rel="noreferrer" onClick={abrirJanelaDaPlay}>Baixar</a>
     </div>
   );
 }
