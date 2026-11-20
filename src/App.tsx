@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import LandingLayout from "@/components/layouts/LandingLayout";
 import ApplicationLayout from "@/components/layouts/ApplicationLayout";
 import CompleteProfileModal from "@/components/modals/CompleteProfileModal";
+import AceiteDosTermos from "@/features/termos/AceiteDosTermos";
 import CookieConsent from "@/components/CookieConsent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { TempoReal } from "@/components/TempoReal";
@@ -46,7 +47,7 @@ const InvitePublic = lazy(() => import("@/pages/InvitePublic"));
 const Connections = lazy(() => import("@/pages/Connections"));
 const KanbanPage = lazy(() => import("@/pages/KanbanPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
-const TermsRedirect = lazy(() => import("@/pages/TermsRedirect"));
+const TermosDeUso = lazy(() => import("@/pages/TermosDeUso"));
 const DeleteAccount = lazy(() => import("@/pages/DeleteAccount"));
 const ReferralLanding = lazy(() => import("@/pages/ReferralLanding"));
 
@@ -93,7 +94,7 @@ function Router() {
         <Route path="/convite/:token"><RouteBoundary><InvitePublic /></RouteBoundary></Route>
         <Route path="/kanban"><RouteBoundary><KanbanPage /></RouteBoundary></Route>
         <Route path="/nova-senha"><RouteBoundary><ResetPasswordPage /></RouteBoundary></Route>
-        <Route path="/termos-de-uso"><RouteBoundary><TermsRedirect /></RouteBoundary></Route>
+        <Route path="/termos-de-uso"><RouteBoundary><TermosDeUso /></RouteBoundary></Route>
         <Route path="/excluir-conta"><RouteBoundary><DeleteAccount /></RouteBoundary></Route>
         <Route><RouteBoundary><NotFound /></RouteBoundary></Route>
       </Switch>
@@ -140,6 +141,8 @@ function App() {
     <ErrorBoundary>
       <AppContent />
       <CompleteProfileModal />
+      {/* Termos de uso versionados: pede o aceite da versão nova a quem está logado no site. */}
+      <AceiteDosTermos />
       <TempoReal />
       <CookieConsent />
       <Toaster />

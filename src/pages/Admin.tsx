@@ -13,6 +13,7 @@ import { AdminIaPainel } from "@/features/admin/components/AdminIaPainel";
 import { AdminAnaliseSection } from "@/features/admin/components/AdminAnaliseSection";
 import { AdminErrosSection } from "@/features/admin/components/AdminErrosSection";
 import { AdminAppSection } from "@/features/admin/components/AdminAppSection";
+import { AdminTermosSection } from "@/features/admin/components/AdminTermosSection";
 import { AdminReferralsSection } from "@/features/admin/components/AdminReferralsSection";
 import { AdminListingsSection } from "@/features/admin/components/AdminListingsSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
@@ -83,7 +84,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "erros", "app", "auditoria"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -175,6 +176,8 @@ export default function Admin() {
         return <AdminErrosSection />;
       case "app":
         return <AdminAppSection />;
+      case "termos":
+        return <AdminTermosSection />;
       case "indicacoes":
         return <AdminReferralsSection />;
       case "publicacoes":

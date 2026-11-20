@@ -15,6 +15,7 @@ export type AdminTab =
   | "analise"
   | "erros"
   | "app"
+  | "termos"
   | "indicacoes"
   | "publicacoes"
   | "conversas"

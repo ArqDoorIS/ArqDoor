@@ -1,0 +1,95 @@
+/*
+ * Visual dos Termos de Uso, igual ao da antiga página estática
+ * (public/docs/usetermsprivacitypolices.html até 20/11/2026). Tudo sob .td para não vazar.
+ * A variante "pagina" segue o tema escuro do aparelho, como a página antiga; a "embutido"
+ * (janela de aceite, prévia do painel) fica sempre clara, no fundo branco da janela.
+ */
+.td, .td-fundo {
+  --td-brand: #eb590c;
+  --td-bg: #ffffff;
+  --td-surface: #f7f7f8;
+  --td-text: #1c1c1e;
+  --td-muted: #6b6b70;
+  --td-border: #e4e4e7;
+}
+.td {
+  color: var(--td-text);
+  font-size: 17px;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+@media (prefers-color-scheme: dark) {
+  .td.td-pagina, .td-fundo {
+    --td-bg: #111113;
+    --td-surface: #1a1a1d;
+    --td-text: #e8e8ea;
+    --td-muted: #9a9aa0;
+    --td-border: #2a2a2f;
+  }
+}
+.td-fundo { background: var(--td-bg); min-height: 100vh; }
+.td.td-pagina { max-width: 760px; margin: 0 auto; padding: 32px 20px 96px; }
+.td.td-embutido { font-size: 15px; }
+
+.td-cabecalho { border-bottom: 1px solid var(--td-border); padding-bottom: 24px; margin-bottom: 32px; }
+.td-marca {
+  display: inline-flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -0.2px;
+  color: var(--td-text); text-decoration: none; font-size: 16px; margin-bottom: 20px;
+}
+.td-marca img { width: 30px; height: 30px; border-radius: 9px; display: block; }
+.td h1 { font-size: 1.75rem; line-height: 1.25; letter-spacing: -0.02em; margin: 0 0 12px; font-weight: 700; }
+.td-meta { color: var(--td-muted); font-size: 0.9rem; margin: 0; }
+.td-aviso {
+  margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; font-size: 0.9rem;
+  background: var(--td-surface); border: 1px solid var(--td-border); border-left: 3px solid var(--td-brand);
+}
+.td-aviso a { color: var(--td-brand); }
+
+.td-indice {
+  background: var(--td-surface); border: 1px solid var(--td-border); border-radius: 10px;
+  padding: 20px 24px; margin-bottom: 44px;
+}
+.td-indice > p {
+  margin: 0 0 10px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--td-muted);
+}
+.td-indice ol { margin: 0; padding-left: 20px; list-style: decimal; }
+.td-indice li { margin: 5px 0; }
+.td-indice a { color: var(--td-text); text-decoration: none; }
+.td-indice a:hover { color: var(--td-brand); text-decoration: underline; }
+
+.td h2 {
+  font-size: 1.35rem; letter-spacing: -0.015em; margin: 56px 0 8px;
+  padding-top: 8px; scroll-margin-top: 20px; font-weight: 700; line-height: 1.3;
+}
+.td h2.td-doc { font-size: 1.6rem; margin-top: 72px; padding-top: 40px; border-top: 2px solid var(--td-brand); }
+.td-lead { color: var(--td-muted); margin: 0 0 8px; }
+.td-c { margin: 16px 0; }
+.td-c-sub { margin: 14px 0 14px 24px; }
+.td-c-sub2 { margin: 14px 0 14px 48px; }
+.td-n { font-weight: 600; color: var(--td-brand); margin-right: 4px; }
+.td strong { font-weight: 700; }
+.td p a { color: var(--td-brand); text-decoration: underline; }
+
+.td-rodape {
+  margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--td-border);
+  color: var(--td-muted); font-size: 0.85rem;
+}
+.td-rodape p { margin: 0 0 12px; }
+
+/* Na janela e na prévia o documento é menor: menos ar entre as partes. */
+.td.td-embutido h1 { font-size: 1.4rem; }
+.td.td-embutido h2 { margin-top: 36px; font-size: 1.15rem; }
+.td.td-embutido h2.td-doc { margin-top: 44px; padding-top: 24px; font-size: 1.3rem; }
+.td.td-embutido .td-indice { margin-bottom: 28px; padding: 16px 20px; }
+.td.td-embutido .td-rodape { margin-top: 44px; }
+
+@media (max-width: 600px) {
+  .td { font-size: 16px; }
+  .td.td-pagina { padding: 24px 16px 72px; }
+  .td h1 { font-size: 1.45rem; }
+  .td h2 { font-size: 1.2rem; }
+  .td h2.td-doc { font-size: 1.35rem; }
+  .td-c-sub { margin-left: 14px; }
+  .td-c-sub2 { margin-left: 28px; }
+}
