@@ -43,11 +43,18 @@ export type ProviderData = {
 };
 
 export type PagamentoDevido = {
-  tipo: "grupo" | "deposito";
+  /** etapa: pagamento por fase, sem grupo */
+  tipo: "grupo" | "deposito" | "etapa";
   group_id?: number;
+  step_id?: number;
   nome?: string;
   valor: number;
   etapas?: Array<{ id: number; title: string; price: number }>;
+  /** preço final de cada meio (o mesmo que a página mostra), quando já se sabe */
+  precoPix?: number | null;
+  precoCartao?: number | null;
+  /** limite de parcelas que o profissional pôs neste pagamento */
+  maxParcelas?: number | null;
 };
 
 export type PagamentoAgora = {
