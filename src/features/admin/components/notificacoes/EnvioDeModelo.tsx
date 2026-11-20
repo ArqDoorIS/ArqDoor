@@ -34,49 +34,66 @@ const lerTexto = (f: File) => new Promise<string>((ok, nao) => {
   r.readAsText(f);
 });
 
-/** Tabela dos campos detectados: só dados (rótulo, tipo, obrigatório, padrão, ajuda, variáveis), nada de código. */
+/**
+ * Campos detectados, um cartão por campo (cabe em telas estreitas): só dados, nada de código.
+ *  linha 1: {{chave}}, rótulo (largo) e tipo; linha 2: padrão e ajuda; linha 3: obrigatório, variáveis e opções.
+ */
 function TabelaDeCampos({ campos, mudar }: { campos: CampoDoModelo[]; mudar: (c: CampoDoModelo[]) => void }) {
   const muda = (i: number, parte: Partial<CampoDoModelo>) => mudar(campos.map((c, j) => (j === i ? { ...c, ...parte } : c)));
+  const entrada = cn(classeDoCampo, "mt-0.5 py-1.5");
+  const rot = "block min-w-0 text-[11px] font-semibold text-slate-500";
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-xs" data-testid="tabela-de-campos">
-        <thead className="text-[10px] uppercase tracking-wide text-slate-400">
-          <tr><th className="py-1 pr-2">Campo</th><th className="py-1 pr-2">Rótulo</th><th className="py-1 pr-2">Tipo</th><th className="py-1 pr-2">Obrig.</th><th className="py-1 pr-2">Padrão</th><th className="py-1 pr-2">Ajuda</th><th className="py-1">Variáveis</th></tr>
-        </thead>
-        <tbody>
-          {campos.map((c, i) => (
-            <tr key={c.chave} className="border-t border-slate-100 align-top" data-testid={`linha-campo-${c.chave}`}>
-              <td className="py-1.5 pr-2 font-mono text-[11px] text-slate-700">{`{{${c.chave}}}`}</td>
-              <td className="py-1.5 pr-2"><input aria-label={`Rótulo de ${c.chave}`} value={c.rotulo} onChange={(e) => muda(i, { rotulo: e.target.value })} className={cn(classeDoCampo, "mt-0 py-1 text-xs")} /></td>
-              <td className="py-1.5 pr-2">
-                <select aria-label={`Tipo de ${c.chave}`} value={c.tipo} className={cn(classeDoCampo, "mt-0 py-1 text-xs")}
-                  onChange={(e) => {
-                    const tipo = e.target.value;
-                    muda(i, { tipo, padrao: tipo === "booleano" ? false : typeof c.padrao === "string" ? c.padrao : null, aceita_variaveis: ["texto", "texto_longo", "url", "imagem_url"].includes(tipo) ? c.aceita_variaveis : false });
-                  }}>
-                  {TIPOS.map((t) => <option key={t} value={t}>{NOME_DO_TIPO[t]}</option>)}
-                </select>
-                {c.tipo === "opcoes" ? (
-                  <input aria-label={`Opções de ${c.chave}`} placeholder="Opções separadas por vírgula" className={cn(classeDoCampo, "py-1 text-xs")}
-                    value={c.opcoes.map((o) => o.valor).join(", ")}
-                    onChange={(e) => muda(i, { opcoes: e.target.value.split(",").map((x) => x.trim()).filter(Boolean).map((v) => ({ valor: v, rotulo: v })) })} />
-                ) : null}
-              </td>
-              <td className="py-1.5 pr-2"><input type="checkbox" aria-label={`Obrigatório: ${c.chave}`} className="accent-orange-600" checked={c.obrigatorio} onChange={(e) => muda(i, { obrigatorio: e.target.checked })} /></td>
-              <td className="py-1.5 pr-2">
-                {c.tipo === "booleano" ? (
-                  <input type="checkbox" aria-label={`Padrão de ${c.chave}`} className="accent-orange-600" checked={c.padrao === true} onChange={(e) => muda(i, { padrao: e.target.checked })} />
-                ) : (
-                  <input aria-label={`Padrão de ${c.chave}`} value={typeof c.padrao === "string" ? c.padrao : ""} onChange={(e) => muda(i, { padrao: e.target.value || null })} className={cn(classeDoCampo, "mt-0 py-1 text-xs")} />
-                )}
-              </td>
-              <td className="py-1.5 pr-2"><input aria-label={`Ajuda de ${c.chave}`} value={c.ajuda} onChange={(e) => muda(i, { ajuda: e.target.value })} className={cn(classeDoCampo, "mt-0 py-1 text-xs")} /></td>
-              <td className="py-1.5"><input type="checkbox" aria-label={`Aceita variáveis: ${c.chave}`} className="accent-orange-600" checked={c.aceita_variaveis} onChange={(e) => muda(i, { aceita_variaveis: e.target.checked })} /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ul className="space-y-2" data-testid="tabela-de-campos">
+      {campos.map((c, i) => (
+        <li key={c.chave} className="space-y-2 rounded-xl border border-slate-200 bg-white p-3" data-testid={`linha-campo-${c.chave}`}>
+          <div className="grid gap-2 sm:grid-cols-[auto_minmax(0,1fr)_minmax(150px,200px)] sm:items-end">
+            <code className="self-center rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-800">{`{{${c.chave}}}`}</code>
+            <label className={rot}>Rótulo
+              <input aria-label={`Rótulo de ${c.chave}`} value={c.rotulo} onChange={(e) => muda(i, { rotulo: e.target.value })} className={entrada} />
+            </label>
+            <label className={rot}>Tipo
+              <select aria-label={`Tipo de ${c.chave}`} value={c.tipo} className={entrada}
+                onChange={(e) => {
+                  const tipo = e.target.value;
+                  muda(i, { tipo, padrao: tipo === "booleano" ? false : typeof c.padrao === "string" ? c.padrao : null, aceita_variaveis: ["texto", "texto_longo", "url", "imagem_url"].includes(tipo) ? c.aceita_variaveis : false });
+                }}>
+                {TIPOS.map((t) => <option key={t} value={t}>{NOME_DO_TIPO[t]}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {c.tipo === "booleano" ? (
+              <label className="flex items-center gap-2 self-end text-xs text-slate-700">
+                <input type="checkbox" aria-label={`Padrão de ${c.chave}`} className="accent-orange-600" checked={c.padrao === true} onChange={(e) => muda(i, { padrao: e.target.checked })} />
+                Ligado por padrão
+              </label>
+            ) : (
+              <label className={rot}>Padrão
+                <input aria-label={`Padrão de ${c.chave}`} value={typeof c.padrao === "string" ? c.padrao : ""} placeholder="Vazio = sem padrão" onChange={(e) => muda(i, { padrao: e.target.value || null })} className={entrada} />
+              </label>
+            )}
+            <label className={rot}>Ajuda
+              <input aria-label={`Ajuda de ${c.chave}`} value={c.ajuda} placeholder="Aparece embaixo do campo" onChange={(e) => muda(i, { ajuda: e.target.value })} className={entrada} />
+            </label>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-700">
+            <label className="inline-flex items-center gap-1.5">
+              <input type="checkbox" aria-label={`Obrigatório: ${c.chave}`} className="accent-orange-600" checked={c.obrigatorio} onChange={(e) => muda(i, { obrigatorio: e.target.checked })} />Obrigatório
+            </label>
+            <label className="inline-flex items-center gap-1.5">
+              <input type="checkbox" aria-label={`Aceita variáveis: ${c.chave}`} className="accent-orange-600" checked={c.aceita_variaveis} onChange={(e) => muda(i, { aceita_variaveis: e.target.checked })} />Aceita variáveis ({"{nome}"}, {"{titulo}"}...)
+            </label>
+            {c.tipo === "opcoes" ? (
+              <label className={cn(rot, "min-w-[220px] flex-1")}>Opções
+                <input aria-label={`Opções de ${c.chave}`} placeholder="Separadas por vírgula: Leve, Sério" className={entrada}
+                  value={c.opcoes.map((o) => o.valor).join(", ")}
+                  onChange={(e) => muda(i, { opcoes: e.target.value.split(",").map((x) => x.trim()).filter(Boolean).map((v) => ({ valor: v, rotulo: v })) })} />
+              </label>
+            ) : null}
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
