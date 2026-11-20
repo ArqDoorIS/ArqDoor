@@ -615,8 +615,8 @@ export function AdminNotificacoesSection() {
       ) : null}
       {aba === "modelos" ? (
         <SectionCard title="Modelos de e-mail" subtitle="Os modelos que existem no backend, os campos de cada um e como ficam."
-          dica="Só leitura. Cada modelo é um arquivo no backend e declara os próprios campos; o formulário do e-mail nos eventos e comunicados é montado a partir deles.">
-          <ModelosDeEmail reserva={painel.modelos} />
+          dica="Os do sistema são arquivos no backend e não se mudam aqui. Os enviados pelo painel têm versões. O formulário do e-mail nos eventos, comunicados e personalizadas é montado a partir dos campos de cada modelo.">
+          <ModelosDeEmail reserva={painel.modelos} aoMudar={deNovo} />
         </SectionCard>
       ) : null}
     </div>

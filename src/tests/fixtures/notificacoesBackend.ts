@@ -360,6 +360,9 @@ export const PAINEL_REAL = {
  "modelos": [
   {
    "chave": "com_botao",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Com botão",
    "descricao": "Título, texto e um botão que leva à página da notificação no site.",
    "formato": "mjml",
@@ -470,6 +473,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "destaque",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Destaque",
    "descricao": "Texto dentro de um cartão com borda colorida, para avisos que a pessoa não pode perder.",
    "formato": "mjml",
@@ -612,6 +618,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "legado",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "ArqDoor (o de sempre)",
    "descricao": "O e-mail que a ArqDoor sempre mandou nas notificações: título laranja, \"Olá, nome\", o texto e o rodapé. É o padrão de todos os eventos.",
    "formato": "html",
@@ -652,6 +661,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "lembrete_telefone",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Lembrete de telefone (o de sempre)",
    "descricao": "O pedido para completar o telefone no cadastro, igual ao que a ArqDoor sempre mandou. Usa {{nome_completo}} e {{link_perfil}} do evento.",
    "formato": "html",
@@ -678,6 +690,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "redefinir_senha",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Redefinição de senha (o de sempre)",
    "descricao": "O e-mail com o link para criar uma senha nova, igual ao que a ArqDoor sempre mandou. Usa {{email}} e {{link_redefinicao}} do evento.",
    "formato": "html",
@@ -705,6 +720,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "senha_alterada",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Senha alterada (o de sempre)",
    "descricao": "O aviso de que a senha foi trocada, igual ao que a ArqDoor sempre mandou. Usa {{nome_completo}} e {{email}} do evento.",
    "formato": "html",
@@ -731,6 +749,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "simples",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Simples",
    "descricao": "Título, saudação e texto. É o e-mail que a ArqDoor sempre mandou.",
    "formato": "mjml",
@@ -823,6 +844,9 @@ export const PAINEL_REAL = {
   },
   {
    "chave": "nenhum",
+   "origem": "sistema",
+   "versao": null,
+   "ativo": true,
    "rotulo": "Sem e-mail",
    "descricao": "Não manda e-mail para este evento.",
    "formato": null,
@@ -1166,3 +1190,211 @@ export const eventoSalvo = (tipo: string, regra: Record<string, unknown>) => {
   const e = PAINEL_REAL.eventos.find((x: any) => x.tipo === tipo)!;
   return { success: true, evento: { ...e, regra: { ...e.regra, ...regra }, personalizado: true } };
 };
+
+/* ---------- modelos enviados pelo painel (modelosDoPainel.js), gerados rodando previaUpload do backend ---------- */
+/** O arquivo .html usado na prévia real abaixo. */
+export const ARQUIVO_ENVIADO = "<!doctype html><html><head><style>h1{color:{{cor_destaque}}}</style></head><body>\n<h1>{{titulo}}</h1>\n<p>{{saudacao}}</p>\n<p>{{texto}}</p>\n<a href=\"{{botao_link}}\">{{botao_rotulo}}</a>\n</body></html>";
+/** POST /modelos/previa-upload sem .json: campos tirados dos {{x}}. */
+export const PREVIA_UPLOAD_REAL = {
+ "success": true,
+ "formato": "html",
+ "html": "<!doctype html><html><head><style>h1{color:}</style></head><body>\n<h1>Título de exemplo</h1>\n<p></p>\n<p>Texto de exemplo da notificação.\nCom uma segunda linha.</p>\n<a href=\"\"></a>\n</body></html>",
+ "texto": "Título de exemplo\n\nTexto de exemplo da notificação.\nCom uma segunda linha.",
+ "assunto": "Título de exemplo",
+ "campos_detectados": [
+  {
+   "chave": "cor_destaque",
+   "rotulo": "cor_destaque",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "titulo",
+   "rotulo": "titulo",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "{titulo}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "saudacao",
+   "rotulo": "saudacao",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "texto",
+   "rotulo": "texto",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "{texto}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "botao_link",
+   "rotulo": "botao_link",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "botao_rotulo",
+   "rotulo": "botao_rotulo",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  }
+ ],
+ "erros": [],
+ "avisos": [
+  "sem lista de campos: tirados do molde, todos de texto e opcionais"
+ ]
+};
+/** POST /modelos/previa-upload com <script>: erro que bloqueia. */
+export const PREVIA_UPLOAD_INSEGURA_REAL = {
+ "success": true,
+ "formato": "html",
+ "html": null,
+ "texto": null,
+ "campos_detectados": [
+  {
+   "chave": "titulo",
+   "rotulo": "titulo",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "{titulo}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  }
+ ],
+ "erros": [
+  "molde inseguro: tem <script>"
+ ],
+ "avisos": [
+  "sem lista de campos: tirados do molde, todos de texto e opcionais"
+ ]
+};
+/** POST /modelos/previa-upload com os campos do .json. */
+export const PREVIA_UPLOAD_COM_JSON_REAL = {
+ "success": true,
+ "formato": "html",
+ "html": "<!doctype html><html><head><style>h1{color:}</style></head><body>\n<h1>Título de exemplo</h1>\n<p></p>\n<p>Texto de exemplo da notificação.\nCom uma segunda linha.</p>\n<a href=\"\"></a>\n</body></html>",
+ "texto": "Título de exemplo\n\nTexto de exemplo da notificação.\nCom uma segunda linha.",
+ "assunto": "Título de exemplo",
+ "campos_detectados": [
+  {
+   "chave": "titulo",
+   "rotulo": "Título",
+   "tipo": "texto",
+   "obrigatorio": true,
+   "padrao": "{titulo}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  }
+ ],
+ "erros": [],
+ "avisos": [
+  "{{cor_destaque}} não é campo: precisa vir como variável do evento.",
+  "{{saudacao}} não é campo: precisa vir como variável do evento.",
+  "{{botao_link}} não é campo: precisa vir como variável do evento.",
+  "{{botao_rotulo}} não é campo: precisa vir como variável do evento."
+ ]
+};
+/** Um modelo do painel como sai em modelos.listar() (publico). */
+export const MODELO_DO_PAINEL_REAL = {
+ "chave": "boas_vindas",
+ "origem": "painel",
+ "versao": 2,
+ "ativo": true,
+ "atualizado_em": "2026-11-20T15:00:00.000Z",
+ "rotulo": "Boas-vindas",
+ "descricao": "Primeiro e-mail depois do cadastro.",
+ "formato": "html",
+ "arquivo": "boas_vindas.html",
+ "campos": [
+  {
+   "chave": "cor_destaque",
+   "rotulo": "cor_destaque",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "titulo",
+   "rotulo": "titulo",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "{titulo}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "saudacao",
+   "rotulo": "saudacao",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "texto",
+   "rotulo": "texto",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "{texto}",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "botao_link",
+   "rotulo": "botao_link",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  },
+  {
+   "chave": "botao_rotulo",
+   "rotulo": "botao_rotulo",
+   "tipo": "texto",
+   "obrigatorio": false,
+   "padrao": "",
+   "ajuda": "",
+   "aceita_variaveis": true
+  }
+ ],
+ "variaveis_do_molde": [],
+ "status": "ok",
+ "avisos": [
+  "sem lista de campos: tirados do molde, todos de texto e opcionais"
+ ]
+};
+/** GET /modelos/:chave/versoes */
+export const VERSOES_REAIS = { success: true, versoes: [
+  { versao: 2, nome_arquivo: "boas_vindas.html", motivo: "Rodapé novo", criado_por: "rafael@arqdoor.com", criado_em: "2026-11-20T15:00:00.000Z", atual: true },
+  { versao: 1, nome_arquivo: "boas_vindas.html", motivo: "Primeira versão", criado_por: "rafael@arqdoor.com", criado_em: "2026-11-19T10:00:00.000Z", atual: false },
+] };
+/** PATCH /modelos/:chave/ativo { ativo: false } com o modelo em uso (409, recusaComExtras). */
+export const DESATIVAR_EM_USO_REAL = {
+  success: false,
+  message: 'O modelo está em uso: evento "Fase entregue", personalizada "Lembrete de proposta". Troque o modelo nesses lugares antes de desativar.',
+  usos: [{ onde: "evento", tipo: "step_delivered", rotulo: "Fase entregue" }, { onde: "personalizada", id: 4, rotulo: "Lembrete de proposta" }],
+};
+/** GET /modelos/:chave/arquivo */
+export const ARQUIVO_DO_MODELO_REAL = { success: true, nome_arquivo: "boas_vindas.html", conteudo: ARQUIVO_ENVIADO, campos_json: null };

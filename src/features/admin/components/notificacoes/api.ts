@@ -71,6 +71,8 @@ export type Modelo = {
   formato?: "mjml" | "html" | null; arquivo?: string | null;
   /** {{x}} do arquivo que não são campos: o evento precisa trazer (ex.: {{link_redefinicao}}). */
   variaveis_do_molde?: string[];
+  /** "sistema" = arquivo no código do backend (só leitura); "painel" = enviado por aqui, com versões. */
+  origem?: "sistema" | "painel"; versao?: number | null; ativo?: boolean;
   /** "erro" = o arquivo do modelo não carregou; `erro` diz por quê. */
   status?: "ok" | "erro"; erro?: string | null;
 };
@@ -151,8 +153,8 @@ export function normalizarModelos(bruto: any): Modelo[] {
   return lista.map(normalizarModelo).filter(Boolean) as Modelo[];
 }
 
-/** Modelos que dá para escolher num evento ou comunicado: sem o "nenhum" e sem os que deram erro. */
-export const modelosParaEscolher = (modelos: Modelo[]) => modelos.filter((m) => m.chave !== "nenhum" && m.status !== "erro");
+/** Modelos que dá para escolher num evento ou comunicado: sem o "nenhum", sem os que deram erro e sem os desativados. */
+export const modelosParaEscolher = (modelos: Modelo[]) => modelos.filter((m) => m.chave !== "nenhum" && m.status !== "erro" && m.ativo !== false);
 
 /** {{x}} que o arquivo do modelo pede e que este envio não tem (além das embutidas: nome, titulo, texto, link). */
 export const faltaNoMolde = (m: Modelo, permitidas: string[]) =>
@@ -260,6 +262,9 @@ function normalizarModelo(m: any): Modelo | null {
     arquivo: textoOuNulo(m.arquivo),
     status: m.status === "erro" ? "erro" : "ok",
     erro: textoOuNulo(m.erro),
+    origem: m.origem === "painel" ? "painel" : "sistema",
+    versao: numOuNulo(m.versao),
+    ativo: bool(m.ativo, true),
   };
 }
 
@@ -587,4 +592,112 @@ export function personalizadasLigadas(bruto: any): boolean | null {
   const b = desembrulhar(bruto);
   const v = b?.personalizadas_ligadas ?? b?.config?.personalizadas_ligadas;
   return typeof v === "boolean" ? v : null;
+}
+
+/* ---------- modelos enviados pelo painel (upload de .mjml/.html, sem editor de código) ---------- */
+/**
+ *   POST  /admin/notificacoes/modelos/previa-upload    { nome_arquivo, conteudo, campos?, valores? }
+ *                                                       -> { formato, html, texto, campos_detectados, erros, avisos }
+ *   POST  /admin/notificacoes/modelos                  { chave, rotulo, descricao, nome_arquivo, conteudo, campos, motivo }
+ *   PUT   /admin/notificacoes/modelos/:chave           { rotulo, descricao, nome_arquivo, conteudo, campos, motivo } (versão nova)
+ *   GET   /admin/notificacoes/modelos/:chave/versoes
+ *   POST  /admin/notificacoes/modelos/:chave/restaurar { versao, motivo }
+ *   PATCH /admin/notificacoes/modelos/:chave/ativo     { ativo }   (recusa diz quem usa)
+ *   GET   /admin/notificacoes/modelos/:chave/arquivo   { nome_arquivo, conteudo }
+ */
+export type PreviaDoUpload = { formato: "mjml" | "html" | null; html: string | null; texto: string | null; assunto: string | null; campos_detectados: CampoDoModelo[]; erros: string[]; avisos: string[] };
+export type CorpoDoModelo = { rotulo: string; descricao: string; nome_arquivo: string; conteudo: string; campos: CampoDoModelo[]; motivo: string };
+export type VersaoDoModelo = { versao: number; nome_arquivo: string | null; motivo: string | null; criado_por: string | null; created_at: string | null; atual: boolean | null };
+
+const deModelo = (chave: string) => `${CAMINHO_MODELOS}/${encodeURIComponent(chave)}`;
+export const caminhoDasVersoes = (chave: string) => `${deModelo(chave)}/versoes`;
+/** Só o que o backend guarda de cada campo (sem nada do painel). */
+export const camposParaGuardar = (campos: CampoDoModelo[]) => campos.map((c) => ({
+  chave: c.chave, rotulo: c.rotulo || c.chave, tipo: c.tipo, obrigatorio: c.obrigatorio, padrao: c.padrao ?? (c.tipo === "booleano" ? false : ""),
+  ajuda: c.ajuda, aceita_variaveis: c.aceita_variaveis, ...(c.tipo === "opcoes" ? { opcoes: c.opcoes } : {}),
+}));
+
+/** Erro/aviso do backend: texto solto ou { linha|line, mensagem|message }. */
+const problemasEmTexto = (v: unknown): string[] => (Array.isArray(v) ? v : []).map((x: any) => {
+  if (typeof x === "string") return x;
+  const linha = x?.linha ?? x?.line;
+  const msg = String(x?.mensagem ?? x?.message ?? "problema sem descrição");
+  return linha != null ? `linha ${linha}: ${msg}` : msg;
+});
+
+/** {{x}} detectado vira um campo de texto opcional que aceita variáveis (o admin ajusta depois). */
+const campoDetectado = (x: any): CampoDoModelo | null => (typeof x === "string"
+  ? { chave: x, rotulo: x, tipo: "texto", opcoes: [], obrigatorio: false, padrao: null, ajuda: "", aceita_variaveis: true }
+  : normalizarCampo(x));
+
+export const previaDoUpload = async (p: { nome_arquivo: string; conteudo: string; campos?: CampoDoModelo[]; valores?: ValoresDosCampos }): Promise<PreviaDoUpload> => {
+  const corpo = { nome_arquivo: p.nome_arquivo, conteudo: p.conteudo, ...(p.campos ? { campos: camposParaGuardar(p.campos) } : {}), ...(p.valores ? { valores: p.valores } : {}) };
+  const b = desembrulhar(await apiRequest("POST", `${CAMINHO_MODELOS}/previa-upload`, corpo).then(ler));
+  return {
+    formato: b?.formato === "mjml" || b?.formato === "html" ? b.formato : null,
+    html: typeof b?.html === "string" && b.html.trim() ? b.html : null,
+    texto: typeof b?.texto === "string" ? b.texto : null,
+    assunto: textoOuNulo(b?.assunto),
+    campos_detectados: (Array.isArray(b?.campos_detectados) ? b.campos_detectados : []).map(campoDetectado).filter(Boolean) as CampoDoModelo[],
+    erros: problemasEmTexto(b?.erros), avisos: problemasEmTexto(b?.avisos),
+  };
+};
+
+/** Recusa com o motivo do servidor e, se vier, a lista de quem usa o modelo. */
+async function lerComQuemUsa(res: Response) {
+  const body = await res.json().catch(() => ({}));
+  if (res.ok) return body;
+  // modelosDoPainel.definirAtivo: 409 { message, usos: [{ onde, rotulo }] }; a mensagem já costuma listar os usos.
+  const msg: string = body?.message || "Não foi possível falar com o servidor.";
+  const usos = (Array.isArray(body?.usos) ? body.usos : []).map((u: any) => (typeof u === "string" ? u : `${u?.onde ?? ""} "${u?.rotulo ?? u?.tipo ?? u?.id ?? ""}"`.trim()));
+  const faltando = usos.filter((u: string) => !msg.includes(u.replace(/^\S+ /, "")));
+  throw new Error(faltando.length ? `${msg} Em uso: ${faltando.join(", ")}.` : msg);
+}
+
+export const criarModeloEnviado = (chave: string, c: CorpoDoModelo) =>
+  apiRequest("POST", CAMINHO_MODELOS, { chave, ...c, campos: camposParaGuardar(c.campos) }).then(ler);
+export const novaVersaoDoModelo = (chave: string, c: CorpoDoModelo) =>
+  apiRequest("PUT", deModelo(chave), { ...c, campos: camposParaGuardar(c.campos) }).then(ler);
+export const restaurarVersaoDoModelo = (chave: string, versao: number, motivo: string) =>
+  apiRequest("POST", `${deModelo(chave)}/restaurar`, { versao, motivo }).then(ler);
+export const ativarModelo = (chave: string, ativo: boolean) => apiRequest("PATCH", `${deModelo(chave)}/ativo`, { ativo }).then(lerComQuemUsa);
+export const arquivoDoModelo = async (chave: string): Promise<{ nome_arquivo: string; conteudo: string }> => {
+  const b = desembrulhar(await apiRequest("GET", `${deModelo(chave)}/arquivo`).then(ler));
+  return { nome_arquivo: textoOuNulo(b?.nome_arquivo) ?? `${chave}.html`, conteudo: typeof b?.conteudo === "string" ? b.conteudo : "" };
+};
+
+export function normalizarVersoes(bruto: any): VersaoDoModelo[] {
+  const b = desembrulhar(bruto);
+  const lista = Array.isArray(b) ? b : Array.isArray(b?.versoes) ? b.versoes : [];
+  return lista.filter((v: any) => v && Number.isFinite(Number(v.versao))).map((v: any) => ({
+    versao: Number(v.versao), nome_arquivo: textoOuNulo(v.nome_arquivo), motivo: textoOuNulo(v.motivo), criado_por: textoOuNulo(v.criado_por),
+    created_at: textoOuNulo(v.criado_em ?? v.created_at ?? v.createdAt), atual: typeof v.atual === "boolean" ? v.atual : null,
+  }));
+}
+
+/** Chave a partir do nome do arquivo: "Boas Vindas.mjml" -> "boas_vindas". */
+export function chaveDoArquivo(nome: string): string {
+  return nome.replace(/\.[^.]+$/, "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .replace(/[^a-z0-9_]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40);
+}
+/** Mesma regra do backend (modelos-de-email): 2 a 40 de a-z, 0-9 e _; "nenhum" é reservado. */
+export function problemaDaChave(chave: string, existentes: string[]): string | null {
+  if (!/^[a-z0-9_]{2,40}$/.test(chave)) return "Use de 2 a 40 letras minúsculas, números ou _.";
+  if (chave === "nenhum") return "\"nenhum\" é reservado.";
+  if (existentes.includes(chave)) return "Já existe um modelo com essa chave.";
+  return null;
+}
+/** Formato pelo nome do arquivo. */
+export const formatoDoArquivo = (nome: string) => (/\.mjml$/i.test(nome) ? "mjml" : /\.html?$/i.test(nome) ? "html" : null);
+
+/** Campos de um .json enviado junto: { campos: [...] } ou a lista direto. */
+export function camposDoJson(texto: string): { campos: CampoDoModelo[]; rotulo?: string; descricao?: string } | { erro: string } {
+  let d: any;
+  try { d = JSON.parse(texto); } catch (e) { return { erro: `O .json não abriu: ${(e as Error).message}` }; }
+  const lista = Array.isArray(d) ? d : Array.isArray(d?.campos) ? d.campos : null;
+  if (!lista) return { erro: "O .json precisa ter uma lista \"campos\"." };
+  return {
+    campos: lista.map(normalizarCampo).filter(Boolean) as CampoDoModelo[],
+    ...(typeof d?.rotulo === "string" ? { rotulo: d.rotulo } : {}), ...(typeof d?.descricao === "string" ? { descricao: d.descricao } : {}),
+  };
 }
