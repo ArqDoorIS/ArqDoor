@@ -411,6 +411,7 @@ export function useAdminDashboard({
      * `/admin/documents`, e pedir uma secao inexistente ao backend so renderia erro.
      * `equipe` pelo mesmo motivo: ela le `/admin/members`. `publicacoes` le `/admin/listings`.
    * `ia` le `/admin/ai-settings`; `erros` le `/admin/erros`; `analise` le `/admin/analise/*`.
+   * `impulsionamento` le `/admin/impulsionamento/*`; `punicoes` le `/admin/punicoes`.
      */
     const requestedSection: DashboardSection =
       activeTab === "dashboard" ||
@@ -421,6 +422,8 @@ export function useAdminDashboard({
       activeTab === "analise" ||
       activeTab === "app" ||
       activeTab === "equipe" ||
+      activeTab === "impulsionamento" ||
+      activeTab === "punicoes" ||
       activeTab === "ia"
         ? "all"
         : activeTab;
