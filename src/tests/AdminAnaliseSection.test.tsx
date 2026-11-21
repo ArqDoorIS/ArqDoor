@@ -325,6 +325,37 @@ describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => 
     expect(within(caixa).getByRole("button", { name: /Salvar como versão 2/ })).toBeDisabled();
   });
 
+  it("regras: número com milhar aparece com ponto e é lido como o mesmo número; vazio não vira zero", async () => {
+    const GRANDE = { ...V1, params: { ...V1.params, regras: { ...V1.params.regras, max_chamadas_semana: 1500 } } };
+    const LIM_GRANDE = { ...LIM, regras: { ...LIM.regras, max_chamadas_semana: [1, 5000] } };
+    comRotas();
+    const comConfig = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) =>
+      rota === "/admin/algoritmo/config" && m === "GET" ? Promise.resolve(ok({ ativa: GRANDE, padrao: PADRAO, limites: LIM_GRANDE, versoes: [GRANDE] })) : comConfig(m, rota, c));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
+    const chamadas = within(caixa).getByLabelText("Chamadas por semana (por profissional)");
+    expect(chamadas).toHaveValue("1.500");
+    // "1.500" lido de volta é 1500, não 1,5: nada mudou
+    expect(within(caixa).getByText("Nada mudou ainda.")).toBeInTheDocument();
+    fireEvent.change(chamadas, { target: { value: "6.000" } });
+    expect(within(caixa).getByText(/Precisa ficar entre 1 e 5\.000/)).toBeInTheDocument();
+    fireEvent.change(chamadas, { target: { value: "2.000" } });
+    expect(within(caixa).queryByText(/Precisa ficar/)).toBeNull();
+    // campo vazio fica vermelho em vez de salvar 0
+    fireEvent.change(within(caixa).getByLabelText("Força da nota"), { target: { value: "" } });
+    expect(within(caixa).getByText(/Precisa ficar entre 0,001 e 20/)).toBeInTheDocument();
+    fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "Mais chamadas" } });
+    expect(within(caixa).getByRole("button", { name: /Salvar como versão 2/ })).toBeDisabled();
+    fireEvent.change(within(caixa).getByLabelText("Força da nota"), { target: { value: "1,5" } });
+    fireEvent.click(within(caixa).getByRole("button", { name: /Salvar como versão 2/ }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PUT", "/admin/algoritmo/config", expect.objectContaining({
+      params: expect.objectContaining({ regras: expect.objectContaining({ max_chamadas_semana: 2000 }), palpite: expect.objectContaining({ nota_k: 1.5 }) }),
+    })));
+  });
+
   it("regras: número fora do limite trava o salvar; versões voltam para a de fábrica", async () => {
     comRotas();
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);

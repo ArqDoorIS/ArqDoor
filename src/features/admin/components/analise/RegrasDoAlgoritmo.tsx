@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { History, Loader2, RotateCcw, Save } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { lerNumero, mostrarNumero } from "@/lib/numeroBr";
 import { Dica, SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { Carregando, Erro, ler, quando, useApi } from "./comum";
@@ -76,8 +77,10 @@ const SECOES: { titulo: string; dica: string; campos: Campo[] }[] = [
   },
 ];
 
-const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("pt-BR", { maximumFractionDigits: 4 }) : String(v));
-const paraNumero = (s: string) => Number(String(s).replace(/\s/g, "").replace(",", "."));
+/** Mostra no padrão pt-BR ("1.000", "0,03"); o campo mostra igual e lerNumero lê de volta o mesmo número. */
+const fmt = (v: unknown) => (typeof v === "number" ? mostrarNumero(v, 4) : String(v));
+/** "1.000" = mil, "1,5" e "1.5" = um e meio; vazio é NaN (o campo fica vermelho, não vira 0). */
+const paraNumero = lerNumero;
 
 /** Quantos números mudaram entre duas versões. */
 const diferencas = (a: Params, b: Params) =>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { contagem } from "@/lib/numeroBr";
 import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { Carregando, Erro, EtiquetaPH, quando, useApi, type ConteudoJanela } from "./comum";
@@ -96,7 +97,7 @@ export function DetalheDaLista({ demandId, investigar }: { demandId: number; inv
         <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">Quem ficou de fora</p>
         {!l.excluidos.length ? <p className="text-xs text-slate-400">{l.candidatos == null ? "Lista feita antes de o retrato ser guardado." : "Ninguém."}</p> : (
           <>
-            <div className="mb-1.5 flex flex-wrap gap-1">{motivos.map(([m, n]) => <span key={m} className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">{m}: {n}</span>)}</div>
+            <div className="mb-1.5 flex flex-wrap gap-1">{motivos.map(([m, n]) => <span key={m} className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">{m}: {contagem(n)}</span>)}</div>
             <ul className="max-h-56 divide-y divide-slate-100 overflow-auto rounded-xl border border-slate-200 text-xs">
               {l.excluidos.map((x) => (
                 <li key={x.user_id} className="flex items-center gap-2 px-3 py-1.5" data-testid="excluido-da-lista">

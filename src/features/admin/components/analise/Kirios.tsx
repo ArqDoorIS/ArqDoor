@@ -1,6 +1,7 @@
 import { Cpu, Gauge, ListOrdered, Radio, ScrollText, Store, Target } from "lucide-react";
 import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
+import { contagem } from "@/lib/numeroBr";
 import { Barras, Bloco, Carregando, Erro, dia, rotulo, useApi } from "./comum";
 import type { Kirios } from "./tipos";
 import { PerfisElegiveis } from "./PerfisElegiveis";
@@ -30,8 +31,9 @@ function Medidor({ rotulo: r, valor, ajuda, icone: I }: { rotulo: string; valor:
   );
 }
 
+/** Número solto ganha o ponto do milhar (1.234); texto pronto ("64%") passa como veio. */
 function Numero({ rotulo: r, valor, ajuda }: { rotulo: string; valor: React.ReactNode; ajuda?: string }) {
-  return <div className="rounded-xl bg-slate-50 px-3 py-2"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{r}</p><p className="text-lg font-bold text-slate-950">{valor}</p>{ajuda ? <p className="text-[11px] text-slate-400">{ajuda}</p> : null}</div>;
+  return <div className="rounded-xl bg-slate-50 px-3 py-2"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{r}</p><p className="text-lg font-bold text-slate-950">{typeof valor === "number" ? contagem(valor) : valor}</p>{ajuda ? <p className="text-[11px] text-slate-400">{ajuda}</p> : null}</div>;
 }
 
 export function AbaKirios({ abrir, investigar }: { abrir?: (c: ConteudoJanela) => void; investigar?: (id: number) => void } = {}) {
@@ -58,7 +60,7 @@ export function AbaKirios({ abrir, investigar }: { abrir?: (c: ConteudoJanela) =
         <div className="space-y-2.5">
           {[["Seleção de dados liga", v.minimo_para_selecao, "a partir daqui o algoritmo pode promover ou rebaixar dados"], ["Troca do arranque pelo modelo real", v.transicao_em, "o treino inventado perde peso conforme o dado real chega"]].map(([r, alvo, ajuda]) => (
             <div key={String(r)}>
-              <div className="flex justify-between text-xs"><span className="font-semibold text-slate-700">{r}</span><span className="text-slate-500"><b className="text-slate-900">{v.contratos_reais}</b> de {alvo} contratos reais</span></div>
+              <div className="flex justify-between text-xs"><span className="font-semibold text-slate-700">{r}</span><span className="text-slate-500"><b className="text-slate-900">{contagem(v.contratos_reais)}</b> de {contagem(Number(alvo))} contratos reais</span></div>
               <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100"><i className="block h-full rounded-full bg-orange-500" style={{ width: `${Math.min(100, (v.contratos_reais / Number(alvo)) * 100)}%` }} /></div>
               <p className="mt-0.5 text-[11px] text-slate-400">{ajuda}</p>
             </div>
@@ -100,7 +102,7 @@ export function AbaKirios({ abrir, investigar }: { abrir?: (c: ConteudoJanela) =
               <div key={p.posicao} className="grid grid-cols-[70px_1fr_auto] items-center gap-2 text-xs">
                 <span className="font-semibold text-slate-700">{p.posicao >= 5 ? "5º ou mais" : `${p.posicao}º cartão`}</span>
                 <span className="relative h-4 overflow-hidden rounded-md bg-slate-100"><i className="absolute inset-y-0 left-0 bg-orange-200" style={{ width: `${(p.cartoes / maxPos) * 100}%` }} /><i className="absolute inset-y-0 left-0 bg-orange-600" style={{ width: `${(p.contratos / maxPos) * 100}%` }} /></span>
-                <span className="whitespace-nowrap text-slate-500"><b className="text-slate-900">{p.contratos}</b> de {p.cartoes} · {p.cartoes ? Math.round((p.contratos / p.cartoes) * 100) : 0}%</span>
+                <span className="whitespace-nowrap text-slate-500"><b className="text-slate-900">{contagem(p.contratos)}</b> de {contagem(p.cartoes)} · {p.cartoes ? Math.round((p.contratos / p.cartoes) * 100) : 0}%</span>
               </div>
             ))}
             <div className="flex gap-4 pt-1 text-[11px] text-slate-500"><span className="inline-flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm bg-orange-200" />cartões</span><span className="inline-flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm bg-orange-600" />viraram contrato</span></div>
@@ -141,7 +143,7 @@ export function AbaKirios({ abrir, investigar }: { abrir?: (c: ConteudoJanela) =
         {!(k.semanas ?? []).length ? <p className="text-sm text-slate-500">Sem semanas ainda.</p> : (
           <div className="flex items-end gap-2">
             {k.semanas.map((s) => (
-              <div key={s.inicio} className="flex flex-1 flex-col items-center gap-1" title={`Semana de ${dia(s.inicio)}: ${s.cartoes} cartões, ${s.contratos} contratos, acerto ${auc(s.auc)}`}>
+              <div key={s.inicio} className="flex flex-1 flex-col items-center gap-1" title={`Semana de ${dia(s.inicio)}: ${contagem(s.cartoes)} cartões, ${contagem(s.contratos)} contratos, acerto ${auc(s.auc)}`}>
                 <span className="text-[10px] font-bold text-slate-500">{auc(s.auc)}</span>
                 <div className="relative flex h-28 w-full items-end justify-center">
                   <i className="block w-full rounded-t-md bg-orange-200" style={{ height: `${(s.cartoes / maxSem) * 100}%` }} />
