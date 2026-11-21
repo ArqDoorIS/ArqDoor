@@ -157,7 +157,10 @@ describe("notificações personalizadas (respostas reais do backend)", () => {
     fireEvent.click(f.getByRole("button", { name: "Salvar" }));
     const dialogo = await screen.findByRole("alertdialog");
     expect(dialogo).toHaveTextContent("2 dias depois de Proposta recebida, se a proposta ainda não foi assinada");
-    fireEvent.click(within(dialogo).getByRole("button", { name: "Criar" }));
+    const ambiente = within(dialogo).getByTestId("ambiente-do-envio");
+    expect(ambiente).toHaveTextContent("PRODUÇÃO");
+    expect(ambiente).toHaveTextContent("Para quem: o cliente, a cada “Proposta recebida” daqui para a frente (quando a condição vale).");
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Criar em PRODUÇÃO" }));
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("POST", "/admin/notificacoes/personalizadas", {
       nome: "Proposta parada", ativo: true, evento: "proposal_created", atraso_minutos: 2880, condicao: "proposta_ainda_nao_assinada", para: ["cliente"],
       titulo: "Sua proposta está esperando", texto: "A proposta #{numero_proposta} ainda não foi assinada.", href: null,
@@ -172,7 +175,7 @@ describe("notificações personalizadas (respostas reais do backend)", () => {
     const f = within(await screen.findByTestId("editor-personalizada"));
     fireEvent.change(f.getByLabelText("Limite por pessoa por dia"), { target: { value: "3" } });
     fireEvent.click(f.getByRole("button", { name: "Salvar" }));
-    fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Salvar" }));
+    fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Salvar em PRODUÇÃO" }));
     await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PUT", "/admin/notificacoes/personalizadas/5", expect.objectContaining({
       limite_por_pessoa_dia: 3, href: "/projects", email_modelo: "simples", email_campos: { saudacao: "" }, ativo: false,
     })));

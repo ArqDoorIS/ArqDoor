@@ -66,3 +66,67 @@ export function trocarAmbienteDoPainel(novo: AmbienteDoPainel) {
   }
   window.location.reload();
 }
+
+/* ---------- ambiente de um envio em massa (20/11/2026) ---------- */
+/**
+ * Em que ambiente cai um envio do painel (comunicado, notificação personalizada). Quem decide
+ * quem recebe é o SERVIDOR, não a página: cada ambiente tem o seu banco, com as suas contas.
+ * Por isso o ambiente sai do endereço da API em uso (o da compilação, VITE_API_URL, ou o do
+ * seletor "Produção | Staging"), sem variável nova:
+ *   - servidor local (localhost, 127.0.0.1, rede da casa) -> LOCAL;
+ *   - servidor com "staging" no nome (api.staging.arqdoor.com) -> TESTE;
+ *   - qualquer outro -> PRODUÇÃO. Na dúvida vale o aviso mais forte.
+ * No caso normal bate com o domínio da página (arqdoor.com, staging.arqdoor.com, localhost).
+ * Quando não bate, vale o servidor: o painel em localhost sem VITE_API_URL fala com
+ * api.arqdoor.com (o padrão do queryClient) e manda para gente de verdade.
+ */
+export type AmbienteDoEnvio = "producao" | "teste" | "local";
+
+export const NOME_DO_AMBIENTE: Record<AmbienteDoEnvio, string> = { producao: "PRODUÇÃO", teste: "TESTE", local: "LOCAL" };
+
+const HOST_LOCAL = [
+  /^localhost$/i, /\.localhost$/i, /\.local$/i, /^0\.0\.0\.0$/, /^\[?::1\]?$/,
+  /^127(\.\d{1,3}){3}$/, /^10(\.\d{1,3}){3}$/, /^192\.168(\.\d{1,3}){2}$/, /^172\.(1[6-9]|2\d|3[01])(\.\d{1,3}){2}$/,
+];
+
+/** O host é do computador de quem desenvolve (ou da rede da casa)? */
+export function ehHostLocal(host: string): boolean {
+  return HOST_LOCAL.some((r) => r.test(host));
+}
+
+const paginaAtual = () => (typeof window !== "undefined" ? window.location.href : "http://localhost/");
+
+/** O endereço do servidor como URL (um caminho relativo é o próprio site). null = não deu para ler. */
+function urlDoServidor(servidor: string, pagina: string): URL | null {
+  try {
+    return new URL(servidor || "/", pagina);
+  } catch {
+    return null;
+  }
+}
+
+/** O host do servidor, com a porta, para mostrar na confirmação ("api.arqdoor.com"). */
+export function hostDoServidor(servidor: string, pagina = paginaAtual()): string {
+  return urlDoServidor(servidor, pagina)?.host || servidor || "servidor desconhecido";
+}
+
+export function ambienteDoEnvio(servidor: string, pagina = paginaAtual()): AmbienteDoEnvio {
+  const url = urlDoServidor(servidor, pagina);
+  if (!url) return "producao";
+  if (ehHostLocal(url.hostname)) return "local";
+  return ambienteDoServidor(url.hostname) === "staging" ? "teste" : "producao";
+}
+
+/** A frase do ambiente na confirmação do envio. */
+export function explicacaoDoAmbiente(servidor: string, pagina = paginaAtual()): string {
+  const ambiente = ambienteDoEnvio(servidor, pagina);
+  const host = hostDoServidor(servidor, pagina);
+  if (ambiente === "teste") return `Ambiente de teste (staging): só as contas do staging recebem. Servidor ${host}.`;
+  if (ambiente === "local") return `Servidor no seu computador: só as contas do banco local recebem. Servidor ${host}.`;
+  const doPainel = urlDoServidor("/", pagina);
+  const painelLocal = doPainel ? ehHostLocal(doPainel.hostname) : false;
+  return `${painelLocal ? "O painel está no seu computador, mas fala com o servidor de produção. " : ""}Chega em pessoas reais. Servidor ${host}.`;
+}
+
+/** O fim do botão final: "Enviar para 1.234 contas em PRODUÇÃO". */
+export const noAmbiente = (servidor: string, pagina = paginaAtual()) => `em ${NOME_DO_AMBIENTE[ambienteDoEnvio(servidor, pagina)]}`;

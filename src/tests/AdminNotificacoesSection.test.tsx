@@ -12,8 +12,9 @@ import {
   ENVIOS_REAIS, PAINEL_REAL, PREVIA_REAL, TESTE_COMUNICADO_REAL, TESTE_EVENTO_REAL, eventoSalvo,
 } from "./fixtures/notificacoesBackend";
 
-const { apiRequestMock } = vi.hoisted(() => ({ apiRequestMock: vi.fn() }));
-vi.mock("@/lib/queryClient", () => ({ apiRequest: apiRequestMock, API_BASE_URL: "https://api.test" }));
+const { apiRequestMock, servidor } = vi.hoisted(() => ({ apiRequestMock: vi.fn(), servidor: { atual: "https://api.test" } }));
+// O servidor em uso decide o ambiente do envio (PRODUÇÃO, TESTE, LOCAL); um teste troca para o staging.
+vi.mock("@/lib/queryClient", () => ({ apiRequest: apiRequestMock, get API_BASE_URL() { return servidor.atual; } }));
 
 const ok = (body: unknown) => ({ ok: true, json: async () => body });
 const recusa = (message: string) => ({ ok: false, json: async () => ({ success: false, message }) });
@@ -24,6 +25,7 @@ let falharPut: string | null = null;
 let previa: (corpo: any) => unknown = (corpo) => (corpo?.modelo === "nenhum" ? { success: true, html: null, texto: null, assunto: null, push: PREVIA_REAL.push } : PREVIA_REAL);
 
 beforeEach(() => {
+  servidor.atual = "https://api.test";
   painel = copia(PAINEL_REAL);
   falharPut = null;
   previa = (corpo) => (corpo?.modelo === "nenhum" ? { success: true, html: null, texto: null, assunto: null, push: PREVIA_REAL.push } : PREVIA_REAL);
@@ -310,7 +312,13 @@ describe("aba Notificações (respostas reais do backend)", () => {
     fireEvent.click(within(raiz).getByRole("button", { name: "Enviar" }));
     const dialogo = await screen.findByRole("alertdialog");
     expect(dialogo).toHaveTextContent("Vai para 1.234 contas, por sino, push.");
-    fireEvent.click(within(dialogo).getByRole("button", { name: "Enviar para 1.234 contas" }));
+    // o ambiente e o público, no aviso e no botão final (servidor que não é staging nem local = produção)
+    const ambiente = within(dialogo).getByTestId("ambiente-do-envio");
+    expect(ambiente).toHaveAttribute("data-ambiente", "producao");
+    expect(ambiente).toHaveTextContent("PRODUÇÃO");
+    expect(ambiente).toHaveTextContent("Chega em pessoas reais. Servidor api.test.");
+    expect(ambiente).toHaveTextContent("Para quem: Todos os profissionais, 1.234 contas.");
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Enviar para 1.234 contas em PRODUÇÃO" }));
     await waitFor(() => expect(chamadas("POST", "/admin/notificacoes/envios")).toHaveLength(1));
     expect(chamadas("POST", "/admin/notificacoes/envios")[0][2]).toEqual({
       titulo: "Novidade", texto: "Chegou a carteira, {nome}.", href: "/financeiro", canais: { sino: true, push: true, email: false },
@@ -328,6 +336,25 @@ describe("aba Notificações (respostas reais do backend)", () => {
     const dialogo = await screen.findByRole("alertdialog");
     expect(dialogo).toHaveTextContent("Enviar para todo mundo?");
     expect(dialogo).toHaveTextContent("todas as 5.000 contas da ArqDoor");
+    expect(within(dialogo).getByTestId("ambiente-do-envio")).toHaveTextContent("Para quem: Todo mundo, profissionais e clientes, 5.000 contas.");
+    expect(within(dialogo).getByRole("button", { name: "Enviar para 5.000 contas em PRODUÇÃO" })).toBeInTheDocument();
+  });
+
+  it("comunicado com o painel no staging: a confirmação diz TESTE", async () => {
+    servidor.atual = "https://api.staging.arqdoor.com";
+    const raiz = await comunicado();
+    fireEvent.change(naNotificacao(raiz).getByLabelText("Título da notificação"), { target: { value: "Aviso" } });
+    fireEvent.change(naNotificacao(raiz).getByLabelText("Texto da notificação"), { target: { value: "Texto" } });
+    fireEvent.click(within(raiz).getByLabelText("Todo mundo"));
+    expect(await within(raiz).findByText("Vai para 5.000 contas")).toBeInTheDocument();
+    fireEvent.click(within(raiz).getByRole("button", { name: "Enviar" }));
+    const dialogo = await screen.findByRole("alertdialog");
+    const ambiente = within(dialogo).getByTestId("ambiente-do-envio");
+    expect(ambiente).toHaveAttribute("data-ambiente", "teste");
+    expect(ambiente).toHaveTextContent("TESTE");
+    expect(ambiente).toHaveTextContent("só as contas do staging recebem. Servidor api.staging.arqdoor.com.");
+    expect(dialogo).not.toHaveTextContent("PRODUÇÃO");
+    expect(within(dialogo).getByRole("button", { name: "Enviar para 5.000 contas em TESTE" })).toBeInTheDocument();
   });
 
   it("comunicado só por e-mail: canais só com e-mail, campos do modelo e modelos compatíveis", async () => {
@@ -344,7 +371,7 @@ describe("aba Notificações (respostas reais do backend)", () => {
     fireEvent.change(email.getByLabelText("Texto"), { target: { value: "Agora dá para ver tudo o que recebeu." } });
     await within(raiz).findByText("Vai para 1.234 contas");
     fireEvent.click(within(raiz).getByRole("button", { name: "Enviar" }));
-    fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Enviar para 1.234 contas" }));
+    fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Enviar para 1.234 contas em PRODUÇÃO" }));
     await waitFor(() => expect(chamadas("POST", "/admin/notificacoes/envios")).toHaveLength(1));
     expect(chamadas("POST", "/admin/notificacoes/envios")[0][2]).toEqual({
       titulo: "Sua carteira chegou", texto: "Agora dá para ver tudo o que recebeu.", href: null,
