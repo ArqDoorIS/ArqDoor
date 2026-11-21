@@ -279,8 +279,9 @@ describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => 
     comRotas();
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
-    const caixa = await screen.findByTestId("regras-do-algoritmo");
-    expect(screen.getByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    // espera os dados (a versão em vigor), não um tempo; quando ela aparece, os campos já vêm preenchidos
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
     expect(within(caixa).getByLabelText("Selo de verificado")).toHaveValue("1,5");
     const salvar = within(caixa).getByRole("button", { name: /Salvar como versão 2/ });
     expect(salvar).toBeDisabled();
@@ -293,12 +294,44 @@ describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => 
     expect(await within(caixa).findByRole("status")).toHaveTextContent("Salvo como versão 2");
   });
 
+  it("regras: antes de carregar não há campo nem salvar; os campos nascem da versão em vigor", async () => {
+    comRotas();
+    const comConfig = apiRequestMock.getMockImplementation()!;
+    let soltar: () => void = () => {};
+    const segurada = new Promise<void>((r) => { soltar = r; });
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) =>
+      rota === "/admin/algoritmo/config" && m === "GET" ? segurada.then(() => comConfig(m, rota, c)) : comConfig(m, rota, c));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    // a lista de elegíveis (outra rota) chega; as regras continuam carregando
+    await screen.findByTestId("contagem-elegiveis");
+    expect(screen.queryByTestId("regras-do-algoritmo")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Salvar como versão/ })).toBeNull();
+    expect(screen.queryByLabelText("Selo de verificado")).toBeNull();
+    // Simula o CI lento: com o relógio correndo, o agendador do React cede a vez depois de cada
+    // tarefa. Era aí que o rascunho preenchido por efeito chegava depois da tela, com os campos vazios.
+    let agora = performance.now();
+    const relogio = vi.spyOn(performance, "now").mockImplementation(() => (agora += 50));
+    let caixa: HTMLElement;
+    try {
+      soltar();
+      caixa = await screen.findByTestId("regras-do-algoritmo");
+      expect(within(caixa).getByLabelText("Selo de verificado")).toHaveValue("1,5");
+      expect(within(caixa).getByLabelText("Raio padrão (km)")).toHaveValue("30");
+      expect(within(caixa).getByText("Nada mudou ainda.")).toBeInTheDocument();
+    } finally {
+      relogio.mockRestore();
+    }
+    expect(within(caixa).getByRole("button", { name: /Salvar como versão 2/ })).toBeDisabled();
+  });
+
   it("regras: número fora do limite trava o salvar; versões voltam para a de fábrica", async () => {
     comRotas();
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
-    const caixa = await screen.findByTestId("regras-do-algoritmo");
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
     fireEvent.change(within(caixa).getByLabelText("Raio padrão (km)"), { target: { value: "900" } });
     fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "teste" } });
     expect(within(caixa).getByText(/Precisa ficar entre 1 e 500/)).toBeInTheDocument();
