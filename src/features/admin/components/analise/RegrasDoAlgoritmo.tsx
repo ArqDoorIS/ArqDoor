@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { History, Loader2, RotateCcw, Save } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { lerNumero, mostrarNumero } from "@/lib/numeroBr";
 import { Dica, SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { Carregando, Erro, ler, quando, useApi } from "./comum";
@@ -76,55 +77,67 @@ const SECOES: { titulo: string; dica: string; campos: Campo[] }[] = [
   },
 ];
 
-const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("pt-BR", { maximumFractionDigits: 4 }) : String(v));
-const paraNumero = (s: string) => Number(String(s).replace(/\s/g, "").replace(",", "."));
+/** Mostra no padrão pt-BR ("1.000", "0,03"); o campo mostra igual e lerNumero lê de volta o mesmo número. */
+const fmt = (v: unknown) => (typeof v === "number" ? mostrarNumero(v, 4) : String(v));
+/** "1.000" = mil, "1,5" e "1.5" = um e meio; vazio é NaN (o campo fica vermelho, não vira 0). */
+const paraNumero = lerNumero;
 
 /** Quantos números mudaram entre duas versões. */
 const diferencas = (a: Params, b: Params) =>
   (["palpite", "intencao", "regras"] as Grupo[]).flatMap((g) => Object.keys(a[g] || {}).filter((k) => a[g][k] !== b[g]?.[k]).map((k) => `${g}.${k}`));
 
+/** O que está nos campos, com a versão de onde saiu. */
+type Rascunho = { de: Versao; campos: Record<string, string>; sinais: boolean };
+const rascunhoDe = (v: Versao): Rascunho => {
+  const campos: Record<string, string> = {};
+  for (const s of SECOES) for (const c of s.campos) campos[`${c.grupo}.${c.chave}`] = fmt(v.params[c.grupo][c.chave]);
+  return { de: v, campos, sinais: Boolean(v.params.regras.usar_sinais_na_chance) };
+};
+
 export function RegrasDoAlgoritmo() {
   const { dado, erro, deNovo } = useApi<Resposta>("/admin/algoritmo/config");
-  const [rascunho, setRascunho] = useState<Record<string, string>>({});
-  const [sinais, setSinais] = useState(false);
+  const [rascunho, setRascunho] = useState<Rascunho | null>(null);
   const [motivo, setMotivo] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [aviso, setAviso] = useState<{ texto: string; ruim?: boolean } | null>(null);
   const [verVersoes, setVerVersoes] = useState(false);
 
-  const ativa = dado?.ativa;
-  useEffect(() => {
-    if (!ativa) return;
-    const r: Record<string, string> = {};
-    for (const s of SECOES) for (const c of s.campos) r[`${c.grupo}.${c.chave}`] = fmt(ativa.params[c.grupo][c.chave]);
-    setRascunho(r);
-    setSinais(Boolean(ativa.params.regras.usar_sinais_na_chance));
-  }, [ativa]);
+  const ativa = dado?.ativa?.params ? dado.ativa : null;
+  // O rascunho nasce da versão carregada neste mesmo render, antes de a tela aparecer (na primeira
+  // carga e quando chega a versão nova depois de salvar). Antes ele começava vazio e um efeito o
+  // preenchia depois: havia um render com os campos em branco, tudo contado como "mudou" e o salvar
+  // montado com zeros. O teste do painel às vezes pegava esse render no CI.
+  if (ativa && rascunho?.de !== ativa) setRascunho(rascunhoDe(ativa));
+  const pronto = ativa && rascunho?.de === ativa ? rascunho : null;
 
   const montado = useMemo<Params | null>(() => {
-    if (!ativa) return null;
-    const p: Params = JSON.parse(JSON.stringify(ativa.params));
+    if (!pronto) return null;
+    const p: Params = JSON.parse(JSON.stringify(pronto.de.params));
     for (const s of SECOES) for (const c of s.campos) {
-      const n = paraNumero(rascunho[`${c.grupo}.${c.chave}`] ?? "");
+      const n = paraNumero(pronto.campos[`${c.grupo}.${c.chave}`] ?? "");
       if (Number.isFinite(n)) (p[c.grupo] as Record<string, number | boolean>)[c.chave] = n;
     }
-    p.regras.usar_sinais_na_chance = sinais;
+    p.regras.usar_sinais_na_chance = pronto.sinais;
     return p;
-  }, [ativa, rascunho, sinais]);
+  }, [pronto]);
 
   if (erro) return <SectionCard title="Regras do algoritmo"><Erro msg={erro} /></SectionCard>;
-  if (!dado || !ativa || !montado || !dado.padrao || !dado.limites) return <SectionCard title="Regras do algoritmo"><Carregando /></SectionCard>;
+  if (!dado || !ativa || !pronto || !montado || !dado.padrao || !dado.limites) return <SectionCard title="Regras do algoritmo"><Carregando /></SectionCard>;
   const versoes = Array.isArray(dado.versoes) ? dado.versoes : [];
+  const campos = pronto.campos;
+  const sinais = pronto.sinais;
+  const mudarCampo = (id: string, valor: string) => setRascunho((r) => (r ? { ...r, campos: { ...r.campos, [id]: valor } } : r));
 
   const mudou = diferencas(ativa.params, montado);
   const foraDoLimite = (c: Campo) => {
     const [min, max] = dado.limites[c.grupo]?.[c.chave] ?? [-Infinity, Infinity];
-    const n = paraNumero(rascunho[`${c.grupo}.${c.chave}`] ?? "");
+    const n = paraNumero(campos[`${c.grupo}.${c.chave}`] ?? "");
     return !Number.isFinite(n) || n < min || n > max ? `entre ${fmt(min)} e ${fmt(max)}` : null;
   };
   const invalidos = SECOES.flatMap((s) => s.campos).filter(foraDoLimite);
 
   const salvar = async () => {
+    if (!pronto || !montado) return;
     setSalvando(true); setAviso(null);
     try {
       const r = (await apiRequest("PUT", "/admin/algoritmo/config", { params: montado, motivo: motivo.trim() }).then(ler)) as { versao: number };
@@ -185,7 +198,7 @@ export function RegrasDoAlgoritmo() {
                 return (
                   <label key={id} className={cn("block rounded-xl border px-3 py-2", ruim ? "border-rose-300 bg-rose-50/40" : alterado ? "border-orange-300 bg-orange-50/40" : "border-slate-200")}>
                     <span className="block text-xs font-semibold text-slate-800">{c.rotulo}</span>
-                    <input aria-label={c.rotulo} inputMode="decimal" value={rascunho[id] ?? ""} onChange={(e) => setRascunho((r) => ({ ...r, [id]: e.target.value }))}
+                    <input aria-label={c.rotulo} inputMode="decimal" value={campos[id] ?? ""} onChange={(e) => mudarCampo(id, e.target.value)}
                       className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-semibold outline-none focus:border-orange-400" />
                     <span className="mt-0.5 block text-[11px] text-slate-400">{ruim ? <b className="text-rose-700">Precisa ficar {ruim}. </b> : null}{c.ajuda} Fábrica: {fmt(fabrica)}.</span>
                   </label>
@@ -194,7 +207,7 @@ export function RegrasDoAlgoritmo() {
             </div>
             {s.titulo.startsWith("Intenção") ? (
               <label className="mt-2 flex items-center gap-2 text-xs font-semibold text-slate-700">
-                <input type="checkbox" checked={sinais} onChange={(e) => setSinais(e.target.checked)} />
+                <input type="checkbox" checked={sinais} onChange={(e) => { const ligado = e.target.checked; setRascunho((r) => (r ? { ...r, sinais: ligado } : r)); }} />
                 Usar os sinais da conversa com a IA na chance (deixe desligado até a auditoria dar 90% de acerto)
               </label>
             ) : null}
@@ -207,9 +220,9 @@ export function RegrasDoAlgoritmo() {
             className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-orange-400" />
           {aviso ? <p role="status" className={cn("mt-2 rounded-lg px-3 py-1.5 text-xs font-semibold", aviso.ruim ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-800")}>{aviso.texto}</p> : null}
           <div className="mt-2 flex justify-end gap-2">
-            <button type="button" disabled={!mudou.length || salvando} onClick={() => { const r: Record<string, string> = {}; for (const s of SECOES) for (const c of s.campos) r[`${c.grupo}.${c.chave}`] = fmt(ativa.params[c.grupo][c.chave]); setRascunho(r); setSinais(Boolean(ativa.params.regras.usar_sinais_na_chance)); }}
+            <button type="button" disabled={!mudou.length || salvando} onClick={() => setRascunho(rascunhoDe(ativa))}
               className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-40">Desfazer</button>
-            <button type="button" disabled={!mudou.length || invalidos.length > 0 || motivo.trim().length < 3 || salvando} onClick={() => void salvar()}
+            <button type="button" disabled={!pronto || !mudou.length || invalidos.length > 0 || motivo.trim().length < 3 || salvando} onClick={() => void salvar()}
               className="inline-flex items-center gap-1 rounded-full bg-orange-600 px-3.5 py-1.5 text-xs font-bold text-white disabled:opacity-40">
               {salvando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}Salvar como versão {(versoes[0]?.versao ?? 0) + 1}
             </button>

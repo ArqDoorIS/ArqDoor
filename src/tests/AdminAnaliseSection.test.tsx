@@ -279,8 +279,9 @@ describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => 
     comRotas();
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
-    const caixa = await screen.findByTestId("regras-do-algoritmo");
-    expect(screen.getByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    // espera os dados (a versão em vigor), não um tempo; quando ela aparece, os campos já vêm preenchidos
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
     expect(within(caixa).getByLabelText("Selo de verificado")).toHaveValue("1,5");
     const salvar = within(caixa).getByRole("button", { name: /Salvar como versão 2/ });
     expect(salvar).toBeDisabled();
@@ -293,12 +294,75 @@ describe("regras do algoritmo, histórico das listas e matchs da pessoa", () => 
     expect(await within(caixa).findByRole("status")).toHaveTextContent("Salvo como versão 2");
   });
 
+  it("regras: antes de carregar não há campo nem salvar; os campos nascem da versão em vigor", async () => {
+    comRotas();
+    const comConfig = apiRequestMock.getMockImplementation()!;
+    let soltar: () => void = () => {};
+    const segurada = new Promise<void>((r) => { soltar = r; });
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) =>
+      rota === "/admin/algoritmo/config" && m === "GET" ? segurada.then(() => comConfig(m, rota, c)) : comConfig(m, rota, c));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    // a lista de elegíveis (outra rota) chega; as regras continuam carregando
+    await screen.findByTestId("contagem-elegiveis");
+    expect(screen.queryByTestId("regras-do-algoritmo")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Salvar como versão/ })).toBeNull();
+    expect(screen.queryByLabelText("Selo de verificado")).toBeNull();
+    // Simula o CI lento: com o relógio correndo, o agendador do React cede a vez depois de cada
+    // tarefa. Era aí que o rascunho preenchido por efeito chegava depois da tela, com os campos vazios.
+    let agora = performance.now();
+    const relogio = vi.spyOn(performance, "now").mockImplementation(() => (agora += 50));
+    let caixa: HTMLElement;
+    try {
+      soltar();
+      caixa = await screen.findByTestId("regras-do-algoritmo");
+      expect(within(caixa).getByLabelText("Selo de verificado")).toHaveValue("1,5");
+      expect(within(caixa).getByLabelText("Raio padrão (km)")).toHaveValue("30");
+      expect(within(caixa).getByText("Nada mudou ainda.")).toBeInTheDocument();
+    } finally {
+      relogio.mockRestore();
+    }
+    expect(within(caixa).getByRole("button", { name: /Salvar como versão 2/ })).toBeDisabled();
+  });
+
+  it("regras: número com milhar aparece com ponto e é lido como o mesmo número; vazio não vira zero", async () => {
+    const GRANDE = { ...V1, params: { ...V1.params, regras: { ...V1.params.regras, max_chamadas_semana: 1500 } } };
+    const LIM_GRANDE = { ...LIM, regras: { ...LIM.regras, max_chamadas_semana: [1, 5000] } };
+    comRotas();
+    const comConfig = apiRequestMock.getMockImplementation()!;
+    apiRequestMock.mockImplementation((m: string, rota: string, c?: any) =>
+      rota === "/admin/algoritmo/config" && m === "GET" ? Promise.resolve(ok({ ativa: GRANDE, padrao: PADRAO, limites: LIM_GRANDE, versoes: [GRANDE] })) : comConfig(m, rota, c));
+    render(<AdminAnaliseSection />);
+    fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
+    const chamadas = within(caixa).getByLabelText("Chamadas por semana (por profissional)");
+    expect(chamadas).toHaveValue("1.500");
+    // "1.500" lido de volta é 1500, não 1,5: nada mudou
+    expect(within(caixa).getByText("Nada mudou ainda.")).toBeInTheDocument();
+    fireEvent.change(chamadas, { target: { value: "6.000" } });
+    expect(within(caixa).getByText(/Precisa ficar entre 1 e 5\.000/)).toBeInTheDocument();
+    fireEvent.change(chamadas, { target: { value: "2.000" } });
+    expect(within(caixa).queryByText(/Precisa ficar/)).toBeNull();
+    // campo vazio fica vermelho em vez de salvar 0
+    fireEvent.change(within(caixa).getByLabelText("Força da nota"), { target: { value: "" } });
+    expect(within(caixa).getByText(/Precisa ficar entre 0,001 e 20/)).toBeInTheDocument();
+    fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "Mais chamadas" } });
+    expect(within(caixa).getByRole("button", { name: /Salvar como versão 2/ })).toBeDisabled();
+    fireEvent.change(within(caixa).getByLabelText("Força da nota"), { target: { value: "1,5" } });
+    fireEvent.click(within(caixa).getByRole("button", { name: /Salvar como versão 2/ }));
+    await waitFor(() => expect(apiRequestMock).toHaveBeenCalledWith("PUT", "/admin/algoritmo/config", expect.objectContaining({
+      params: expect.objectContaining({ regras: expect.objectContaining({ max_chamadas_semana: 2000 }), palpite: expect.objectContaining({ nota_k: 1.5 }) }),
+    })));
+  });
+
   it("regras: número fora do limite trava o salvar; versões voltam para a de fábrica", async () => {
     comRotas();
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);
     render(<AdminAnaliseSection />);
     fireEvent.click(screen.getByRole("tab", { name: /Algoritmo/ }));
-    const caixa = await screen.findByTestId("regras-do-algoritmo");
+    expect(await screen.findByText(/Em vigor: versão 1/)).toBeInTheDocument();
+    const caixa = screen.getByTestId("regras-do-algoritmo");
     fireEvent.change(within(caixa).getByLabelText("Raio padrão (km)"), { target: { value: "900" } });
     fireEvent.change(within(caixa).getByPlaceholderText(/Motivo da mudança/), { target: { value: "teste" } });
     expect(within(caixa).getByText(/Precisa ficar entre 1 e 500/)).toBeInTheDocument();

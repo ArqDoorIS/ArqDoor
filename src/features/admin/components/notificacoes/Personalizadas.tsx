@@ -5,6 +5,7 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { StatusBadge } from "../AdminPrimitives";
+import { AvisoDoAmbienteDoEnvio, noAmbienteDoEnvio } from "../AmbienteDoPainel";
 import { Carregando, Erro, Janela, quando, useApi } from "../analise/comum";
 import { cn } from "../../utils";
 import { Interruptor, classeDoCampo } from "./CamposDoModelo";
@@ -142,6 +143,11 @@ function EditorDePersonalizada({ inicial, gatilhos, modelos, aoSalvar, cancelar 
     email_campos: canais.email ? camposEmail : {}, limite_por_pessoa_dia: limiteOk ? limiteNum : 1,
   };
 
+  const rotuloDoEvento = gatilhos.eventos.find((e) => e.tipo === evento)?.rotulo ?? evento;
+  const publicoDaRegra = para.length
+    ? `${para.map((p) => `o ${NOME_DO_PAPEL[p]}`).join(" e ")}, a cada “${rotuloDoEvento}” daqui para a frente${corpo.condicao ? " (quando a condição vale)" : ""}.`
+    : "ninguém.";
+
   const salvar = async () => {
     setSalvando(true); setAviso(null);
     try {
@@ -249,13 +255,14 @@ function EditorDePersonalizada({ inicial, gatilhos, modelos, aoSalvar, cancelar 
                   Por {[canais.sino && "sino", canais.push && "push", canais.email && "e-mail"].filter(Boolean).join(", ")}, no máximo {corpo.limite_por_pessoa_dia} por pessoa por dia.
                   {inicial ? "" : " Começa ativa: vale para o que acontecer daqui para a frente."}
                 </p>
+                <AvisoDoAmbienteDoEnvio publico={publicoDaRegra} />
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={salvando}>Voltar</AlertDialogCancel>
             <AlertDialogAction disabled={salvando} onClick={(e) => { e.preventDefault(); void salvar(); }} className="bg-orange-600 hover:bg-orange-700">
-              {inicial ? "Salvar" : "Criar"}
+              {`${inicial ? "Salvar" : "Criar"} ${noAmbienteDoEnvio()}`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

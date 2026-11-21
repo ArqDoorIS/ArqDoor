@@ -5,6 +5,7 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EmptyState, PaginationControls, SectionCard, StatusBadge } from "./AdminPrimitives";
+import { AvisoDoAmbienteDoEnvio, noAmbienteDoEnvio } from "./AmbienteDoPainel";
 import { BuscaDePessoa, PapelIcone, type PessoaEscolhida } from "./AdminPunicoesSection";
 import { Carregando, Erro, Janela, quando, useApi } from "./analise/comum";
 import { CamposDoModelo, ChipsDeVariaveis, Interruptor, classeDoCampo, devolverCursor, inserirNoCursor } from "./notificacoes/CamposDoModelo";
@@ -376,6 +377,9 @@ function NovoComunicado({ modelos, aoEnviar }: { modelos: Modelo[]; aoEnviar: ()
   const paraTodos = tipo === "todos";
   const n = total ?? 0;
   const canaisDoTexto = [canais.sino && "sino", canais.push && "push", canais.email && "e-mail"].filter(Boolean).join(", ");
+  const rotuloDoPublico = tipo === "pessoa" && pessoa ? (pessoa.nome ? `${pessoa.nome} (conta #${pessoa.id})` : `Conta #${pessoa.id}`)
+    : paraTodos ? "Todo mundo, profissionais e clientes"
+    : descreverPublico(publico);
 
   return (
     <div className="space-y-4" data-testid="novo-comunicado">
@@ -446,18 +450,23 @@ function NovoComunicado({ modelos, aoEnviar }: { modelos: Modelo[]; aoEnviar: ()
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{paraTodos ? "Enviar para todo mundo?" : quandoAgendado ? "Agendar comunicado?" : "Enviar comunicado?"}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {paraTodos
-                ? `Isto vai para todas as ${contas(n)} da ArqDoor, profissionais e clientes, por ${canaisDoTexto}. Confira o texto com calma: depois de enviado, não dá para desfazer.`
-                : `Vai para ${contas(n)}, por ${canaisDoTexto}. Depois de enviado, não dá para desfazer.`}
-              {quandoAgendado ? ` Sai em ${quando(quandoAgendado.toISOString())}; até lá dá para cancelar no histórico.` : ""}
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>
+                  {paraTodos
+                    ? `Isto vai para todas as ${contas(n)} da ArqDoor, profissionais e clientes, por ${canaisDoTexto}. Confira o texto com calma: depois de enviado, não dá para desfazer.`
+                    : `Vai para ${contas(n)}, por ${canaisDoTexto}. Depois de enviado, não dá para desfazer.`}
+                  {quandoAgendado ? ` Sai em ${quando(quandoAgendado.toISOString())}; até lá dá para cancelar no histórico.` : ""}
+                </p>
+                <AvisoDoAmbienteDoEnvio publico={`${rotuloDoPublico}, ${contas(n)}.`} />
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={enviando}>Voltar</AlertDialogCancel>
             <AlertDialogAction disabled={enviando} onClick={(e) => { e.preventDefault(); void enviar(); }}
               className={paraTodos ? "bg-rose-600 hover:bg-rose-700" : "bg-orange-600 hover:bg-orange-700"}>
-              {quandoAgendado ? `Agendar para ${contas(n)}` : `Enviar para ${contas(n)}`}
+              {`${quandoAgendado ? "Agendar" : "Enviar"} para ${contas(n)} ${noAmbienteDoEnvio()}`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

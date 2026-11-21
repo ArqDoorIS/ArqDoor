@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, Loader2, Search } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { contagem } from "@/lib/numeroBr";
 import { SectionCard } from "../AdminPrimitives";
 import { cn } from "../../utils";
 import { Carregando, Erro, EtiquetaPH, ler, useApi } from "./comum";
@@ -78,7 +79,7 @@ export function PerfisElegiveis() {
               <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar por nome, profissão ou cidade" aria-label="Buscar profissional"
                 className="w-full bg-transparent text-sm outline-none" />
             </label>
-            <span className="text-xs text-slate-500" data-testid="contagem-elegiveis"><b className="text-slate-900">{elegiveis}</b> de {lista.length} elegíveis</span>
+            <span className="text-xs text-slate-500" data-testid="contagem-elegiveis"><b className="text-slate-900">{contagem(elegiveis)}</b> de {contagem(lista.length)} elegíveis</span>
             {salvando ? <Loader2 className="h-4 w-4 animate-spin text-slate-400" aria-label="Salvando" /> : null}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -108,7 +109,7 @@ export function PerfisElegiveis() {
                           <b className="text-sm text-slate-900">{p.nome}</b>
                           <EtiquetaPH id={p.user_id} leve />
                           {p.verificado ? <BadgeCheck className="h-3.5 w-3.5 text-sky-600" aria-label="verificado" /> : null}
-                          {p.nota != null ? <span className="text-xs text-slate-500">★ {p.nota.toLocaleString("pt-BR")} ({p.avaliacoes})</span> : null}
+                          {p.nota != null ? <span className="text-xs text-slate-500">★ {p.nota.toLocaleString("pt-BR")} ({contagem(p.avaliacoes)})</span> : null}
                         </span>
                         <span className="block text-xs text-slate-500">{[p.profissao ?? "sem profissão", p.cidade].filter(Boolean).join(" · ")}</span>
                         {p.profissoes_reconhecidas.length ? (

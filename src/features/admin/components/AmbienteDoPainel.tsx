@@ -1,6 +1,10 @@
-import { FlaskConical, Globe } from "lucide-react";
+import { AlertTriangle, FlaskConical, Globe, Laptop } from "lucide-react";
 import { API_BASE_URL } from "@/lib/queryClient";
-import { ambienteDoServidor, trocarAmbienteDoPainel, type AmbienteDoPainel } from "@/lib/ambienteDoPainel";
+import {
+  NOME_DO_AMBIENTE, ambienteDoEnvio, ambienteDoServidor, explicacaoDoAmbiente, noAmbiente, trocarAmbienteDoPainel,
+  type AmbienteDoEnvio, type AmbienteDoPainel,
+} from "@/lib/ambienteDoPainel";
+import { cn } from "../utils";
 
 /**
  * Seletor "Produção | Staging" do painel e a faixa que deixa claro quando se está no
@@ -56,6 +60,36 @@ export function FaixaDoAmbiente() {
     <div role="status" className="flex items-center justify-center gap-2 bg-violet-600 px-4 py-1.5 text-center text-xs font-semibold text-white">
       <FlaskConical className="h-3.5 w-3.5 shrink-0" />
       STAGING: ambiente de teste, com banco de dados próprio e pagamentos de teste. Nada aqui afeta clientes reais.
+    </div>
+  );
+}
+
+const ESTILO_DO_ENVIO: Record<AmbienteDoEnvio, { caixa: string; selo: string; Icone: typeof Globe }> = {
+  producao: { caixa: "border-rose-400 bg-rose-50 text-rose-900", selo: "bg-rose-600", Icone: AlertTriangle },
+  teste: { caixa: "border-violet-300 bg-violet-50 text-violet-900", selo: "bg-violet-600", Icone: FlaskConical },
+  local: { caixa: "border-slate-300 bg-slate-50 text-slate-800", selo: "bg-slate-700", Icone: Laptop },
+};
+
+/** "em PRODUÇÃO", "em TESTE" ou "em LOCAL": o fim do botão final de um envio em massa. */
+export const noAmbienteDoEnvio = (servidor = API_BASE_URL) => noAmbiente(servidor);
+
+/**
+ * Na confirmação de um envio em massa: em que ambiente ele cai e para quem vai.
+ * PRODUÇÃO em vermelho de alerta, TESTE no roxo da faixa do staging, LOCAL em cinza.
+ * O ambiente é o do servidor em uso (lib/ambienteDoPainel.ts, ambienteDoEnvio).
+ */
+export function AvisoDoAmbienteDoEnvio({ publico, servidor = API_BASE_URL }: { publico: string; servidor?: string }) {
+  const ambiente = ambienteDoEnvio(servidor);
+  const { caixa, selo, Icone } = ESTILO_DO_ENVIO[ambiente];
+  return (
+    <div data-testid="ambiente-do-envio" data-ambiente={ambiente} className={cn("rounded-xl border-2 p-3 text-left text-sm", caixa)}>
+      <p className="flex flex-wrap items-center gap-2">
+        <span className={cn("inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-black tracking-wide text-white", selo)}>
+          <Icone className="h-3.5 w-3.5" />{NOME_DO_AMBIENTE[ambiente]}
+        </span>
+        <span className="font-semibold">{explicacaoDoAmbiente(servidor)}</span>
+      </p>
+      <p className="mt-1.5"><b>Para quem:</b> {publico}</p>
     </div>
   );
 }
