@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { AlertTriangle, CalendarCheck, Check, Clock, Loader2, MapPin, Search, Trash2, X } from "lucide-react";
+import { AlertTriangle, CalendarCheck, Check, Loader2, MapPin, Search, Trash2, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { SectionCard, StatusBadge } from "./AdminPrimitives";
 import { cn } from "../utils";
-import { Carregando, Erro, Janela, ler, quando, useApi, type ConteudoJanela } from "./analise/comum";
+import { Carregando, Erro, Janela, ler, useApi, type ConteudoJanela } from "./analise/comum";
 
 /**
  * Aba "Visitas" (26/11/2026). Só owner.
@@ -121,20 +121,20 @@ const nomeDaAcao: Record<string, string> = {
 
 const nomeDaSituacao: Record<string, string> = {
   ok: "GPS ok",
-  sem_permissao: "Sem permissao",
+  sem_permissao: "Sem permissão",
   desligada: "GPS desligado",
-  indisponivel: "Indisponivel",
+  indisponivel: "Indisponível",
   erro: "Erro no GPS",
-  nao_enviada: "Nao enviada",
+  nao_enviada: "Não enviada",
 };
 
 const nomeDoStatus: Record<string, { texto: string; tom: "emerald" | "amber" | "rose" | "sky" | "slate" }> = {
   pending: { texto: "Aguardando aceite", tom: "slate" },
   confirmed: { texto: "Confirmada", tom: "sky" },
   paid: { texto: "Paga", tom: "sky" },
-  completion_pending: { texto: "Aguardando confirmacao", tom: "amber" },
+  completion_pending: { texto: "Aguardando confirmação", tom: "amber" },
   disputed: { texto: "Contestada", tom: "rose" },
-  completed: { texto: "Concluida", tom: "emerald" },
+  completed: { texto: "Concluída", tom: "emerald" },
   cancelled: { texto: "Cancelada", tom: "slate" },
   cancellation_requested: { texto: "Cancelamento pedido", tom: "amber" },
 };
@@ -154,7 +154,7 @@ const enderecoFormatado = (e: Record<string, string> | null | undefined): string
   return partes.join(", ") || "-";
 };
 
-/* ---------- detalhe: localizacoes ---------- */
+/* ---------- detalhe: localizações ---------- */
 function TabelaDeLocalizacoes({
   localizacoes,
   visitaId,
@@ -170,7 +170,7 @@ function TabelaDeLocalizacoes({
   const apagar = async () => {
     if (
       !window.confirm(
-        "Apagar as coordenadas desta visita? As linhas de localização ficam, mas latitude, longitude, precisao e distancia sao zeradas e fica registrado no historico."
+        "Apagar as coordenadas desta visita? As linhas de localização ficam, mas latitude, longitude, precisão e distância são zeradas e fica registrado no histórico."
       )
     )
       return;
@@ -191,7 +191,7 @@ function TabelaDeLocalizacoes({
   };
 
   if (!localizacoes.length)
-    return <p className="text-sm text-slate-400">Nenhuma localizacao registrada nesta visita.</p>;
+    return <p className="text-sm text-slate-400">Nenhuma localização registrada nesta visita.</p>;
 
   return (
     <div className="space-y-2">
@@ -207,7 +207,7 @@ function TabelaDeLocalizacoes({
           className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-60"
         >
           {apagando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-          Apagar localizacoes
+          Apagar localizações
         </button>
       </div>
       {aviso ? (
@@ -226,11 +226,11 @@ function TabelaDeLocalizacoes({
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-slate-100 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-              <th className="pb-1.5 pr-3">Acao</th>
+              <th className="pb-1.5 pr-3">Ação</th>
               <th className="pb-1.5 pr-3">Quem</th>
-              <th className="pb-1.5 pr-3">Situacao</th>
+              <th className="pb-1.5 pr-3">Situação</th>
               <th className="pb-1.5 pr-3">Dist. obra</th>
-              <th className="pb-1.5 pr-3">Precisao</th>
+              <th className="pb-1.5 pr-3">Precisão</th>
               <th className="pb-1.5 pr-3">Simulada</th>
               <th className="pb-1.5 pr-3">Coordenada</th>
               <th className="pb-1.5">Hora</th>
@@ -257,7 +257,7 @@ function TabelaDeLocalizacoes({
                     {l.precisao_m != null ? `${l.precisao_m} m` : "-"}
                   </td>
                   <td className="py-1 pr-3">
-                    {l.simulada == null ? "-" : l.simulada ? "Sim" : "Nao"}
+                    {l.simulada == null ? "-" : l.simulada ? "Sim" : "Não"}
                   </td>
                   <td className="py-1 pr-3 font-mono">
                     {temCoordenada ? (
@@ -291,7 +291,7 @@ function TabelaDeLocalizacoes({
   );
 }
 
-/* ---------- detalhe: decisao de contestacao ---------- */
+/* ---------- detalhe: decisão de contestação ---------- */
 function DecidirContestacao({
   visitaId,
   aoDecidido,
@@ -319,7 +319,7 @@ function DecidirContestacao({
         decision,
         reason: reason.trim(),
       }).then(ler);
-      setAviso({ ok: true, msg: "Contestacao decidida com sucesso." });
+      setAviso({ ok: true, msg: "Contestação decidida com sucesso." });
       setConfirmando(false);
       aoDecidido();
     } catch (e: any) {
@@ -337,15 +337,15 @@ function DecidirContestacao({
     >
       <h4 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-rose-800">
         <AlertTriangle className="h-4 w-4" />
-        Contestacao aberta - decida
+        Contestação aberta - decida
       </h4>
       <div className="space-y-3">
         <fieldset>
-          <legend className="mb-1.5 text-xs font-semibold text-slate-600">Decisao</legend>
+          <legend className="mb-1.5 text-xs font-semibold text-slate-600">Decisão</legend>
           <div className="flex flex-wrap gap-2">
             {(
               [
-                ["complete", "Confirmar realizacao"],
+                ["complete", "Confirmar realização"],
                 ["cancel_and_refund", "Cancelar e estornar"],
               ] as const
             ).map(([v, r]) => (
@@ -380,14 +380,14 @@ function DecidirContestacao({
 
         <label className="block text-xs font-semibold text-slate-600">
           Justificativa
-          <span className="ml-1 font-normal text-slate-400">(3 a 1000 caracteres, obrigatoria)</span>
+          <span className="ml-1 font-normal text-slate-400">(3 a 1000 caracteres, obrigatória)</span>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             maxLength={1000}
             rows={3}
-            aria-label="Justificativa da decisao"
-            placeholder="Descreva o motivo da decisao..."
+            aria-label="Justificativa da decisão"
+            placeholder="Descreva o motivo da decisão..."
             className="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm font-normal outline-none focus:border-orange-400"
           />
           <span className="mt-0.5 block text-right font-normal text-slate-400">
@@ -416,7 +416,7 @@ function DecidirContestacao({
             data-testid="btn-confirmar-decisao"
             className="inline-flex items-center gap-1.5 rounded-full bg-rose-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-50"
           >
-            Decidir contestacao
+            Decidir contestação
           </button>
         ) : (
           <div
@@ -426,7 +426,7 @@ function DecidirContestacao({
             <p className="text-sm font-semibold text-slate-900">
               Confirmar:{" "}
               <span className="text-rose-700">
-                {decision === "complete" ? "Confirmar realizacao" : "Cancelar e estornar"}
+                {decision === "complete" ? "Confirmar realização" : "Cancelar e estornar"}
               </span>
               ?
             </p>
@@ -466,10 +466,10 @@ function DetalheDeVisita({
   visitaId: number;
   aoMudar: () => void;
 }) {
-  const [vez, setVez] = useState(0);
-  const { dado, erro } = useApi<VisitaDetalhada>(`/admin/visitas/${visitaId}`, 90000);
-  const recarregar = useCallback(() => setVez((x) => x + 1), []);
-  useEffect(() => { if (vez) aoMudar(); }, [vez, aoMudar]);
+  // Fix: usa deNovo do useApi para forçar o re-fetch real após ações (apagar localizações,
+  // decidir contestação). A versão anterior incrementava vez local sem afetar useApi.
+  const { dado, erro, deNovo } = useApi<VisitaDetalhada>(`/admin/visitas/${visitaId}`, 90000);
+  const recarregar = useCallback(() => { deNovo(); aoMudar(); }, [deNovo, aoMudar]);
 
   if (erro) return <Erro msg={erro} />;
   if (!dado) return <Carregando />;
@@ -510,7 +510,7 @@ function DetalheDeVisita({
             </div>
             {visita.marcada_antes_do_horario ? (
               <div className="mt-1 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-800">
-                Marcada antes do horario agendado
+                Marcada antes do horário agendado
               </div>
             ) : null}
             {visita.motivo_cancelamento ? (
@@ -521,13 +521,13 @@ function DetalheDeVisita({
             ) : null}
             {visita.motivo_disputa ? (
               <div className="flex justify-between gap-2">
-                <dt className="text-slate-500">Motivo contestacao</dt>
+                <dt className="text-slate-500">Motivo contestação</dt>
                 <dd className="text-slate-900">{visita.motivo_disputa}</dd>
               </div>
             ) : null}
             {visita.resolucao_disputa ? (
               <div className="flex justify-between gap-2">
-                <dt className="text-slate-500">Resolucao</dt>
+                <dt className="text-slate-500">Resolução</dt>
                 <dd className="text-slate-900">{visita.resolucao_disputa}</dd>
               </div>
             ) : null}
@@ -539,7 +539,7 @@ function DetalheDeVisita({
         </SectionCard>
 
         <div className="space-y-3">
-          <SectionCard title="Endereco da obra">
+          <SectionCard title="Endereço da obra">
             <div className="flex items-start gap-1.5 text-sm text-slate-700">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
               <span>{endereco}</span>
@@ -593,17 +593,17 @@ function DetalheDeVisita({
         ))}
       </div>
 
-      {/* contestacao */}
+      {/* contestação */}
       {eContestada ? (
         <DecidirContestacao
           visitaId={visitaId}
-          aoDecidido={() => { recarregar(); aoMudar(); }}
+          aoDecidido={recarregar}
         />
       ) : null}
 
-      {/* historico */}
+      {/* histórico */}
       {historico.length ? (
-        <SectionCard title="Historico">
+        <SectionCard title="Histórico">
           <ol className="space-y-1">
             {historico.map((h, i) => (
               <li key={i} className="flex flex-wrap gap-x-3 text-xs text-slate-700">
@@ -616,12 +616,12 @@ function DetalheDeVisita({
         </SectionCard>
       ) : null}
 
-      {/* localizacoes */}
-      <SectionCard title="Localizacoes">
+      {/* localizações */}
+      <SectionCard title="Localizações">
         <TabelaDeLocalizacoes
           localizacoes={localizacoes}
           visitaId={visitaId}
-          aoApagar={() => { recarregar(); aoMudar(); }}
+          aoApagar={recarregar}
         />
       </SectionCard>
     </div>
@@ -632,7 +632,7 @@ function DetalheDeVisita({
 const FILTROS: [FiltroStatus, string][] = [
   ["contestadas", "Contestadas"],
   ["ativas", "Ativas"],
-  ["concluidas", "Concluidas"],
+  ["concluidas", "Concluídas"],
   ["canceladas", "Canceladas"],
   ["", "Todas"],
 ];
@@ -680,7 +680,7 @@ function VisitaNaLista({
   );
 }
 
-/* ---------- secao principal ---------- */
+/* ---------- seção principal ---------- */
 export function AdminVisitasSection({
   onContestacoes,
 }: {
@@ -728,7 +728,7 @@ export function AdminVisitasSection({
 
   return (
     <div className="space-y-3">
-      {/* contador de contestacoes abertas */}
+      {/* contador de contestações abertas */}
       {dado?.contestacoes_abertas != null && dado.contestacoes_abertas > 0 ? (
         <div
           className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-800"
@@ -736,7 +736,7 @@ export function AdminVisitasSection({
         >
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {dado.contestacoes_abertas}{" "}
-          {dado.contestacoes_abertas === 1 ? "contestacao aberta" : "contestacoes abertas"} - clique
+          {dado.contestacoes_abertas === 1 ? "contestação aberta" : "contestações abertas"} - clique
           em "Contestadas" para ver
         </div>
       ) : null}
@@ -768,7 +768,7 @@ export function AdminVisitasSection({
           <input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="Numero, nome ou e-mail"
+            placeholder="Número, nome ou e-mail"
             aria-label="Buscar visita"
             className="w-full outline-none text-xs"
           />
@@ -792,7 +792,7 @@ export function AdminVisitasSection({
         </div>
       )}
 
-      {/* paginacao */}
+      {/* paginação */}
       {dado && totalPaginas > 1 ? (
         <div className="flex items-center gap-2 text-sm">
           <button
@@ -804,7 +804,7 @@ export function AdminVisitasSection({
             Anterior
           </button>
           <span className="text-slate-500">
-            Pagina {pagina} de {totalPaginas}
+            Página {pagina} de {totalPaginas}
           </span>
           <button
             type="button"
@@ -812,7 +812,7 @@ export function AdminVisitasSection({
             onClick={() => setPagina((p) => p + 1)}
             className="rounded-lg border border-slate-200 px-3 py-1 disabled:opacity-50"
           >
-            Proxima
+            Próxima
           </button>
         </div>
       ) : null}

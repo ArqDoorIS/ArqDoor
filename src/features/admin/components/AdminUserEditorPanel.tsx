@@ -267,7 +267,7 @@ export function AdminUserEditorPanel({
             month: "2-digit",
             year: "numeric",
           })}
-          . Esta pessoa pediu para nao receber comunicados avulsos.
+          . Esta pessoa pediu para não receber comunicados avulsos.
         </div>
       ) : null}
 

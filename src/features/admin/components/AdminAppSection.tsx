@@ -162,9 +162,9 @@ function Avaliacoes() {
 /**
  * Telemetria do app (26/11/2026).
  * Liga e desliga o envio de eventos do app ao PostHog. A rota /eventos continua funcionando
- * independente desta chave; o que muda e o PostHog em especifico.
- * Nao confundir com "Ligar o PostHog" na aba Analise, que configura uma chave pessoal de
- * leitura para buscar dados do PostHog no painel. Sao coisas diferentes.
+ * independente desta chave; o que muda é o PostHog em específico.
+ * Não confundir com "Ligar o PostHog" na aba Análise, que configura uma chave pessoal de
+ * leitura para buscar dados do PostHog no painel. São coisas diferentes.
  */
 function TelemetriaDoApp() {
   const [ligada, setLigada] = useState<boolean | null>(null);
@@ -183,7 +183,7 @@ function TelemetriaDoApp() {
     try {
       await apiRequest("PUT", "/admin/telemetria", { telemetria_ligada: nova }).then(ler);
       setLigada(nova);
-      setAviso({ ok: true, msg: nova ? "Telemetria do app ligada. O app voltara a enviar eventos ao PostHog." : "Telemetria do app desligada. O app para de enviar eventos ao PostHog. A rota /eventos continua funcionando normalmente." });
+      setAviso({ ok: true, msg: nova ? "Telemetria do app ligada. O app voltará a enviar eventos ao PostHog." : "Telemetria do app desligada. O app para de enviar eventos ao PostHog. A rota /eventos continua funcionando normalmente." });
     } catch (e) {
       setAviso({ ok: false, msg: (e as Error).message });
     } finally {
@@ -194,7 +194,7 @@ function TelemetriaDoApp() {
   return (
     <SectionCard
       title="Telemetria do app"
-      dica="Liga ou desliga o envio de eventos do app ao PostHog (cliques, telas abertas, acoes). Desligar nao afeta a rota /eventos nem os dados que ja estao no PostHog. Nao confundir com &ldquo;Ligar o PostHog&rdquo; na aba Analise, que e uma chave pessoal de leitura."
+      dica="Liga ou desliga o envio de eventos do app ao PostHog (cliques, telas abertas, ações). Desligar não afeta a rota /eventos nem os dados que já estão no PostHog. Não confundir com &ldquo;Ligar o PostHog&rdquo; na aba Análise, que é uma chave pessoal de leitura."
       subtitle={ligada == null ? "Carregando..." : ligada ? "Ligada - o app envia eventos ao PostHog" : "Desligada - nenhum evento vai ao PostHog"}
       action={ligada != null ? <StatusBadge label={ligada ? "Ligada" : "Desligada"} tone={ligada ? "emerald" : "slate"} /> : null}
     >
@@ -204,8 +204,8 @@ function TelemetriaDoApp() {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-slate-900">PostHog - envio de eventos do app</p>
             <p className="mt-0.5 text-xs text-slate-500">
-              Quando ligado, o app envia ao PostHog cada acao (tela aberta, botao clicado, visita realizada).
-              Desligar interrompe so o PostHog; a rota <code className="font-mono">/eventos</code> continua recebendo e guardando tudo.
+              Quando ligado, o app envia ao PostHog cada ação (tela aberta, botão clicado, visita realizada).
+              Desligar interrompe só o PostHog; a rota <code className="font-mono">/eventos</code> continua recebendo e guardando tudo.
             </p>
           </div>
           {ligada == null ? (

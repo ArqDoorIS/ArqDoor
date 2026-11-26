@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Filter, Loader2, LogOut, Menu, RefreshCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TABS } from "@/features/admin/constants";
@@ -34,6 +34,7 @@ import type { AdminTab } from "@/features/admin/types";
 import { cn, formatRelativeTime, openSecureFile } from "@/features/admin/utils";
 import { ADMIN_TOKENS } from "@/features/admin/tokens";
 import { FaixaDoAmbiente, SeletorDeAmbiente } from "@/features/admin/components/AmbienteDoPainel";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Admin() {
   useAdminPageMeta();
@@ -90,6 +91,19 @@ export default function Admin() {
   // para nao piscar abas que vao sumir (ADR-001).
   const papel = session.role;
   const abasVisiveis = TABS.filter((tab) => (papel ? tab.papeis.includes(papel) : tab.papeis.includes("reviewer")));
+
+  // Busca o contador de contestações ao abrir o painel (owner). Silencioso em caso de falha.
+  useEffect(() => {
+    if (!session.isAuthenticated || papel !== "owner") return;
+    apiRequest("GET", "/admin/visitas?status=contestadas&pagina=1")
+      .then((r) => r.json())
+      .then((b: { contestacoes_abertas?: number }) => {
+        if (typeof b.contestacoes_abertas === "number") {
+          setContestacoesBadge(b.contestacoes_abertas);
+        }
+      })
+      .catch(() => { /* silencioso */ });
+  }, [session.isAuthenticated, papel]);
   const activeTab = TABS.find((tab) => tab.key === admin.activeTab);
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
