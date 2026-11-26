@@ -17,7 +17,7 @@ import { Carregando, Erro, ler, quando, useApi } from "./analise/comum";
  */
 export type Nivel = "aviso" | "fora_do_algoritmo" | "congelada" | "banida";
 type PapelDaPessoa = "cliente" | "profissional";
-export type PessoaEscolhida = { id: number; nome: string | null; papel: PapelDaPessoa | null };
+export type PessoaEscolhida = { id: number; nome: string | null; papel: PapelDaPessoa | null; comunicados_descadastrado_em?: string | null };
 
 type Punicao = {
   id: number; user_id: number; nivel: Nivel; motivo: string; nota_interna: string | null; valido_ate: string | null;
@@ -25,7 +25,7 @@ type Punicao = {
   revogada_em?: string | null; revogada_por?: string | null;
   pessoa?: { id: number; name: string | null; email: string | null; type: "prestador" | "contratante" | string } | null;
 };
-type Achado = { id: number; nome: string | null; papel: PapelDaPessoa; cidade: string | null; uf: string | null; profissao: string | null };
+type Achado = { id: number; nome: string | null; papel: PapelDaPessoa; cidade: string | null; uf: string | null; profissao: string | null; comunicados_descadastrado_em?: string | null };
 
 export const NIVEIS: { nivel: Nivel; nome: string; descricao: string; soProfissional?: boolean; cor: string }[] = [
   { nivel: "aviso", nome: "Aviso", cor: "bg-sky-50 text-sky-700 ring-sky-200",
@@ -129,7 +129,7 @@ export function BuscaDePessoa({ escolher }: { escolher: (p: PessoaEscolhida) => 
           <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200">
             {achados.map((a) => (
               <li key={a.id}>
-                <button type="button" onClick={() => escolher({ id: a.id, nome: a.nome, papel: a.papel })} data-testid="pessoa-achada" className="flex w-full flex-wrap items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50">
+                <button type="button" onClick={() => escolher({ id: a.id, nome: a.nome, papel: a.papel, comunicados_descadastrado_em: a.comunicados_descadastrado_em })} data-testid="pessoa-achada" className="flex w-full flex-wrap items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50">
                   <b className="text-slate-900">{a.nome || `#${a.id}`}</b>
                   <PapelIcone papel={a.papel} />
                   <span className="text-xs text-slate-400">{[a.profissao, a.cidade && `${a.cidade}${a.uf ? `/${a.uf}` : ""}`, `#${a.id}`].filter(Boolean).join(" · ")}</span>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Radio, Star } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { SectionCard, StatusBadge } from "./AdminPrimitives";
 
@@ -159,18 +159,99 @@ function Avaliacoes() {
   );
 }
 
+/**
+ * Telemetria do app (26/11/2026).
+ * Liga e desliga o envio de eventos do app ao PostHog. A rota /eventos continua funcionando
+ * independente desta chave; o que muda e o PostHog em especifico.
+ * Nao confundir com "Ligar o PostHog" na aba Analise, que configura uma chave pessoal de
+ * leitura para buscar dados do PostHog no painel. Sao coisas diferentes.
+ */
+function TelemetriaDoApp() {
+  const [ligada, setLigada] = useState<boolean | null>(null);
+  const [salvando, setSalvando] = useState(false);
+  const [aviso, setAviso] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  useEffect(() => {
+    apiRequest("GET", "/admin/telemetria").then(ler).then((b) => { setLigada(b?.telemetria_ligada !== false); }).catch((e) => setAviso({ ok: false, msg: e.message }));
+  }, []);
+
+  const alternar = async () => {
+    if (ligada == null) return;
+    const nova = !ligada;
+    setSalvando(true);
+    setAviso(null);
+    try {
+      await apiRequest("PUT", "/admin/telemetria", { telemetria_ligada: nova }).then(ler);
+      setLigada(nova);
+      setAviso({ ok: true, msg: nova ? "Telemetria do app ligada. O app voltara a enviar eventos ao PostHog." : "Telemetria do app desligada. O app para de enviar eventos ao PostHog. A rota /eventos continua funcionando normalmente." });
+    } catch (e) {
+      setAviso({ ok: false, msg: (e as Error).message });
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  return (
+    <SectionCard
+      title="Telemetria do app"
+      dica="Liga ou desliga o envio de eventos do app ao PostHog (cliques, telas abertas, acoes). Desligar nao afeta a rota /eventos nem os dados que ja estao no PostHog. Nao confundir com &ldquo;Ligar o PostHog&rdquo; na aba Analise, que e uma chave pessoal de leitura."
+      subtitle={ligada == null ? "Carregando..." : ligada ? "Ligada - o app envia eventos ao PostHog" : "Desligada - nenhum evento vai ao PostHog"}
+      action={ligada != null ? <StatusBadge label={ligada ? "Ligada" : "Desligada"} tone={ligada ? "emerald" : "slate"} /> : null}
+    >
+      <div className="space-y-3">
+        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <Radio className={`mt-0.5 h-5 w-5 shrink-0 ${ligada ? "text-emerald-600" : "text-slate-400"}`} />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-slate-900">PostHog - envio de eventos do app</p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Quando ligado, o app envia ao PostHog cada acao (tela aberta, botao clicado, visita realizada).
+              Desligar interrompe so o PostHog; a rota <code className="font-mono">/eventos</code> continua recebendo e guardando tudo.
+            </p>
+          </div>
+          {ligada == null ? (
+            <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          ) : (
+            <button
+              type="button"
+              disabled={salvando}
+              onClick={() => void alternar()}
+              data-testid="btn-telemetria"
+              aria-pressed={ligada}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none disabled:opacity-60 ${ligada ? "bg-emerald-500" : "bg-slate-300"}`}
+            >
+              <span className="sr-only">{ligada ? "Desligar telemetria" : "Ligar telemetria"}</span>
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${ligada ? "translate-x-6" : "translate-x-1"}`}
+              />
+            </button>
+          )}
+        </div>
+        {aviso ? (
+          <p
+            role="status"
+            data-testid="aviso-telemetria"
+            className={`rounded-lg px-3 py-2 text-xs font-semibold ${aviso.ok ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-700"}`}
+          >
+            {aviso.msg}
+          </p>
+        ) : null}
+      </div>
+    </SectionCard>
+  );
+}
+
 export function AdminAppSection() {
-  const [parte, setParte] = useState<"textos" | "avaliacoes">("textos");
+  const [parte, setParte] = useState<"textos" | "avaliacoes" | "telemetria">("textos");
   return (
     <div>
       <div className="mt-2 inline-flex rounded-xl border border-slate-200 bg-white p-1">
-        {([["textos", "Textos do app"], ["avaliacoes", "Avaliações"]] as const).map(([k, n]) => (
+        {([["textos", "Textos do app"], ["avaliacoes", "Avaliações"], ["telemetria", "Telemetria"]] as const).map(([k, n]) => (
           <button key={k} type="button" onClick={() => setParte(k)} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${parte === k ? "bg-orange-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}>
             {n}
           </button>
         ))}
       </div>
-      {parte === "textos" ? <TextosDoApp /> : <Avaliacoes />}
+      {parte === "textos" ? <TextosDoApp /> : parte === "avaliacoes" ? <Avaliacoes /> : <div className="mt-2"><TelemetriaDoApp /></div>}
     </div>
   );
 }

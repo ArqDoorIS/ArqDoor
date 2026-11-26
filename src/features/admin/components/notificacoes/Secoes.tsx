@@ -63,17 +63,32 @@ export function Secao({ titulo, icone: I, ligado, mudar, desligadoTexto, childre
   );
 }
 
+/** Tarja exibida quando a pessoa se descadastrou dos comunicados. */
+function TarjaDescadastrada({ em }: { em: string }) {
+  const diaBr = (iso: string) => new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return (
+    <div role="alert" data-testid="tarja-descadastrada" className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+      <span>Descadastrado dos comunicados em {diaBr(em)}.</span>
+    </div>
+  );
+}
+
 /** Escolhe uma conta pela mesma busca da aba Punições. */
 export function EscolherConta({ pessoa, escolher }: { pessoa: PessoaEscolhida | null; escolher: (p: PessoaEscolhida | null) => void }) {
   if (!pessoa) return <BuscaDePessoa escolher={escolher} />;
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-3 py-2" data-testid="conta-escolhida">
-      <b className="text-sm text-slate-900">{pessoa.nome || `#${pessoa.id}`}</b>
-      <PapelIcone papel={pessoa.papel} />
-      <span className="text-xs text-slate-400">#{pessoa.id}</span>
-      <button type="button" onClick={() => escolher(null)} className="ml-auto inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 ring-1 ring-slate-200">
-        <X className="h-3 w-3" />Trocar
-      </button>
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-3 py-2" data-testid="conta-escolhida">
+        <b className="text-sm text-slate-900">{pessoa.nome || `#${pessoa.id}`}</b>
+        <PapelIcone papel={pessoa.papel} />
+        <span className="text-xs text-slate-400">#{pessoa.id}</span>
+        <button type="button" onClick={() => escolher(null)} className="ml-auto inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 ring-1 ring-slate-200">
+          <X className="h-3 w-3" />Trocar
+        </button>
+      </div>
+      {pessoa.comunicados_descadastrado_em ? (
+        <TarjaDescadastrada em={pessoa.comunicados_descadastrado_em} />
+      ) : null}
     </div>
   );
 }

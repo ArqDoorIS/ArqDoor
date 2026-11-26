@@ -22,7 +22,8 @@ export type AdminTab =
   | "auditoria"
   | "impulsionamento"
   | "punicoes"
-  | "notificacoes";
+  | "notificacoes"
+  | "visitas";
 
 export type DashboardSection =
   | "all"
@@ -504,6 +505,7 @@ export type AdminUserProfile = {
     suspended: boolean;
     created_at: string | null;
     updated_at: string | null;
+    comunicados_descadastrado_em?: string | null;
   };
   provider: {
     provider_id: number;

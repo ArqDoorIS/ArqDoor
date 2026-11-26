@@ -21,6 +21,7 @@ import {
   Sparkles,
   Users,
   UserCog,
+  CalendarCheck,
 } from "lucide-react";
 
 export const TABS: AdminTabConfig[] = [
@@ -58,6 +59,8 @@ export const TABS: AdminTabConfig[] = [
   { key: "app", label: "Textos e avaliações", icon: Star, papeis: ["owner"] },
   // Termos de Uso versionados: editar, publicar versão nova e ver quem já aceitou (20/11/2026)
   { key: "termos", label: "Termos de uso", icon: FileCheck, papeis: ["owner"] },
+  // Visitas agendadas: lista, detalhe, contestacoes e localizacoes (26/11/2026)
+  { key: "visitas", label: "Visitas", icon: CalendarCheck, papeis: ["owner"] },
   // Gestao do proprio time administrativo. So owner, porque e onde se concede e
   // revoga acesso ao painel.
   { key: "equipe", label: "Equipe", icon: UserCog, papeis: ["owner"] },
@@ -101,6 +104,7 @@ export const INITIAL_PAGES: Record<AdminTab, number> = {
   impulsionamento: 1,
   punicoes: 1,
   notificacoes: 1,
+  visitas: 1,
   equipe: 1,
 };
 
@@ -126,6 +130,7 @@ export const PAGE_SIZE_BY_TAB: Record<AdminTab, number> = {
   impulsionamento: 25,
   punicoes: 25,
   notificacoes: 20,
+  visitas: 20,
   equipe: 25,
 };
 

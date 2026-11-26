@@ -19,6 +19,7 @@ import { AdminListingsSection } from "@/features/admin/components/AdminListingsS
 import { AdminImpulsionamentoSection } from "@/features/admin/components/AdminImpulsionamentoSection";
 import { AdminPunicoesSection, type PessoaEscolhida } from "@/features/admin/components/AdminPunicoesSection";
 import { AdminNotificacoesSection } from "@/features/admin/components/AdminNotificacoesSection";
+import { AdminVisitasSection } from "@/features/admin/components/AdminVisitasSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
 import { AdminLoginView } from "@/features/admin/components/AdminLoginView";
 import { AdminDashboardView } from "@/features/admin/components/AdminOverviewSection";
@@ -38,6 +39,8 @@ export default function Admin() {
   useAdminPageMeta();
 
   const [navigationOpen, setNavigationOpen] = useState(false);
+  // contador de contestacoes abertas, atualizado pela aba Visitas
+  const [contestacoesAbertas, setContestacoesBadge] = useState(0);
   // pessoa que o botão "Punições" da aba Usuários manda para a aba Punições
   const [pessoaDaPunicao, setPessoaDaPunicao] = useState<PessoaEscolhida | null>(null);
   // a aba Punições avisa quando já usou a pessoa: voltar pela barra lateral não reabre a antiga
@@ -91,7 +94,7 @@ export default function Admin() {
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes", "notificacoes"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes", "notificacoes", "visitas"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -217,6 +220,8 @@ export default function Admin() {
         return <AdminPunicoesSection pessoaInicial={pessoaDaPunicao} aoUsarPessoaInicial={limparPessoaDaPunicao} />;
       case "notificacoes":
         return <AdminNotificacoesSection />;
+      case "visitas":
+        return <AdminVisitasSection onContestacoes={setContestacoesBadge} />;
       default:
         return (
           <AdminDashboardView
@@ -324,7 +329,12 @@ export default function Admin() {
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{label}</span>
+                <span className="truncate flex-1">{label}</span>
+                {key === "visitas" && contestacoesAbertas > 0 ? (
+                  <span className="ml-auto rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    {contestacoesAbertas}
+                  </span>
+                ) : null}
               </button>
             ))}
           </nav>
