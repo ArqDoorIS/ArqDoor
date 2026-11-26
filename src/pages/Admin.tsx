@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Filter, Loader2, LogOut, Menu, RefreshCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TABS } from "@/features/admin/constants";
@@ -19,6 +19,7 @@ import { AdminListingsSection } from "@/features/admin/components/AdminListingsS
 import { AdminImpulsionamentoSection } from "@/features/admin/components/AdminImpulsionamentoSection";
 import { AdminPunicoesSection, type PessoaEscolhida } from "@/features/admin/components/AdminPunicoesSection";
 import { AdminNotificacoesSection } from "@/features/admin/components/AdminNotificacoesSection";
+import { AdminVisitasSection } from "@/features/admin/components/AdminVisitasSection";
 import { AdminFiltersModal } from "@/features/admin/components/AdminFiltersModal";
 import { AdminLoginView } from "@/features/admin/components/AdminLoginView";
 import { AdminDashboardView } from "@/features/admin/components/AdminOverviewSection";
@@ -33,11 +34,14 @@ import type { AdminTab } from "@/features/admin/types";
 import { cn, formatRelativeTime, openSecureFile } from "@/features/admin/utils";
 import { ADMIN_TOKENS } from "@/features/admin/tokens";
 import { FaixaDoAmbiente, SeletorDeAmbiente } from "@/features/admin/components/AmbienteDoPainel";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Admin() {
   useAdminPageMeta();
 
   const [navigationOpen, setNavigationOpen] = useState(false);
+  // contador de contestacoes abertas, atualizado pela aba Visitas
+  const [contestacoesAbertas, setContestacoesBadge] = useState(0);
   // pessoa que o botão "Punições" da aba Usuários manda para a aba Punições
   const [pessoaDaPunicao, setPessoaDaPunicao] = useState<PessoaEscolhida | null>(null);
   // a aba Punições avisa quando já usou a pessoa: voltar pela barra lateral não reabre a antiga
@@ -87,11 +91,24 @@ export default function Admin() {
   // para nao piscar abas que vao sumir (ADR-001).
   const papel = session.role;
   const abasVisiveis = TABS.filter((tab) => (papel ? tab.papeis.includes(papel) : tab.papeis.includes("reviewer")));
+
+  // Busca o contador de contestações ao abrir o painel (owner). Silencioso em caso de falha.
+  useEffect(() => {
+    if (!session.isAuthenticated || papel !== "owner") return;
+    apiRequest("GET", "/admin/visitas?status=contestadas&pagina=1")
+      .then((r) => r.json())
+      .then((b: { contestacoes_abertas?: number }) => {
+        if (typeof b.contestacoes_abertas === "number") {
+          setContestacoesBadge(b.contestacoes_abertas);
+        }
+      })
+      .catch(() => { /* silencioso */ });
+  }, [session.isAuthenticated, papel]);
   const activeTab = TABS.find((tab) => tab.key === admin.activeTab);
   const ActiveTabIcon = activeTab?.icon;
   const showPagination = Boolean(
     admin.activePagination &&
-      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes", "notificacoes"].includes(admin.activeTab)
+      !["dashboard", "all", "taxas", "ia", "erros", "app", "termos", "auditoria", "impulsionamento", "punicoes", "notificacoes", "visitas"].includes(admin.activeTab)
   );
 
   const renderActiveSection = () => {
@@ -217,6 +234,8 @@ export default function Admin() {
         return <AdminPunicoesSection pessoaInicial={pessoaDaPunicao} aoUsarPessoaInicial={limparPessoaDaPunicao} />;
       case "notificacoes":
         return <AdminNotificacoesSection />;
+      case "visitas":
+        return <AdminVisitasSection onContestacoes={setContestacoesBadge} />;
       default:
         return (
           <AdminDashboardView
@@ -324,7 +343,12 @@ export default function Admin() {
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{label}</span>
+                <span className="truncate flex-1">{label}</span>
+                {key === "visitas" && contestacoesAbertas > 0 ? (
+                  <span className="ml-auto rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    {contestacoesAbertas}
+                  </span>
+                ) : null}
               </button>
             ))}
           </nav>

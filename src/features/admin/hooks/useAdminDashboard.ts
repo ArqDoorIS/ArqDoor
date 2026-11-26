@@ -428,6 +428,7 @@ export function useAdminDashboard({
       activeTab === "impulsionamento" ||
       activeTab === "punicoes" ||
       activeTab === "notificacoes" ||
+      activeTab === "visitas" ||
       activeTab === "ia"
         ? "all"
         : activeTab;

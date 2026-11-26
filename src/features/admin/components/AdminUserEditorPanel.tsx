@@ -255,6 +255,22 @@ export function AdminUserEditorPanel({
         </div>
       )}
 
+      {profile.account.comunicados_descadastrado_em ? (
+        <div
+          role="alert"
+          data-testid="tarja-descadastrada-perfil"
+          className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-800"
+        >
+          Descadastrado dos comunicados em{" "}
+          {new Date(profile.account.comunicados_descadastrado_em).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
+          . Esta pessoa pediu para não receber comunicados avulsos.
+        </div>
+      ) : null}
+
       <section className="border-b border-slate-200 pb-7">
         <SectionTitle icon={<UserRound className="h-4 w-4" />} title="Conta e identidade" />
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
